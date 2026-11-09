@@ -1,0 +1,25 @@
+name: Garder Supabase éveillé
+
+# Supabase met en pause un projet gratuit après 7 jours sans requête.
+# Une petite lecture tous les 3 jours suffit à l'éviter.
+on:
+  schedule:
+    - cron: '17 6 */3 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Lire une recette
+        run: |
+          supabase_url=$(grep -oP "supabaseUrl: '\K[^']+" src/environments/environment.ts)
+          supabase_key=$(grep -oP "supabasePublishableKey: '\K[^']+" src/environments/environment.ts)
+          curl --fail --silent --show-error \
+            "$supabase_url/rest/v1/recipe?select=id&limit=1" \
+            -H "apikey: $supabase_key" > /dev/null

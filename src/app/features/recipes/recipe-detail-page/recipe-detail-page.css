@@ -1,0 +1,123 @@
+.back-link {
+  display: inline-block;
+  margin: 0.25rem 0 0.75rem;
+  text-decoration: none;
+}
+
+.recipe-meta {
+  margin: 0.5rem 0 0;
+}
+
+.servings-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 0.5rem;
+}
+
+.servings-picker__value {
+  min-width: 2ch;
+  text-align: center;
+  font-size: 1.3rem;
+}
+
+.ingredient-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ingredient-list__line {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ingredient-list__quantity {
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.add-to-shopping-list {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.added-confirmation {
+  margin: 0.625rem 0 0;
+  font-size: 0.95rem;
+}
+
+.step-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.step-list__step {
+  display: flex;
+  gap: 0.875rem;
+}
+
+.step-list__number {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-title);
+  font-weight: 600;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.step-list__text {
+  margin: 2px 0 0;
+}
+
+.notes {
+  margin: 0;
+  white-space: pre-line;
+}
+
+.comment-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.625rem;
+}
+
+.comment__content {
+  margin: 0;
+  white-space: pre-line;
+}
+
+.comment__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-top: 0.375rem;
+}
+
+.comment-form {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.recipe-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 2.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}

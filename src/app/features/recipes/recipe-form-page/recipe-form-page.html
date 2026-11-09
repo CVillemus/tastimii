@@ -1,0 +1,203 @@
+<div class="page">
+  @if (isEditingExistingRecipe()) {
+    <a class="back-link" [routerLink]="['/recettes', recipeId()]">‹ Annuler</a>
+    <h1>Modifier la recette</h1>
+  } @else {
+    <a class="back-link" routerLink="/recettes">‹ Recettes</a>
+    <h1>Nouvelle recette</h1>
+  }
+
+  @if (isExistingRecipeLoading()) {
+    <p class="status-message">Chargement de la recette…</p>
+  } @else {
+    <form class="recipe-form" novalidate (submit)="submitRecipeForm($event)">
+      <div>
+        <label for="recipe-title">Titre</label>
+        <input
+          id="recipe-title"
+          type="text"
+          placeholder="Poulet rôti au citron"
+          [formField]="recipeForm.title"
+        />
+        @if (recipeForm.title().touched()) {
+          @for (titleError of recipeForm.title().errors(); track titleError.kind) {
+            <p class="field-error">{{ titleError.message }}</p>
+          }
+        }
+      </div>
+
+      <div class="recipe-form__row">
+        <div>
+          <label for="recipe-base-servings">Nombre de parts</label>
+          <input
+            id="recipe-base-servings"
+            type="number"
+            inputmode="numeric"
+            [formField]="recipeForm.baseServings"
+          />
+          @for (servingsError of recipeForm.baseServings().errors(); track servingsError.kind) {
+            <p class="field-error">{{ servingsError.message }}</p>
+          }
+        </div>
+        <div>
+          <label for="recipe-preparation-minutes">Durée (minutes)</label>
+          <input
+            id="recipe-preparation-minutes"
+            type="number"
+            inputmode="numeric"
+            placeholder="45"
+            [formField]="recipeForm.preparationMinutes"
+          />
+        </div>
+      </div>
+
+      <section>
+        <h2 class="section-title">Ingrédients</h2>
+        <p class="muted recipe-form__hint">
+          Quantités pour le nombre de parts ci-dessus. Laissez la quantité vide pour « au goût ».
+        </p>
+
+        <datalist id="known-ingredients">
+          @for (knownIngredient of knownIngredients(); track knownIngredient.id) {
+            <option [value]="knownIngredient.name"></option>
+          }
+        </datalist>
+        <datalist id="suggested-units">
+          @for (suggestedUnit of suggestedUnits; track suggestedUnit) {
+            <option [value]="suggestedUnit"></option>
+          }
+        </datalist>
+
+        <ol class="ingredient-lines">
+          @for (ingredientLineField of recipeForm.ingredientLines; track ingredientLineField) {
+            <li class="ingredient-line card">
+              <div class="ingredient-line__name">
+                <label [for]="'ingredient-name-' + $index">Ingrédient</label>
+                <input
+                  [id]="'ingredient-name-' + $index"
+                  type="text"
+                  list="known-ingredients"
+                  autocomplete="off"
+                  placeholder="Cuisses de poulet"
+                  [formField]="ingredientLineField.ingredientName"
+                  (change)="fillDefaultUnit(ingredientLineField)"
+                />
+              </div>
+              <button
+                class="icon-button icon-button--quiet ingredient-line__remove"
+                type="button"
+                [attr.aria-label]="'Retirer l’ingrédient ' + ($index + 1)"
+                (click)="removeIngredientLine($index)"
+              >
+                ×
+              </button>
+              <div>
+                <label [for]="'ingredient-quantity-' + $index">Quantité</label>
+                <input
+                  [id]="'ingredient-quantity-' + $index"
+                  type="number"
+                  inputmode="decimal"
+                  step="any"
+                  [formField]="ingredientLineField.quantity"
+                />
+              </div>
+              <div>
+                <label [for]="'ingredient-unit-' + $index">Unité</label>
+                <input
+                  [id]="'ingredient-unit-' + $index"
+                  type="text"
+                  list="suggested-units"
+                  autocomplete="off"
+                  placeholder="g"
+                  [formField]="ingredientLineField.unit"
+                />
+              </div>
+
+              @if (isNewIngredientName(ingredientLineField.ingredientName().value())) {
+                <div class="ingredient-line__new-family">
+                  <label [for]="'ingredient-family-' + $index">
+                    Nouvel ingrédient : dans quelle famille ?
+                  </label>
+                  <select
+                    [id]="'ingredient-family-' + $index"
+                    [formField]="ingredientLineField.newIngredientFamilyId"
+                  >
+                    <option value="">Choisir une famille</option>
+                    @for (familyOption of familyOptions(); track familyOption.familyId) {
+                      <option [value]="familyOption.familyId">{{ familyOption.label }}</option>
+                    }
+                  </select>
+                  @if (ingredientLineField.newIngredientFamilyId().touched()) {
+                    @for (
+                      familyError of ingredientLineField.newIngredientFamilyId().errors();
+                      track familyError.kind
+                    ) {
+                      <p class="field-error">{{ familyError.message }}</p>
+                    }
+                  }
+                </div>
+              }
+            </li>
+          }
+        </ol>
+        <button class="button" type="button" (click)="addIngredientLine()">
+          + Ajouter un ingrédient
+        </button>
+      </section>
+
+      <section>
+        <h2 class="section-title">Préparation</h2>
+        <ol class="step-lines">
+          @for (stepField of recipeForm.steps; track stepField) {
+            <li class="step-line">
+              <span class="step-line__number" aria-hidden="true">{{ $index + 1 }}</span>
+              <label class="visually-hidden" [for]="'step-' + $index">Étape {{ $index + 1 }}</label>
+              <textarea
+                [id]="'step-' + $index"
+                rows="3"
+                placeholder="Décrivez l'étape"
+                [formField]="stepField.instruction"
+              ></textarea>
+              <button
+                class="icon-button icon-button--quiet"
+                type="button"
+                [attr.aria-label]="'Retirer l’étape ' + ($index + 1)"
+                (click)="removeStep($index)"
+              >
+                ×
+              </button>
+            </li>
+          }
+        </ol>
+        <button class="button" type="button" (click)="addStep()">+ Ajouter une étape</button>
+      </section>
+
+      <section>
+        <h2 class="section-title">Notes</h2>
+        <label class="visually-hidden" for="recipe-notes">Notes</label>
+        <textarea
+          id="recipe-notes"
+          rows="4"
+          placeholder="Astuces, variantes, accompagnements…"
+          [formField]="recipeForm.notes"
+        ></textarea>
+      </section>
+
+      @if (saveErrorMessage() !== null) {
+        <p class="error-message" role="alert">{{ saveErrorMessage() }}</p>
+      }
+
+      <button
+        class="button button--primary recipe-form__submit"
+        type="submit"
+        [disabled]="recipeForm().submitting()"
+      >
+        @if (recipeForm().submitting()) {
+          Enregistrement…
+        } @else {
+          Enregistrer la recette
+        }
+      </button>
+    </form>
+  }
+</div>

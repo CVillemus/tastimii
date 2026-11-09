@@ -1,0 +1,52 @@
+<div class="page">
+  <div class="recipe-list-header">
+    <h1>Nos recettes</h1>
+    <a class="button button--primary" routerLink="/recettes/nouvelle">+ Ajouter</a>
+  </div>
+
+  @if (recipeSummariesResource.hasValue()) {
+    @if (recipeSummariesResource.value().length > 0) {
+      <label class="visually-hidden" for="recipe-search">Chercher une recette</label>
+      <input
+        id="recipe-search"
+        class="recipe-search"
+        type="search"
+        placeholder="Chercher une recette"
+        [value]="recipeSearchText()"
+        (input)="updateRecipeSearchText($event)"
+      />
+
+      <ul class="recipe-list">
+        @for (recipeSummary of matchingRecipeSummaries(); track recipeSummary.id) {
+          <li>
+            <a class="recipe-card card" [routerLink]="['/recettes', recipeSummary.id]">
+              <h2 class="recipe-card__title">{{ recipeSummary.title }}</h2>
+              <p class="recipe-card__meta muted">
+                {{ recipeSummary.baseServings }} parts
+                @if (recipeSummary.preparationMinutes !== null) {
+                  · {{ formatPreparationTime(recipeSummary.preparationMinutes) }}
+                }
+              </p>
+            </a>
+          </li>
+        } @empty {
+          <li class="status-message">
+            Aucune recette ne correspond à « {{ recipeSearchText() }} ».
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="empty-state card">
+        <h2>Le carnet est vide</h2>
+        <p class="muted">Ajoutez votre première recette : ingrédients, étapes et notes.</p>
+        <a class="button button--primary" routerLink="/recettes/nouvelle">Ajouter une recette</a>
+      </div>
+    }
+  } @else if (recipeSummariesResource.error()) {
+    <p class="status-message error-message">
+      Impossible de charger les recettes. Vérifiez la connexion.
+    </p>
+  } @else {
+    <p class="status-message">Chargement des recettes…</p>
+  }
+</div>

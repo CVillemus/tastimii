@@ -1,0 +1,108 @@
+<div class="page">
+  <div class="shopping-list-header">
+    <h1>Courses</h1>
+    <button
+      class="button button--quiet button--small"
+      type="button"
+      [disabled]="shoppingListResource.isLoading()"
+      (click)="refreshShoppingList()"
+    >
+      Actualiser
+    </button>
+  </div>
+
+  @if (shoppingListResource.hasValue()) {
+    @let shoppingList = shoppingListResource.value();
+
+    @if (shoppingList.menuRecipes.length > 0) {
+      <h2 class="section-title">Au menu</h2>
+      <ul class="menu-recipes">
+        @for (menuRecipe of shoppingList.menuRecipes; track menuRecipe.menuEntryId) {
+          <li class="menu-recipe card">
+            <a class="menu-recipe__title" [routerLink]="['/recettes', menuRecipe.recipeId]">
+              {{ menuRecipe.recipeTitle }}
+            </a>
+            <div class="menu-recipe__controls">
+              <button
+                class="icon-button"
+                type="button"
+                [attr.aria-label]="'Une part de moins pour ' + menuRecipe.recipeTitle"
+                (click)="decreaseMenuRecipeServings(menuRecipe)"
+              >
+                −
+              </button>
+              <span class="menu-recipe__servings">{{ menuRecipe.wantedServings }} parts</span>
+              <button
+                class="icon-button"
+                type="button"
+                [attr.aria-label]="'Une part de plus pour ' + menuRecipe.recipeTitle"
+                (click)="increaseMenuRecipeServings(menuRecipe)"
+              >
+                +
+              </button>
+              <button
+                class="button button--quiet button--small menu-recipe__remove"
+                type="button"
+                (click)="removeRecipeFromShoppingList(menuRecipe)"
+              >
+                Retirer
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+
+      <h2 class="section-title">
+        À acheter · {{ shoppingProgress().checkedLineCount }} /
+        {{ shoppingProgress().totalLineCount }}
+      </h2>
+      @for (aisle of shoppingList.aisles; track aisle.aisleFamilyId) {
+        <section class="aisle card">
+          <h3 class="aisle__name">{{ aisle.aisleName }}</h3>
+          <ul class="aisle__lines">
+            @for (shoppingListLine of aisle.lines; track shoppingListLine.lineKey) {
+              <li>
+                <label
+                  class="shopping-line"
+                  [class.shopping-line--checked]="shoppingListLine.isChecked"
+                >
+                  <input
+                    type="checkbox"
+                    [checked]="shoppingListLine.isChecked"
+                    (change)="toggleShoppingListLine(shoppingListLine)"
+                  />
+                  <span class="shopping-line__name">{{ shoppingListLine.ingredientName }}</span>
+                  <span class="shopping-line__quantity">{{
+                    formatQuantityWithUnit(shoppingListLine.quantity, shoppingListLine.unit)
+                  }}</span>
+                </label>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      <button
+        class="button button--quiet button--danger clear-button"
+        type="button"
+        (click)="clearShoppingList()"
+      >
+        Vider la liste
+      </button>
+    } @else {
+      <div class="empty-state card">
+        <h2>Rien à acheter</h2>
+        <p class="muted">
+          Ouvrez une recette, choisissez le nombre de parts et ajoutez-la aux courses.
+        </p>
+        <a class="button button--primary" routerLink="/recettes">Choisir des recettes</a>
+      </div>
+    }
+  } @else if (shoppingListResource.error()) {
+    <p class="status-message error-message">
+      Impossible de charger la liste. Vérifiez la connexion.
+    </p>
+  } @else {
+    <p class="status-message">Chargement de la liste…</p>
+  }
+</div>

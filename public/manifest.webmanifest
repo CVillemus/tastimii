@@ -1,0 +1,11 @@
+{
+  "name": "Tastimii",
+  "short_name": "Tastimii",
+  "description": "Nos recettes et notre liste de courses",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf6ef",
+  "theme_color": "#faf6ef",
+  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
