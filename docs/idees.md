@@ -50,6 +50,10 @@ Dernière mise à jour : 11/11/2026.
       (badge « Au menu · 4 parts » sur la vignette, ou un aperçu « Au menu » en haut de la liste),
       mis à jour dès qu'on ajoute ou retire une recette. Va bien avec « Ajouter aux courses depuis
       les vignettes » : on verrait tout de suite le résultat, et on pourrait ajuster les parts.
+- [ ] **Fiche recette plus épurée** : retirer « Modifier la description » (et « + Ajouter une
+      description », la modification en place sur la fiche) ; remplacer le bouton « Modifier la
+      recette » par une icône crayon en haut à droite de la carte d'en-tête. Tout se modifie alors
+      depuis le formulaire.
 - [ ] **Description → « Astuces et variantes »** : renommer la section et l'orienter vers les tips
       et modifications possibles (four ou air fryer, version végétarienne…).
 - [ ] **Signaler les incohérences ingrédients ↔ étapes** : un ingrédient cité dans les étapes mais
