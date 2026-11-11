@@ -42,6 +42,24 @@ Dernière mise à jour : 11/11/2026.
       de chaque ingrédient connu dans le texte des étapes et afficher un avertissement dans le
       formulaire.
 
+### Tags
+
+- [ ] **Ranger les tags par catégorie** : aujourd'hui tous les tags sont au même niveau. Trois
+      familles se dessinent :
+  - **Type de plat** : soupe, salade, plat, dessert, apéro…
+  - **Saison** : été, hiver… (« toute l'année » = aucun tag de saison, pour ne pas le cocher partout) ;
+  - **Mood** : express, mijoté, complexe…
+
+  Pistes à discuter :
+  - en base, une colonne `category` sur `tag` (ou une petite table `tag_category`), reprise des
+    tags existants dans une migration (« Rapide » → Mood, etc.) ;
+  - dans le formulaire, les tags groupés par catégorie ; pour le type de plat, un seul choix
+    (une recette est une soupe *ou* une salade) ou plusieurs ?
+  - dans la liste des recettes, un filtre par catégorie (« Saison : hiver » + « Mood : express ») ;
+  - « Express » pourrait être déduit de la durée (moins de 30 min) plutôt que coché à la main ;
+  - la saison pourrait être proposée par défaut selon le mois en cours (« recettes d'hiver » en
+    novembre).
+
 ### Autres fonctionnalités
 
 - [ ] **Notation des recettes** : étoiles, smileys ou simple coup de cœur. Par profil (Corentin /
