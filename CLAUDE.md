@@ -37,7 +37,8 @@ L'ancienne colonne `recipe.steps` (text[]) n'est plus utilisée depuis le script
 - **Template d'une resource** : `hasValue()` → `error()` → sinon chargement.
 - **Lazy loading** : chaque page passe par `loadComponent`.
 - **Couleurs** uniquement via les variables CSS de `src/styles.css`. Thème clair uniquement, pas de thème sombre.
-- **Design** : inspiré des sites de cuisine (fond blanc, photos, peu de bordures). Pensé pour desktop, compacté pour mobile : les styles de base sont ceux du mobile, `@media (min-width: 48rem)` pour le desktop. Tailles de texte via `--font-size-*`.
+- **Design** : inspiré des sites de cuisine (fond blanc cassé, cartes blanches à ombre douce, photos, peu de bordures). Pensé pour desktop, compacté pour mobile : les styles de base sont ceux du mobile, `@media (min-width: 48rem)` pour le desktop. Tailles de texte via `--font-size-*`.
+- **Desktop ≠ mobile agrandi** : sur desktop, les pages utilisent la largeur (`.page-columns` + `.page-columns__sidebar` collante, grilles de cartes) au lieu d'une colonne étroite.
 - **Tailles en rem** (16 px = 1rem, la racine garde la taille du navigateur). Seules les bordures et contours d'1–2 px restent en px.
 - **Typographie** : titres en Fraunces (`--font-title`), texte en Atkinson Hyperlegible (`--font-body`), corps à 0.9375rem sur mobile et 1.0625rem sur desktop, champs à 1rem minimum (sinon iOS zoome).
 

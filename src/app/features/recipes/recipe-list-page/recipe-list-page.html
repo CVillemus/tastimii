@@ -1,18 +1,6 @@
 <div class="page">
-  <div class="recipe-list-header">
+  <div class="page-header">
     <h1>Nos recettes</h1>
-    @if (recipeSummariesResource.hasValue() && recipeSummariesResource.value().length > 0) {
-      <div class="recipe-search">
-        <label class="visually-hidden" for="recipe-search">Chercher une recette</label>
-        <input
-          id="recipe-search"
-          type="search"
-          placeholder="Chercher une recette"
-          [value]="recipeSearchText()"
-          (input)="updateRecipeSearchText($event)"
-        />
-      </div>
-    }
     <!-- Bouton flottant en bas à droite sur mobile, dans l'en-tête sur desktop. -->
     <a
       class="button button--primary new-recipe-button"
@@ -24,87 +12,121 @@
     </a>
   </div>
 
-  @if (filterTags().length > 0) {
-    <ul class="tag-filters" aria-label="Filtrer par tag">
-      <li>
-        <button
-          class="tag-chip"
-          type="button"
-          [class.tag-chip--selected]="selectedTagIds().size === 0"
-          [attr.aria-pressed]="selectedTagIds().size === 0"
-          (click)="clearTagFilters()"
-        >
-          Toutes
-        </button>
-      </li>
-      @for (filterTag of filterTags(); track filterTag.id) {
-        <li>
-          <button
-            class="tag-chip"
-            type="button"
-            [class.tag-chip--selected]="selectedTagIds().has(filterTag.id)"
-            [attr.aria-pressed]="selectedTagIds().has(filterTag.id)"
-            (click)="toggleTagFilter(filterTag.id)"
-          >
-            {{ filterTag.name }}
-          </button>
-        </li>
-      }
-    </ul>
-  }
+  @let hasRecipes =
+    recipeSummariesResource.hasValue() && recipeSummariesResource.value().length > 0;
+  @let hasRecipeFilters = hasRecipes || filterTags().length > 0;
 
-  @if (recipeSummariesResource.hasValue()) {
-    @if (recipeSummariesResource.value().length > 0) {
-      <ul class="recipe-list">
-        @for (recipeSummary of matchingRecipeSummaries(); track recipeSummary.id) {
-          <li>
-            <a class="recipe-card" [routerLink]="['/recettes', recipeSummary.id]">
-              <app-recipe-photo class="recipe-card__photo" [photoUrl]="recipeSummary.photoUrl" />
-              <div class="recipe-card__text">
-                <h2 class="recipe-card__title">{{ recipeSummary.title }}</h2>
-                <p class="recipe-card__meta">
-                  @if (recipeSummary.preparationMinutes !== null) {
-                    {{ formatPreparationTime(recipeSummary.preparationMinutes) }} ·
-                  }
-                  {{ recipeSummary.baseServings }} parts
-                </p>
-                @if (recipeSummary.tags.length > 0) {
-                  <ul class="recipe-card__tags" aria-label="Tags">
-                    @for (recipeTag of recipeSummary.tags; track recipeTag.id) {
-                      <li class="tag-label">{{ recipeTag.name }}</li>
-                    }
-                  </ul>
-                }
-              </div>
-            </a>
-          </li>
-        } @empty {
-          <li class="status-message">
-            Aucune recette ne correspond à ces critères.
-            @if (hasActiveFilters()) {
-              <button
-                class="button button--quiet button--small"
-                type="button"
-                (click)="clearAllFilters()"
-              >
-                Retirer les filtres
-              </button>
-            }
-          </li>
+  <!-- Desktop : recherche et tags dans une colonne à gauche, les recettes à droite. -->
+  <div class="recipe-list-layout" [class.page-columns]="hasRecipeFilters">
+    @if (hasRecipeFilters) {
+      <aside class="recipe-filters page-columns__sidebar" aria-label="Filtres">
+        @if (hasRecipes) {
+          <div class="recipe-search">
+            <label class="visually-hidden" for="recipe-search">Chercher une recette</label>
+            <input
+              id="recipe-search"
+              type="search"
+              placeholder="Chercher une recette"
+              [value]="recipeSearchText()"
+              (input)="updateRecipeSearchText($event)"
+            />
+          </div>
         }
-      </ul>
-    } @else {
-      <div class="empty-state">
-        <h2>Le carnet est vide</h2>
-        <p class="muted">Ajoutez votre première recette : ingrédients, étapes et description.</p>
-        <a class="button button--primary" routerLink="/recettes/nouvelle">Ajouter une recette</a>
-      </div>
+
+        @if (filterTags().length > 0) {
+          <h2 class="recipe-filters__title">Tags</h2>
+          <ul class="tag-filters" aria-label="Filtrer par tag">
+            <li>
+              <button
+                class="tag-chip"
+                type="button"
+                [class.tag-chip--selected]="selectedTagIds().size === 0"
+                [attr.aria-pressed]="selectedTagIds().size === 0"
+                (click)="clearTagFilters()"
+              >
+                Toutes
+              </button>
+            </li>
+            @for (filterTag of filterTags(); track filterTag.id) {
+              <li>
+                <button
+                  class="tag-chip"
+                  type="button"
+                  [class.tag-chip--selected]="selectedTagIds().has(filterTag.id)"
+                  [attr.aria-pressed]="selectedTagIds().has(filterTag.id)"
+                  (click)="toggleTagFilter(filterTag.id)"
+                >
+                  {{ filterTag.name }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </aside>
     }
-  } @else if (recipeSummariesResource.error()) {
-    <p class="status-message error-message">
-      Impossible de charger les recettes. Vérifiez la connexion.
-    </p>
-  } @else {
-    <p class="status-message">Chargement des recettes…</p>
-  }
+
+    <div class="recipe-list-content">
+      @if (recipeSummariesResource.hasValue()) {
+        @if (recipeSummariesResource.value().length > 0) {
+          <ul class="recipe-list">
+            @for (recipeSummary of matchingRecipeSummaries(); track recipeSummary.id) {
+              <li>
+                <a class="recipe-card" [routerLink]="['/recettes', recipeSummary.id]">
+                  <app-recipe-photo
+                    class="recipe-card__photo"
+                    [photoUrl]="recipeSummary.photoUrl"
+                  />
+                  <div class="recipe-card__text">
+                    <h2 class="recipe-card__title">{{ recipeSummary.title }}</h2>
+                    <p class="recipe-card__meta">
+                      @if (recipeSummary.preparationMinutes !== null) {
+                        {{ formatPreparationTime(recipeSummary.preparationMinutes) }} ·
+                      }
+                      {{ recipeSummary.baseServings }} parts
+                    </p>
+                    @if (recipeSummary.tags.length > 0) {
+                      <ul class="recipe-card__tags" aria-label="Tags">
+                        @for (recipeTag of recipeSummary.tags; track recipeTag.id) {
+                          <li class="tag-label">{{ recipeTag.name }}</li>
+                        }
+                      </ul>
+                    }
+                  </div>
+                </a>
+              </li>
+            } @empty {
+              <li class="status-message">
+                Aucune recette ne correspond à ces critères.
+                @if (hasActiveFilters()) {
+                  <button
+                    class="button button--quiet button--small"
+                    type="button"
+                    (click)="clearAllFilters()"
+                  >
+                    Retirer les filtres
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        } @else {
+          <div class="empty-state">
+            <h2>Le carnet est vide</h2>
+            <p class="muted">
+              Ajoutez votre première recette : ingrédients, étapes et description.
+            </p>
+            <a class="button button--primary" routerLink="/recettes/nouvelle"
+              >Ajouter une recette</a
+            >
+          </div>
+        }
+      } @else if (recipeSummariesResource.error()) {
+        <p class="status-message error-message">
+          Impossible de charger les recettes. Vérifiez la connexion.
+        </p>
+      } @else {
+        <p class="status-message">Chargement des recettes…</p>
+      }
+    </div>
+  </div>
 </div>

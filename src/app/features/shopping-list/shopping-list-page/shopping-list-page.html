@@ -1,5 +1,5 @@
-<div class="page page--narrow">
-  <div class="shopping-list-header">
+<div class="page">
+  <div class="page-header">
     <h1>Courses</h1>
     <button
       class="button button--quiet button--small"
@@ -15,80 +15,91 @@
     @let shoppingList = shoppingListResource.value();
 
     @if (shoppingList.menuRecipes.length > 0) {
-      <h2 class="section-title">Au menu</h2>
-      <ul class="menu-recipes">
-        @for (menuRecipe of shoppingList.menuRecipes; track menuRecipe.menuEntryId) {
-          <li class="menu-recipe card">
-            <a class="menu-recipe__title" [routerLink]="['/recettes', menuRecipe.recipeId]">
-              {{ menuRecipe.recipeTitle }}
-            </a>
-            <div class="menu-recipe__controls">
-              <button
-                class="icon-button"
-                type="button"
-                [attr.aria-label]="'Une part de moins pour ' + menuRecipe.recipeTitle"
-                (click)="decreaseMenuRecipeServings(menuRecipe)"
-              >
-                −
-              </button>
-              <span class="menu-recipe__servings">{{ menuRecipe.wantedServings }} parts</span>
-              <button
-                class="icon-button"
-                type="button"
-                [attr.aria-label]="'Une part de plus pour ' + menuRecipe.recipeTitle"
-                (click)="increaseMenuRecipeServings(menuRecipe)"
-              >
-                +
-              </button>
-              <button
-                class="button button--quiet button--small menu-recipe__remove"
-                type="button"
-                (click)="removeRecipeFromShoppingList(menuRecipe)"
-              >
-                Retirer
-              </button>
-            </div>
-          </li>
-        }
-      </ul>
-
-      <h2 class="section-title">
-        À acheter · {{ shoppingProgress().checkedLineCount }} /
-        {{ shoppingProgress().totalLineCount }}
-      </h2>
-      @for (aisle of shoppingList.aisles; track aisle.aisleFamilyId) {
-        <section class="aisle card">
-          <h3 class="aisle__name">{{ aisle.aisleName }}</h3>
-          <ul class="aisle__lines">
-            @for (shoppingListLine of aisle.lines; track shoppingListLine.lineKey) {
-              <li>
-                <label
-                  class="shopping-line"
-                  [class.shopping-line--checked]="shoppingListLine.isChecked"
-                >
-                  <input
-                    type="checkbox"
-                    [checked]="shoppingListLine.isChecked"
-                    (change)="toggleShoppingListLine(shoppingListLine)"
-                  />
-                  <span class="shopping-line__name">{{ shoppingListLine.ingredientName }}</span>
-                  <span class="shopping-line__quantity">{{
-                    formatQuantityWithUnit(shoppingListLine.quantity, shoppingListLine.unit)
-                  }}</span>
-                </label>
+      <!-- Desktop : le menu dans une colonne à gauche, la liste par rayon à droite. -->
+      <div class="page-columns">
+        <section class="menu page-columns__sidebar" aria-labelledby="menu-title">
+          <h2 id="menu-title" class="section-title">Au menu</h2>
+          <ul class="menu-recipes">
+            @for (menuRecipe of shoppingList.menuRecipes; track menuRecipe.menuEntryId) {
+              <li class="menu-recipe card">
+                <a class="menu-recipe__title" [routerLink]="['/recettes', menuRecipe.recipeId]">
+                  {{ menuRecipe.recipeTitle }}
+                </a>
+                <div class="menu-recipe__controls">
+                  <button
+                    class="icon-button"
+                    type="button"
+                    [attr.aria-label]="'Une part de moins pour ' + menuRecipe.recipeTitle"
+                    (click)="decreaseMenuRecipeServings(menuRecipe)"
+                  >
+                    −
+                  </button>
+                  <span class="menu-recipe__servings">{{ menuRecipe.wantedServings }} parts</span>
+                  <button
+                    class="icon-button"
+                    type="button"
+                    [attr.aria-label]="'Une part de plus pour ' + menuRecipe.recipeTitle"
+                    (click)="increaseMenuRecipeServings(menuRecipe)"
+                  >
+                    +
+                  </button>
+                  <button
+                    class="button button--quiet button--small menu-recipe__remove"
+                    type="button"
+                    (click)="removeRecipeFromShoppingList(menuRecipe)"
+                  >
+                    Retirer
+                  </button>
+                </div>
               </li>
             }
           </ul>
-        </section>
-      }
 
-      <button
-        class="button button--quiet button--danger clear-button"
-        type="button"
-        (click)="clearShoppingList()"
-      >
-        Vider la liste
-      </button>
+          <button
+            class="button button--quiet button--danger clear-button"
+            type="button"
+            (click)="clearShoppingList()"
+          >
+            Vider la liste
+          </button>
+        </section>
+
+        <section class="shopping-items" aria-labelledby="shopping-items-title">
+          <h2 id="shopping-items-title" class="section-title">
+            À acheter · {{ shoppingProgress().checkedLineCount }} /
+            {{ shoppingProgress().totalLineCount }}
+          </h2>
+          <div class="aisles">
+            @for (aisle of shoppingList.aisles; track aisle.aisleFamilyId) {
+              <section class="aisle card">
+                <h3 class="aisle__name">{{ aisle.aisleName }}</h3>
+                <ul class="aisle__lines">
+                  @for (shoppingListLine of aisle.lines; track shoppingListLine.lineKey) {
+                    <li>
+                      <label
+                        class="shopping-line"
+                        [class.shopping-line--checked]="shoppingListLine.isChecked"
+                      >
+                        <input
+                          type="checkbox"
+                          [checked]="shoppingListLine.isChecked"
+                          (change)="toggleShoppingListLine(shoppingListLine)"
+                        />
+                        <span class="shopping-line__name">{{
+                          shoppingListLine.ingredientName
+                        }}</span>
+                        <span class="shopping-line__quantity">{{
+                          formatQuantityWithUnit(shoppingListLine.quantity, shoppingListLine.unit)
+                        }}</span>
+                      </label>
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
+          </div>
+        </section>
+      </div>
     } @else {
       <div class="empty-state card">
         <h2>Rien à acheter</h2>

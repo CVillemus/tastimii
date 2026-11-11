@@ -2,8 +2,17 @@
   margin: 0.5rem 0 0.5rem;
 }
 
-.add-panel {
+.ingredients-intro {
+  max-width: var(--page-narrow-max-width);
+}
+
+.add-panels {
+  display: grid;
+  gap: 0.75rem;
   margin-top: 0.75rem;
+}
+
+.add-panel {
   padding: 0;
 }
 
@@ -22,7 +31,7 @@
 
 .family-tree {
   list-style: none;
-  margin: 1.5rem 0 0;
+  margin: 0.5rem 0 0;
   padding: 0;
 }
 
@@ -65,4 +74,24 @@
   min-height: 2.5rem;
   padding: 0.375rem 0.5rem;
   font-size: 1rem;
+}
+
+/* Desktop : l'arbre des familles devient une grande carte à droite des formulaires. */
+@media (min-width: 48rem) {
+  .add-panels {
+    margin-top: 0;
+  }
+
+  .family-tree {
+    margin: 0;
+    background: var(--color-surface);
+    border-radius: var(--radius-card);
+    box-shadow: 0 1px 3px var(--color-shadow-soft);
+    padding: 0.25rem 2rem 1.5rem;
+  }
+
+  .ingredient-row {
+    grid-template-columns: 1fr minmax(0, 15rem) auto;
+    gap: 1rem;
+  }
 }

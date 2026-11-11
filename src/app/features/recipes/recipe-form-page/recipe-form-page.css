@@ -112,13 +112,6 @@
   outline-offset: 2px;
 }
 
-@media (min-width: 48rem) {
-  .recipe-photo-field__preview,
-  .recipe-photo-field__empty {
-    height: 16rem;
-  }
-}
-
 .recipe-form__submit {
   width: 100%;
   margin-top: 0.5rem;
@@ -128,4 +121,94 @@
   display: flex;
   gap: 0.5rem;
   margin-top: 0.75rem;
+}
+
+/* Mobile : photo et tags restent à leur place dans le formulaire ; un seul bouton, tout en bas. */
+.recipe-form__aside {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.recipe-form__aside-save {
+  display: none;
+}
+
+/*
+ * Desktop : le formulaire principal à gauche, photo + tags + enregistrement à droite.
+ * Les lignes de la grille n'ont pas d'écart : la colonne de droite s'étend sur plusieurs lignes
+ * sans créer de vide, l'espacement vient des marges.
+ */
+@media (min-width: 48rem) {
+  .recipe-form {
+    grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
+    column-gap: 2.5rem;
+    row-gap: 0;
+    align-items: start;
+    margin-top: 1.5rem;
+  }
+
+  .recipe-form > * {
+    grid-column: 1;
+    margin-bottom: 1.75rem;
+  }
+
+  .recipe-form > .recipe-form__aside {
+    grid-column: 2;
+    grid-row: 1 / span 10;
+    position: sticky;
+    top: 6rem;
+    margin-bottom: 0;
+    padding: 1rem 1.25rem 1.25rem;
+    background: var(--color-surface);
+    border-radius: var(--radius-card);
+    box-shadow: 0 1px 3px var(--color-shadow-soft);
+  }
+
+  .recipe-form > section > .section-title,
+  .recipe-form__aside .section-title {
+    margin-top: 0;
+  }
+
+  .recipe-form__aside-save {
+    display: block;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .recipe-photo-field__preview,
+  .recipe-photo-field__empty {
+    height: 12rem;
+  }
+
+  /* Une ligne par ingrédient : nom, quantité, unité, puis le bouton pour la retirer. */
+  .ingredient-line {
+    grid-template-columns: minmax(0, 1fr) 7rem 7rem auto;
+    align-items: end;
+    padding: 0.75rem 1rem;
+  }
+
+  .ingredient-line__name {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .ingredient-line__quantity {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .ingredient-line__unit {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .ingredient-line__remove {
+    grid-column: 4;
+    grid-row: 1;
+  }
+
+  .step-line {
+    background: var(--color-surface);
+    padding: 1rem 1.25rem;
+  }
 }

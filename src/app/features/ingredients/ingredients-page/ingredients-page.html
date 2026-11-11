@@ -1,6 +1,6 @@
-<div class="page page--narrow">
+<div class="page">
   <h1 class="ingredients-title">Ingrédients</h1>
-  <p class="muted">
+  <p class="muted ingredients-intro">
     Les familles sans parent sont les rayons de la liste de courses. Exemple : Cuisses de poulet →
     Poulet → Viande.
   </p>
@@ -10,142 +10,150 @@
   }
 
   @if (ingredientCatalogResource.hasValue()) {
-    <details class="add-panel card">
-      <summary>Ajouter un ingrédient</summary>
-      <form class="add-form" novalidate (submit)="submitNewIngredientForm($event)">
-        <div>
-          <label for="new-ingredient-name">Nom</label>
-          <input
-            id="new-ingredient-name"
-            type="text"
-            placeholder="Cuisses de poulet"
-            [formField]="newIngredientForm.ingredientName"
-          />
-        </div>
-        <div>
-          <label for="new-ingredient-family">Famille</label>
-          <select id="new-ingredient-family" [formField]="newIngredientForm.familyId">
-            <option value="">Choisir une famille</option>
-            @for (familyOption of familyOptions(); track familyOption.familyId) {
-              <option [value]="familyOption.familyId">{{ familyOption.label }}</option>
-            }
-          </select>
-          @if (newIngredientForm.familyId().touched()) {
-            @for (familyError of newIngredientForm.familyId().errors(); track familyError.kind) {
-              <p class="field-error">{{ familyError.message }}</p>
-            }
-          }
-        </div>
-        <div>
-          <label for="new-ingredient-unit">Unité habituelle (facultatif)</label>
-          <input
-            id="new-ingredient-unit"
-            type="text"
-            list="ingredient-units"
-            autocomplete="off"
-            placeholder="g"
-            [formField]="newIngredientForm.defaultUnit"
-          />
-          <datalist id="ingredient-units">
-            @for (suggestedUnit of suggestedUnits; track suggestedUnit) {
-              <option [value]="suggestedUnit"></option>
-            }
-          </datalist>
-        </div>
-        <button class="button button--primary" type="submit">Ajouter l'ingrédient</button>
-      </form>
-    </details>
-
-    <details class="add-panel card">
-      <summary>Ajouter une famille</summary>
-      <form class="add-form" novalidate (submit)="submitNewFamilyForm($event)">
-        <div>
-          <label for="new-family-name">Nom</label>
-          <input
-            id="new-family-name"
-            type="text"
-            placeholder="Poulet"
-            [formField]="newFamilyForm.familyName"
-          />
-        </div>
-        <div>
-          <label for="new-family-parent">Dans la famille</label>
-          <select id="new-family-parent" [formField]="newFamilyForm.parentFamilyId">
-            <option value="">Aucune (c'est un rayon)</option>
-            @for (familyOption of familyOptions(); track familyOption.familyId) {
-              <option [value]="familyOption.familyId">{{ familyOption.label }}</option>
-            }
-          </select>
-        </div>
-        <button class="button button--primary" type="submit">Ajouter la famille</button>
-      </form>
-    </details>
-
-    <ul class="family-tree">
-      @for (familyTreeEntry of familyTree(); track familyTreeEntry.family.id) {
-        <li
-          class="family"
-          [class.family--aisle]="familyTreeEntry.depth === 0"
-          [style.margin-left.rem]="familyTreeEntry.depth * familyIndentRem"
-        >
-          <div class="family__header">
-            @if (familyTreeEntry.depth === 0) {
-              <h2 class="family__name">{{ familyTreeEntry.family.name }}</h2>
-            } @else {
-              <h3 class="family__name">{{ familyTreeEntry.family.name }}</h3>
-            }
-            <button
-              class="button button--quiet button--small"
-              type="button"
-              [attr.aria-label]="'Supprimer la famille ' + familyTreeEntry.family.name"
-              (click)="deleteIngredientFamily(familyTreeEntry.family)"
-            >
-              Supprimer
-            </button>
-          </div>
-
-          @if (familyTreeEntry.ingredients.length > 0) {
-            <ul class="family__ingredients">
-              @for (ingredient of familyTreeEntry.ingredients; track ingredient.id) {
-                <li class="ingredient-row">
-                  <span class="ingredient-row__name">
-                    {{ ingredient.name }}
-                    @if (ingredient.defaultUnit.length > 0) {
-                      <span class="muted">({{ ingredient.defaultUnit }})</span>
-                    }
-                  </span>
-                  <label class="visually-hidden" [for]="'ingredient-family-' + ingredient.id">
-                    Famille de {{ ingredient.name }}
-                  </label>
-                  <select
-                    class="ingredient-row__family"
-                    [id]="'ingredient-family-' + ingredient.id"
-                    (change)="moveIngredientToFamily(ingredient, $event)"
-                  >
-                    @for (familyOption of familyOptions(); track familyOption.familyId) {
-                      <option
-                        [value]="familyOption.familyId"
-                        [selected]="familyOption.familyId === ingredient.familyId"
-                      >
-                        {{ familyOption.label }}
-                      </option>
-                    }
-                  </select>
-                  <button
-                    class="icon-button icon-button--quiet"
-                    type="button"
-                    [attr.aria-label]="'Supprimer ' + ingredient.name"
-                    (click)="deleteIngredient(ingredient)"
-                  >
-                    ×
-                  </button>
-                </li>
+    <!-- Desktop : les formulaires d'ajout à gauche, l'arbre des familles à droite. -->
+    <div class="page-columns">
+      <div class="add-panels page-columns__sidebar">
+        <details class="add-panel card">
+          <summary>Ajouter un ingrédient</summary>
+          <form class="add-form" novalidate (submit)="submitNewIngredientForm($event)">
+            <div>
+              <label for="new-ingredient-name">Nom</label>
+              <input
+                id="new-ingredient-name"
+                type="text"
+                placeholder="Cuisses de poulet"
+                [formField]="newIngredientForm.ingredientName"
+              />
+            </div>
+            <div>
+              <label for="new-ingredient-family">Famille</label>
+              <select id="new-ingredient-family" [formField]="newIngredientForm.familyId">
+                <option value="">Choisir une famille</option>
+                @for (familyOption of familyOptions(); track familyOption.familyId) {
+                  <option [value]="familyOption.familyId">{{ familyOption.label }}</option>
+                }
+              </select>
+              @if (newIngredientForm.familyId().touched()) {
+                @for (
+                  familyError of newIngredientForm.familyId().errors();
+                  track familyError.kind
+                ) {
+                  <p class="field-error">{{ familyError.message }}</p>
+                }
               }
-            </ul>
-          }
-        </li>
-      }
-    </ul>
+            </div>
+            <div>
+              <label for="new-ingredient-unit">Unité habituelle (facultatif)</label>
+              <input
+                id="new-ingredient-unit"
+                type="text"
+                list="ingredient-units"
+                autocomplete="off"
+                placeholder="g"
+                [formField]="newIngredientForm.defaultUnit"
+              />
+              <datalist id="ingredient-units">
+                @for (suggestedUnit of suggestedUnits; track suggestedUnit) {
+                  <option [value]="suggestedUnit"></option>
+                }
+              </datalist>
+            </div>
+            <button class="button button--primary" type="submit">Ajouter l'ingrédient</button>
+          </form>
+        </details>
+
+        <details class="add-panel card">
+          <summary>Ajouter une famille</summary>
+          <form class="add-form" novalidate (submit)="submitNewFamilyForm($event)">
+            <div>
+              <label for="new-family-name">Nom</label>
+              <input
+                id="new-family-name"
+                type="text"
+                placeholder="Poulet"
+                [formField]="newFamilyForm.familyName"
+              />
+            </div>
+            <div>
+              <label for="new-family-parent">Dans la famille</label>
+              <select id="new-family-parent" [formField]="newFamilyForm.parentFamilyId">
+                <option value="">Aucune (c'est un rayon)</option>
+                @for (familyOption of familyOptions(); track familyOption.familyId) {
+                  <option [value]="familyOption.familyId">{{ familyOption.label }}</option>
+                }
+              </select>
+            </div>
+            <button class="button button--primary" type="submit">Ajouter la famille</button>
+          </form>
+        </details>
+      </div>
+
+      <ul class="family-tree">
+        @for (familyTreeEntry of familyTree(); track familyTreeEntry.family.id) {
+          <li
+            class="family"
+            [class.family--aisle]="familyTreeEntry.depth === 0"
+            [style.margin-left.rem]="familyTreeEntry.depth * familyIndentRem"
+          >
+            <div class="family__header">
+              @if (familyTreeEntry.depth === 0) {
+                <h2 class="family__name">{{ familyTreeEntry.family.name }}</h2>
+              } @else {
+                <h3 class="family__name">{{ familyTreeEntry.family.name }}</h3>
+              }
+              <button
+                class="button button--quiet button--small"
+                type="button"
+                [attr.aria-label]="'Supprimer la famille ' + familyTreeEntry.family.name"
+                (click)="deleteIngredientFamily(familyTreeEntry.family)"
+              >
+                Supprimer
+              </button>
+            </div>
+
+            @if (familyTreeEntry.ingredients.length > 0) {
+              <ul class="family__ingredients">
+                @for (ingredient of familyTreeEntry.ingredients; track ingredient.id) {
+                  <li class="ingredient-row">
+                    <span class="ingredient-row__name">
+                      {{ ingredient.name }}
+                      @if (ingredient.defaultUnit.length > 0) {
+                        <span class="muted">({{ ingredient.defaultUnit }})</span>
+                      }
+                    </span>
+                    <label class="visually-hidden" [for]="'ingredient-family-' + ingredient.id">
+                      Famille de {{ ingredient.name }}
+                    </label>
+                    <select
+                      class="ingredient-row__family"
+                      [id]="'ingredient-family-' + ingredient.id"
+                      (change)="moveIngredientToFamily(ingredient, $event)"
+                    >
+                      @for (familyOption of familyOptions(); track familyOption.familyId) {
+                        <option
+                          [value]="familyOption.familyId"
+                          [selected]="familyOption.familyId === ingredient.familyId"
+                        >
+                          {{ familyOption.label }}
+                        </option>
+                      }
+                    </select>
+                    <button
+                      class="icon-button icon-button--quiet"
+                      type="button"
+                      [attr.aria-label]="'Supprimer ' + ingredient.name"
+                      (click)="deleteIngredient(ingredient)"
+                    >
+                      ×
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          </li>
+        }
+      </ul>
+    </div>
   } @else if (ingredientCatalogResource.error()) {
     <p class="status-message error-message">
       Impossible de charger les ingrédients. Vérifiez la connexion.

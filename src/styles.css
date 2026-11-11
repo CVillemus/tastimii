@@ -4,18 +4,19 @@
  * Titres en Fraunces, texte en Atkinson Hyperlegible (dessinée pour être très lisible).
  */
 /*
- * Thème clair uniquement, inspiré des sites de cuisine : fond blanc, beaucoup d'air, peu de bordures.
+ * Thème clair uniquement, inspiré des sites de cuisine : fond blanc cassé, cartes d'un blanc doux,
+ * beaucoup d'air, peu de bordures.
  * Les tailles de base sont celles du mobile (compact) ; elles grandissent à partir de 48rem.
  */
 :root {
-  --color-background: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-sunken: #faf6ef;
-  --color-photo-placeholder: #efe7dc;
+  --color-background: #f8f4ed;
+  --color-surface: #fffdf9;
+  --color-surface-sunken: #f1ebe1;
+  --color-photo-placeholder: #ebe2d5;
   --color-photo-placeholder-ink: #b3a493;
   --color-ink: #2b2420;
   --color-ink-muted: #6b6058;
-  --color-border: #ece4d8;
+  --color-border: #e6ddcf;
   --color-accent: #b5532f;
   --color-accent-hover: #9a4426;
   --color-on-accent: #ffffff;
@@ -23,6 +24,7 @@
   --color-danger: #a33a2d;
   --color-checked: #8d8278;
   --color-shadow: rgb(43 36 32 / 25%);
+  --color-shadow-soft: rgb(43 36 32 / 7%);
 
   --font-title: 'Fraunces', Georgia, serif;
   --font-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
@@ -35,8 +37,10 @@
   --radius-control: 0.5rem;
   --radius-card: 0.75rem;
   --page-gutter: 0.75rem;
-  --page-max-width: 72rem;
+  --page-max-width: 76rem;
   --page-narrow-max-width: 44rem;
+  /* Colonne latérale des pages en deux colonnes sur desktop. */
+  --sidebar-width: 20rem;
   --block-gap: 1rem;
   --bottom-navigation-height: 3.5rem;
 
@@ -244,7 +248,26 @@ input[type='checkbox'] {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
+  box-shadow: 0 1px 3px var(--color-shadow-soft);
   padding: 0.75rem;
+}
+
+/*
+ * Pages en deux colonnes sur desktop : une colonne latérale (actions, résumé) qui reste visible
+ * et une colonne principale. Sur mobile, les deux s'empilent dans l'ordre du HTML.
+ */
+.page-columns {
+  display: grid;
+  gap: var(--block-gap);
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .section-title {
@@ -267,6 +290,26 @@ input[type='checkbox'] {
 
   .card {
     padding: 1rem 1.25rem;
+  }
+
+  .page-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .page-columns {
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    align-items: start;
+    gap: 2.5rem;
+  }
+
+  .page-columns--sidebar-end {
+    grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
+  }
+
+  /* Reste visible sous l'en-tête collant pendant qu'on fait défiler la colonne principale. */
+  .page-columns__sidebar {
+    position: sticky;
+    top: 6rem;
   }
 }
 

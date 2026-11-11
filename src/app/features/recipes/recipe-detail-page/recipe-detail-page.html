@@ -25,59 +25,60 @@
             }
           </ul>
         }
+
+        <section class="recipe-description" aria-label="Description">
+          @if (descriptionDraft() !== null) {
+            <app-rich-text-editor
+              editorLabel="Description"
+              placeholder="Une description, une remarque, une variante…"
+              [value]="descriptionDraft() ?? ''"
+              (valueChange)="updateDescriptionDraft($event)"
+            />
+            @if (descriptionErrorMessage() !== null) {
+              <p class="error-message" role="alert">{{ descriptionErrorMessage() }}</p>
+            }
+            <div class="recipe-description__actions">
+              <button
+                class="button button--primary button--small"
+                type="button"
+                [disabled]="isSavingDescription()"
+                (click)="saveDescription()"
+              >
+                Enregistrer
+              </button>
+              <button
+                class="button button--quiet button--small"
+                type="button"
+                (click)="cancelEditingDescription()"
+              >
+                Annuler
+              </button>
+            </div>
+          } @else if (recipe.descriptionHtml.length > 0) {
+            <div class="rich-text" [innerHTML]="recipe.descriptionHtml"></div>
+            <button
+              class="button button--quiet button--small recipe-description__edit"
+              type="button"
+              (click)="startEditingDescription(recipe)"
+            >
+              Modifier la description
+            </button>
+          } @else {
+            <button
+              class="button button--quiet button--small recipe-description__edit"
+              type="button"
+              (click)="startEditingDescription(recipe)"
+            >
+              + Ajouter une description ou une remarque
+            </button>
+          }
+        </section>
+
         <a class="button button--small" [routerLink]="['/recettes', recipe.id, 'modifier']">
           Modifier la recette
         </a>
       </div>
     </header>
-
-    <section class="recipe-description" aria-label="Description">
-      @if (descriptionDraft() !== null) {
-        <app-rich-text-editor
-          editorLabel="Description"
-          placeholder="Une description, une remarque, une variante…"
-          [value]="descriptionDraft() ?? ''"
-          (valueChange)="updateDescriptionDraft($event)"
-        />
-        @if (descriptionErrorMessage() !== null) {
-          <p class="error-message" role="alert">{{ descriptionErrorMessage() }}</p>
-        }
-        <div class="recipe-description__actions">
-          <button
-            class="button button--primary button--small"
-            type="button"
-            [disabled]="isSavingDescription()"
-            (click)="saveDescription()"
-          >
-            Enregistrer
-          </button>
-          <button
-            class="button button--quiet button--small"
-            type="button"
-            (click)="cancelEditingDescription()"
-          >
-            Annuler
-          </button>
-        </div>
-      } @else if (recipe.descriptionHtml.length > 0) {
-        <div class="rich-text" [innerHTML]="recipe.descriptionHtml"></div>
-        <button
-          class="button button--quiet button--small recipe-description__edit"
-          type="button"
-          (click)="startEditingDescription(recipe)"
-        >
-          Modifier la description
-        </button>
-      } @else {
-        <button
-          class="button button--quiet button--small recipe-description__edit"
-          type="button"
-          (click)="startEditingDescription(recipe)"
-        >
-          + Ajouter une description ou une remarque
-        </button>
-      }
-    </section>
 
     <div class="recipe-body">
       <aside class="recipe-ingredients">
