@@ -1,28 +1,26 @@
-/** Famille d'ingrédients. Une famille sans parent est un rayon du magasin (Viande, Crèmerie…). */
-export type IngredientFamily = {
+/** Type d'ingrédient (Viande, Crèmerie…) : c'est aussi son rayon dans la liste de courses. */
+export type IngredientType = {
   id: string;
   name: string;
-  parentFamilyId: string | null;
 };
 
-/** Ingrédient rangé dans une famille : « Cuisses de poulet » → « Poulet ». */
+/** Ingrédient rangé directement dans son type : « Cuisses de poulet » → « Viande ». */
 export type Ingredient = {
   id: string;
   name: string;
-  familyId: string;
+  typeId: string;
   defaultUnit: string;
 };
 
 /** Catalogue complet, chargé en une fois : il reste petit (deux utilisateurs). */
 export type IngredientCatalog = {
-  families: IngredientFamily[];
+  types: IngredientType[];
   ingredients: Ingredient[];
 };
 
-/** Famille affichée dans l'arbre, avec sa profondeur (0 = rayon) et ses ingrédients. */
-export type IngredientFamilyTreeEntry = {
-  family: IngredientFamily;
-  depth: number;
+/** Un type et ses ingrédients, pour la page de gestion. */
+export type IngredientTypeGroup = {
+  ingredientType: IngredientType;
   ingredients: Ingredient[];
 };
 

@@ -234,25 +234,25 @@
               </div>
 
               @if (isNewIngredientName(ingredientLineField.ingredientName().value())) {
-                <div class="ingredient-line__new-family">
-                  <label [for]="'ingredient-family-' + $index">
-                    Nouvel ingrédient : dans quelle famille ?
+                <div class="ingredient-line__new-type">
+                  <label [for]="'ingredient-type-' + $index">
+                    Nouvel ingrédient : de quel type ?
                   </label>
                   <select
-                    [id]="'ingredient-family-' + $index"
-                    [formField]="ingredientLineField.newIngredientFamilyId"
+                    [id]="'ingredient-type-' + $index"
+                    [formField]="ingredientLineField.newIngredientTypeId"
                   >
-                    <option value="">Choisir une famille</option>
-                    @for (familyOption of familyOptions(); track familyOption.familyId) {
-                      <option [value]="familyOption.familyId">{{ familyOption.label }}</option>
+                    <option value="">Choisir un type</option>
+                    @for (ingredientType of sortedIngredientTypes(); track ingredientType.id) {
+                      <option [value]="ingredientType.id">{{ ingredientType.name }}</option>
                     }
                   </select>
-                  @if (ingredientLineField.newIngredientFamilyId().touched()) {
+                  @if (ingredientLineField.newIngredientTypeId().touched()) {
                     @for (
-                      familyError of ingredientLineField.newIngredientFamilyId().errors();
-                      track familyError.kind
+                      typeError of ingredientLineField.newIngredientTypeId().errors();
+                      track typeError.kind
                     ) {
-                      <p class="field-error">{{ familyError.message }}</p>
+                      <p class="field-error">{{ typeError.message }}</p>
                     }
                   }
                 </div>

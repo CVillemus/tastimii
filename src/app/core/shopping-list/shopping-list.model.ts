@@ -19,9 +19,9 @@ export type ShoppingListLine = {
   isChecked: boolean;
 };
 
-/** Un rayon du magasin (famille sans parent) et ses lignes. */
+/** Un rayon du magasin (le type des ingrédients) et ses lignes. */
 export type ShoppingListAisle = {
-  aisleFamilyId: string;
+  ingredientTypeId: string;
   aisleName: string;
   lines: ShoppingListLine[];
 };

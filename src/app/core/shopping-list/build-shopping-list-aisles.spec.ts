@@ -4,15 +4,14 @@ import { buildShoppingListAisles, buildShoppingListLineKey } from './build-shopp
 import { ShoppingListAisle, ShoppingListMenuRecipe } from './shopping-list.model';
 
 const ingredientCatalog: IngredientCatalog = {
-  families: [
-    { id: 'viande', name: 'Viande', parentFamilyId: null },
-    { id: 'poulet', name: 'Poulet', parentFamilyId: 'viande' },
-    { id: 'legumes', name: 'Fruits et légumes', parentFamilyId: null },
+  types: [
+    { id: 'viande', name: 'Viande' },
+    { id: 'legumes', name: 'Fruits et légumes' },
   ],
   ingredients: [
-    { id: 'cuisses', name: 'Cuisses de poulet', familyId: 'poulet', defaultUnit: '' },
-    { id: 'citron', name: 'Citron', familyId: 'legumes', defaultUnit: '' },
-    { id: 'ail', name: 'Ail', familyId: 'legumes', defaultUnit: 'gousse' },
+    { id: 'cuisses', name: 'Cuisses de poulet', typeId: 'viande', defaultUnit: '' },
+    { id: 'citron', name: 'Citron', typeId: 'legumes', defaultUnit: '' },
+    { id: 'ail', name: 'Ail', typeId: 'legumes', defaultUnit: 'gousse' },
   ],
 };
 
@@ -67,7 +66,7 @@ describe('liste de courses', () => {
     ]);
   });
 
-  it('range les sous-familles dans leur rayon et met les lignes cochées à la fin', () => {
+  it('range chaque ingrédient dans le rayon de son type et met les lignes cochées à la fin', () => {
     const aisles: ShoppingListAisle[] = buildShoppingListAisles(
       [roastChicken, lemonPie],
       ingredientCatalog,
@@ -80,6 +79,21 @@ describe('liste de courses', () => {
     expect(aisles[0].lines.map((line) => [line.ingredientName, line.isChecked])).toEqual([
       ['Citron', false],
       ['Ail', true],
+    ]);
+  });
+
+  it("range dans « Autres » un ingrédient dont le type n'existe plus", () => {
+    const aisles: ShoppingListAisle[] = buildShoppingListAisles(
+      [roastChicken],
+      {
+        types: [{ id: 'legumes', name: 'Fruits et légumes' }],
+        ingredients: ingredientCatalog.ingredients,
+      },
+      new Set(),
+    );
+    expect(aisles.map((aisle: ShoppingListAisle) => aisle.aisleName)).toEqual([
+      'Autres',
+      'Fruits et légumes',
     ]);
   });
 });

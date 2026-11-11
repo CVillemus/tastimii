@@ -6,7 +6,7 @@ Tastimii : le carnet de recettes de Corentin et Marine, utilisé sur leurs tél�
 
 - **Recettes** : titre, nombre de parts de base, durée, photo (bucket Storage public `recipe-photos`, réduite à 1600 px avant l'envoi), description libre en texte riche (en tête de recette, éditeur Tiptap, stockée en HTML), ingrédients (quantité + unité), étapes avec un titre facultatif et un texte riche (`recipe.preparation_steps`, jsonb).
 - **Tags** : une recette a zéro, un ou plusieurs tags (`tag`, `recipe_tag`), créés depuis le formulaire. La liste filtre par tags : une recette doit avoir tous les tags choisis.
-- **Ingrédients** rangés dans des **familles** en arbre : Cuisses de poulet → Poulet → Viande. Une famille sans parent est un **rayon** de la liste de courses.
+- **Ingrédients** : chacun a directement un **type** (Cuisses de poulet → Viande), sans sous-types. Le type est le **rayon** de la liste de courses. En base, un type est une ligne de `ingredient_family` (l'ingrédient pointe dessus par `family_id`) ; dans le code, on parle de `IngredientType` / `typeId`.
 - **Liste de courses** : on met des recettes au menu avec un nombre de parts. Les quantités sont recalculées (`parts voulues ÷ parts de base`), additionnées par ingrédient et par unité, puis rangées par rayon, avec des cases à cocher enregistrées en base.
 - **Aucune sécurité voulue** : pas de comptes, tout le monde peut tout faire.
 - **Pas de temps réel** : la liste se recharge à l'ouverture ou avec le bouton « Actualiser ».
@@ -15,7 +15,9 @@ Tastimii : le carnet de recettes de Corentin et Marine, utilisé sur leurs tél�
 
 Depuis le 11/11/2026, Corentin et Marine saisissent leurs vraies recettes. Tout changement de schéma passe par un nouveau script `supabase/migrations/00N_*.sql` qui **reprend les données existantes**. De préférence, ajouter sans supprimer (la version en ligne continue de marcher), et nettoyer les anciennes colonnes dans un script suivant. Pendant les tests, ne créer et ne supprimer que des recettes préfixées `TEST`.
 
-L'ancienne colonne `recipe.steps` (text[]) n'est plus utilisée depuis le script 003 : à supprimer dans un prochain script de nettoyage.
+À supprimer dans un prochain script de nettoyage :
+- l'ancienne colonne `recipe.steps` (text[]), plus utilisée depuis le script 003 ;
+- la colonne `ingredient_family.parent_family_id` (toujours `null` depuis le script 005) et sa contrainte `ingredient_family_sans_parent`.
 
 ## Stack
 
@@ -32,7 +34,7 @@ L'ancienne colonne `recipe.steps` (text[]) n'est plus utilisée depuis le script
 - **Templates séparés** : toujours `templateUrl` + fichier `.html`.
 - **Nommage métier** : `addRecipeToShoppingList()` pas `add()`, `menuRecipe` pas `item`.
 - **Appels Supabase** isolés dans les classes `*Api` de `core/`, une méthode nommée par appel.
-- **Logique pure** (calcul des courses, arbre des familles, quantités) dans des fonctions testées, hors des composants.
+- **Logique pure** (calcul des courses, regroupement par type, quantités) dans des fonctions testées, hors des composants.
 - **Lisibilité** : `recipes.length > 0` plutôt que `!recipes.length`.
 - **Template d'une resource** : `hasValue()` → `error()` → sinon chargement.
 - **Lazy loading** : chaque page passe par `loadComponent`.
@@ -48,13 +50,13 @@ L'ancienne colonne `recipe.steps` (text[]) n'est plus utilisée depuis le script
 src/app/
   core/
     supabase/       client et types de la base
-    ingredients/    familles, ingrédients, arbre des familles
+    ingredients/    types d'ingrédients, ingrédients, regroupement par type
     recipes/        recettes, commentaires, calcul des quantités
     shopping-list/  liste de courses et son calcul par rayon
   features/
     recipes/        liste, détail, formulaire (création + modification)
     shopping-list/  page des courses
-    ingredients/    gestion des familles et des ingrédients
+    ingredients/    gestion des types et des ingrédients
   shared/
     rich-text-editor/  éditeur de texte riche (Tiptap), compatible `[formField]`
 ```

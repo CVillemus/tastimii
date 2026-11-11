@@ -70,7 +70,7 @@
             {{ shoppingProgress().totalLineCount }}
           </h2>
           <div class="aisles">
-            @for (aisle of shoppingList.aisles; track aisle.aisleFamilyId) {
+            @for (aisle of shoppingList.aisles; track aisle.ingredientTypeId) {
               <section class="aisle card">
                 <h3 class="aisle__name">{{ aisle.aisleName }}</h3>
                 <ul class="aisle__lines">

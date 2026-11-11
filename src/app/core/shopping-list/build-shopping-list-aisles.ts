@@ -1,10 +1,12 @@
-import { compareByFrenchName, findAisleFamily } from '../ingredients/ingredient-family-tree';
-import { Ingredient, IngredientCatalog, IngredientFamily } from '../ingredients/ingredient.model';
+import { compareByFrenchName } from '../ingredients/ingredient-types';
+import { Ingredient, IngredientCatalog, IngredientType } from '../ingredients/ingredient.model';
 import { scaleQuantity } from '../recipes/quantity';
 import { ShoppingListAisle, ShoppingListLine, ShoppingListMenuRecipe } from './shopping-list.model';
 
-/** Ligne en cours de calcul : on garde son rayon pour le regroupement final. */
-type ShoppingListLineWithAisle = ShoppingListLine & { aisleFamily: IngredientFamily | undefined };
+/** Ligne en cours de calcul : on garde son type (son rayon) pour le regroupement final. */
+type ShoppingListLineWithAisle = ShoppingListLine & {
+  ingredientType: IngredientType | undefined;
+};
 
 const UNKNOWN_AISLE_ID: string = 'rayon-inconnu';
 const UNKNOWN_AISLE_NAME: string = 'Autres';
@@ -22,7 +24,7 @@ function normalizeUnit(unit: string): string {
  * Calcule la liste de courses :
  * 1. chaque quantité est ramenée au nombre de parts voulu,
  * 2. les mêmes ingrédients dans la même unité sont additionnés,
- * 3. les lignes sont rangées par rayon (la famille tout en haut de l'arbre),
+ * 3. les lignes sont rangées par rayon (le type de l'ingrédient),
  *    les lignes cochées à la fin de leur rayon.
  */
 export function buildShoppingListAisles(
@@ -30,8 +32,11 @@ export function buildShoppingListAisles(
   ingredientCatalog: IngredientCatalog,
   checkedLineKeys: ReadonlySet<string>,
 ): ShoppingListAisle[] {
-  const familiesById: Map<string, IngredientFamily> = new Map(
-    ingredientCatalog.families.map((family: IngredientFamily) => [family.id, family]),
+  const ingredientTypesById: Map<string, IngredientType> = new Map(
+    ingredientCatalog.types.map((ingredientType: IngredientType) => [
+      ingredientType.id,
+      ingredientType,
+    ]),
   );
   const ingredientsById: Map<string, Ingredient> = new Map(
     ingredientCatalog.ingredients.map((ingredient: Ingredient) => [ingredient.id, ingredient]),
@@ -59,10 +64,8 @@ export function buildShoppingListAisles(
           quantity: scaledQuantity,
           unit: ingredientLine.unit.trim(),
           isChecked: checkedLineKeys.has(lineKey),
-          aisleFamily:
-            ingredient === undefined
-              ? undefined
-              : findAisleFamily(ingredient.familyId, familiesById),
+          ingredientType:
+            ingredient === undefined ? undefined : ingredientTypesById.get(ingredient.typeId),
         });
       } else {
         existingLine.quantity = addQuantities(existingLine.quantity, scaledQuantity);
@@ -71,15 +74,15 @@ export function buildShoppingListAisles(
   }
 
   const aislesById: Map<string, ShoppingListAisle> = new Map();
-  for (const { aisleFamily, ...shoppingListLine } of linesByKey.values()) {
-    const aisleFamilyId: string = aisleFamily?.id ?? UNKNOWN_AISLE_ID;
-    const aisle: ShoppingListAisle = aislesById.get(aisleFamilyId) ?? {
-      aisleFamilyId,
-      aisleName: aisleFamily?.name ?? UNKNOWN_AISLE_NAME,
+  for (const { ingredientType, ...shoppingListLine } of linesByKey.values()) {
+    const ingredientTypeId: string = ingredientType?.id ?? UNKNOWN_AISLE_ID;
+    const aisle: ShoppingListAisle = aislesById.get(ingredientTypeId) ?? {
+      ingredientTypeId,
+      aisleName: ingredientType?.name ?? UNKNOWN_AISLE_NAME,
       lines: [],
     };
     aisle.lines.push(shoppingListLine);
-    aislesById.set(aisleFamilyId, aisle);
+    aislesById.set(ingredientTypeId, aisle);
   }
 
   return [...aislesById.values()]

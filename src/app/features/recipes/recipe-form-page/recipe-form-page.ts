@@ -24,11 +24,11 @@ import {
   validate,
 } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
-import { formatFamilyPath } from '../../../core/ingredients/ingredient-family-tree';
+import { sortIngredientTypesByName } from '../../../core/ingredients/ingredient-types';
 import {
   Ingredient,
   IngredientCatalog,
-  IngredientFamily,
+  IngredientType,
   SUGGESTED_UNITS,
 } from '../../../core/ingredients/ingredient.model';
 import { IngredientsApi } from '../../../core/ingredients/ingredients-api';
@@ -55,12 +55,6 @@ import {
   RecipeFormStep,
   toRecipeFormModel,
 } from './recipe-form.model';
-
-/** Famille proposée dans la liste déroulante, avec son chemin complet. */
-type FamilyOption = {
-  familyId: string;
-  label: string;
-};
 
 /**
  * Ce qu'on fera de la photo à l'enregistrement : rien, envoyer la nouvelle, ou retirer l'actuelle.
@@ -133,23 +127,11 @@ export class RecipeFormPage {
       : [],
   );
 
-  protected readonly familyOptions: Signal<FamilyOption[]> = computed(() => {
-    if (!this.ingredientCatalogResource.hasValue()) {
-      return [];
-    }
-    const families: IngredientFamily[] = this.ingredientCatalogResource.value().families;
-    const familiesById: Map<string, IngredientFamily> = new Map(
-      families.map((family: IngredientFamily) => [family.id, family]),
-    );
-    return families
-      .map((family: IngredientFamily): FamilyOption => ({
-        familyId: family.id,
-        label: formatFamilyPath(family.id, familiesById),
-      }))
-      .sort((firstOption: FamilyOption, secondOption: FamilyOption) =>
-        firstOption.label.localeCompare(secondOption.label, 'fr'),
-      );
-  });
+  protected readonly sortedIngredientTypes: Signal<IngredientType[]> = computed(() =>
+    this.ingredientCatalogResource.hasValue()
+      ? sortIngredientTypesByName(this.ingredientCatalogResource.value().types)
+      : [],
+  );
 
   protected readonly suggestedUnits: readonly string[] = SUGGESTED_UNITS;
 
@@ -166,11 +148,11 @@ export class RecipeFormPage {
       min(recipeFormPath.preparationMinutes, 1, { message: 'Au moins une minute.' });
       applyEach(recipeFormPath.ingredientLines, (ingredientLinePath) => {
         min(ingredientLinePath.quantity, 0.01, { message: 'La quantité doit être positive.' });
-        validate(ingredientLinePath.newIngredientFamilyId, ({ value, valueOf }) =>
+        validate(ingredientLinePath.newIngredientTypeId, ({ value, valueOf }) =>
           this.isNewIngredientName(valueOf(ingredientLinePath.ingredientName)) && value() === ''
             ? {
-                kind: 'familleManquante',
-                message: 'Choisissez une famille pour ce nouvel ingrédient.',
+                kind: 'typeManquant',
+                message: 'Choisissez un type pour ce nouvel ingrédient.',
               }
             : undefined,
         );
@@ -444,7 +426,7 @@ export class RecipeFormPage {
     }
     const createdIngredient: Ingredient = await this.ingredientsApi.createIngredient(
       ingredientLine.ingredientName,
-      ingredientLine.newIngredientFamilyId,
+      ingredientLine.newIngredientTypeId,
       ingredientLine.unit,
     );
     // Si le même nouvel ingrédient apparaît deux fois, la deuxième ligne le retrouvera.

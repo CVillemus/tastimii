@@ -39,7 +39,7 @@
   align-self: end;
 }
 
-.ingredient-line__new-family {
+.ingredient-line__new-type {
   grid-column: 1 / -1;
   background: var(--color-accent-soft);
   border-radius: var(--radius-control);

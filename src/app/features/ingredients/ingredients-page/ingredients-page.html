@@ -1,8 +1,7 @@
 <div class="page">
   <h1 class="ingredients-title">Ingrédients</h1>
   <p class="muted ingredients-intro">
-    Les familles sans parent sont les rayons de la liste de courses. Exemple : Cuisses de poulet →
-    Poulet → Viande.
+    Chaque ingrédient a un type (Viande, Crèmerie…) : c'est son rayon dans la liste de courses.
   </p>
 
   @if (actionErrorMessage() !== null) {
@@ -10,7 +9,7 @@
   }
 
   @if (ingredientCatalogResource.hasValue()) {
-    <!-- Desktop : les formulaires d'ajout à gauche, l'arbre des familles à droite. -->
+    <!-- Desktop : les formulaires d'ajout à gauche, les types et leurs ingrédients à droite. -->
     <div class="page-columns">
       <div class="add-panels page-columns__sidebar">
         <details class="add-panel card">
@@ -26,19 +25,16 @@
               />
             </div>
             <div>
-              <label for="new-ingredient-family">Famille</label>
-              <select id="new-ingredient-family" [formField]="newIngredientForm.familyId">
-                <option value="">Choisir une famille</option>
-                @for (familyOption of familyOptions(); track familyOption.familyId) {
-                  <option [value]="familyOption.familyId">{{ familyOption.label }}</option>
+              <label for="new-ingredient-type">Type</label>
+              <select id="new-ingredient-type" [formField]="newIngredientForm.typeId">
+                <option value="">Choisir un type</option>
+                @for (ingredientType of sortedIngredientTypes(); track ingredientType.id) {
+                  <option [value]="ingredientType.id">{{ ingredientType.name }}</option>
                 }
               </select>
-              @if (newIngredientForm.familyId().touched()) {
-                @for (
-                  familyError of newIngredientForm.familyId().errors();
-                  track familyError.kind
-                ) {
-                  <p class="field-error">{{ familyError.message }}</p>
+              @if (newIngredientForm.typeId().touched()) {
+                @for (typeError of newIngredientForm.typeId().errors(); track typeError.kind) {
+                  <p class="field-error">{{ typeError.message }}</p>
                 }
               }
             </div>
@@ -63,57 +59,48 @@
         </details>
 
         <details class="add-panel card">
-          <summary>Ajouter une famille</summary>
-          <form class="add-form" novalidate (submit)="submitNewFamilyForm($event)">
+          <summary>Ajouter un type</summary>
+          <form class="add-form" novalidate (submit)="submitNewIngredientTypeForm($event)">
             <div>
-              <label for="new-family-name">Nom</label>
+              <label for="new-type-name">Nom</label>
               <input
-                id="new-family-name"
+                id="new-type-name"
                 type="text"
-                placeholder="Poulet"
-                [formField]="newFamilyForm.familyName"
+                placeholder="Boissons"
+                [formField]="newIngredientTypeForm.typeName"
               />
             </div>
-            <div>
-              <label for="new-family-parent">Dans la famille</label>
-              <select id="new-family-parent" [formField]="newFamilyForm.parentFamilyId">
-                <option value="">Aucune (c'est un rayon)</option>
-                @for (familyOption of familyOptions(); track familyOption.familyId) {
-                  <option [value]="familyOption.familyId">{{ familyOption.label }}</option>
-                }
-              </select>
-            </div>
-            <button class="button button--primary" type="submit">Ajouter la famille</button>
+            <button class="button button--primary" type="submit">Ajouter le type</button>
           </form>
         </details>
       </div>
 
-      <ul class="family-tree">
-        @for (familyTreeEntry of familyTree(); track familyTreeEntry.family.id) {
-          <li
-            class="family"
-            [class.family--aisle]="familyTreeEntry.depth === 0"
-            [style.margin-left.rem]="familyTreeEntry.depth * familyIndentRem"
-          >
-            <div class="family__header">
-              @if (familyTreeEntry.depth === 0) {
-                <h2 class="family__name">{{ familyTreeEntry.family.name }}</h2>
-              } @else {
-                <h3 class="family__name">{{ familyTreeEntry.family.name }}</h3>
-              }
+      <ul class="ingredient-types">
+        @for (
+          ingredientTypeGroup of ingredientTypeGroups();
+          track ingredientTypeGroup.ingredientType.id
+        ) {
+          <li class="ingredient-type card">
+            <div class="ingredient-type__header">
+              <h2 class="ingredient-type__name">
+                {{ ingredientTypeGroup.ingredientType.name }}
+                <span class="ingredient-type__count">{{
+                  ingredientTypeGroup.ingredients.length
+                }}</span>
+              </h2>
               <button
                 class="button button--quiet button--small"
                 type="button"
-                [attr.aria-label]="'Supprimer la famille ' + familyTreeEntry.family.name"
-                (click)="deleteIngredientFamily(familyTreeEntry.family)"
+                [attr.aria-label]="'Supprimer le type ' + ingredientTypeGroup.ingredientType.name"
+                (click)="deleteIngredientType(ingredientTypeGroup)"
               >
                 Supprimer
               </button>
             </div>
 
-            @if (familyTreeEntry.ingredients.length > 0) {
-              <ul class="family__ingredients">
-                @for (ingredient of familyTreeEntry.ingredients; track ingredient.id) {
+            @if (ingredientTypeGroup.ingredients.length > 0) {
+              <ul class="ingredient-type__ingredients">
+                @for (ingredient of ingredientTypeGroup.ingredients; track ingredient.id) {
                   <li class="ingredient-row">
                     <span class="ingredient-row__name">
                       {{ ingredient.name }}
@@ -121,20 +108,20 @@
                         <span class="muted">({{ ingredient.defaultUnit }})</span>
                       }
                     </span>
-                    <label class="visually-hidden" [for]="'ingredient-family-' + ingredient.id">
-                      Famille de {{ ingredient.name }}
+                    <label class="visually-hidden" [for]="'ingredient-type-' + ingredient.id">
+                      Type de {{ ingredient.name }}
                     </label>
                     <select
-                      class="ingredient-row__family"
-                      [id]="'ingredient-family-' + ingredient.id"
-                      (change)="moveIngredientToFamily(ingredient, $event)"
+                      class="ingredient-row__type"
+                      [id]="'ingredient-type-' + ingredient.id"
+                      (change)="changeIngredientType(ingredient, $event)"
                     >
-                      @for (familyOption of familyOptions(); track familyOption.familyId) {
+                      @for (ingredientType of sortedIngredientTypes(); track ingredientType.id) {
                         <option
-                          [value]="familyOption.familyId"
-                          [selected]="familyOption.familyId === ingredient.familyId"
+                          [value]="ingredientType.id"
+                          [selected]="ingredientType.id === ingredient.typeId"
                         >
-                          {{ familyOption.label }}
+                          {{ ingredientType.name }}
                         </option>
                       }
                     </select>
@@ -149,6 +136,8 @@
                   </li>
                 }
               </ul>
+            } @else {
+              <p class="muted ingredient-type__empty">Aucun ingrédient pour l'instant.</p>
             }
           </li>
         }

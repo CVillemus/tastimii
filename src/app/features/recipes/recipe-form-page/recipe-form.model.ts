@@ -16,13 +16,13 @@ export type RecipeFormModel = {
 
 /**
  * Une ligne d'ingrédient du formulaire. On tape le nom : s'il n'existe pas encore,
- * on choisit sa famille (`newIngredientFamilyId`) et il est créé à l'enregistrement.
+ * on choisit son type (`newIngredientTypeId`) et il est créé à l'enregistrement.
  */
 export type RecipeFormIngredientLine = {
   ingredientName: string;
   quantity: number | null;
   unit: string;
-  newIngredientFamilyId: string;
+  newIngredientTypeId: string;
 };
 
 /** Une étape du formulaire : un titre court facultatif et un texte riche (HTML). */
@@ -34,7 +34,7 @@ export type RecipeFormStep = {
 export const DEFAULT_BASE_SERVINGS: number = 4;
 
 export function createEmptyIngredientLine(): RecipeFormIngredientLine {
-  return { ingredientName: '', quantity: null, unit: '', newIngredientFamilyId: '' };
+  return { ingredientName: '', quantity: null, unit: '', newIngredientTypeId: '' };
 }
 
 export function createEmptyStep(): RecipeFormStep {
@@ -66,7 +66,7 @@ export function toRecipeFormModel(recipe: Recipe): RecipeFormModel {
               ingredientName: ingredientLine.ingredientName,
               quantity: ingredientLine.quantity,
               unit: ingredientLine.unit,
-              newIngredientFamilyId: '',
+              newIngredientTypeId: '',
             }),
           )
         : [createEmptyIngredientLine()],

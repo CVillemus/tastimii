@@ -3,9 +3,11 @@
  * Ce sont des `type` et non des `interface` : supabase-js l'exige, sinon le client est typé en `never`.
  * Une faute de nom de colonne ne compile donc pas.
  */
+/** Un type d'ingrédient (Viande, Crèmerie…), qui est aussi un rayon de la liste de courses. */
 export type IngredientFamilyRow = {
   id: string;
   name: string;
+  /** Ancien parent des sous-familles : toujours `null` depuis le script 005. Ne plus l'utiliser. */
   parent_family_id: string | null;
   created_at: string;
 };
@@ -13,6 +15,7 @@ export type IngredientFamilyRow = {
 export type IngredientRow = {
   id: string;
   name: string;
+  /** Type de l'ingrédient (ligne de `ingredient_family`). */
   family_id: string;
   default_unit: string;
   created_at: string;
