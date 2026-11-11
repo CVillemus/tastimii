@@ -44,6 +44,14 @@ le PC d'origine et le commit concerné, puis committer et pousser.
 
 Rien d'autre : pas de migration Supabase, pas de nouvelle variable, pas d'outil à installer.
 
+### Depuis le même PC, le 11/11/2026, commit `030c7fa`
+
+- [ ] `git pull` : les ingrédients pointent maintenant directement vers leur type (plus de
+      sous-familles). Pas de changement de dépendances : pas besoin de `npm ci`.
+- [ ] **Ne pas relancer** `supabase/migrations/005_types_ingredients_sans_sous_familles.sql` : il a
+      déjà été lancé sur la base Supabase (partagée par les deux PC). Le relancer échouerait sur la
+      contrainte `ingredient_family_sans_parent`, qui existe déjà.
+
 ### À faire un jour (sur n'importe quel PC, pas urgent)
 
 - [ ] Dans `.github/workflows/deploy-github-pages.yml`, mettre à jour `actions/upload-pages-artifact`
