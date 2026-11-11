@@ -21,6 +21,14 @@ Dernière mise à jour : 11/11/2026.
       et/ou avertissement à la création quand un nom proche existe déjà (« Lentille verte » vs
       « Lentilles vertes » : comparer sans accents, sans pluriel, avec une distance de mots).
 
+### Unités des ingrédients
+
+- [ ] **Raccourcir les libellés** : « Nombre (ex. 4 diots) » → « nb » dans la liste des unités.
+- [ ] **cs / cc** à la place de « c. à soupe » / « c. à café » : à valider (lisible pour tout le
+      monde ?). Si oui, une migration renomme les unités déjà enregistrées dans les recettes et les
+      unités habituelles des ingrédients (`c. à soupe` → `cs`, `c. à café` → `cc`), pour que les
+      lignes s'additionnent toujours dans la liste de courses.
+
 ### Liste de courses
 
 - [ ] Bien pour l'instant. **À revoir quand il y aura plusieurs rayons et recettes** (lisibilité,
