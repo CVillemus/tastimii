@@ -28,6 +28,9 @@ Dernière mise à jour : 11/11/2026.
       monde ?). Si oui, une migration renomme les unités déjà enregistrées dans les recettes et les
       unités habituelles des ingrédients (`c. à soupe` → `cs`, `c. à café` → `cc`), pour que les
       lignes s'additionnent toujours dans la liste de courses.
+- [ ] **Litre en majuscule : « L » et non « l »** (1 L, 1,5 L ; et donc « cL », « mL » à harmoniser ?).
+      Simple : ce n'est que l'affichage (`toReadableQuantity` dans `core/recipes/quantity.ts`),
+      les quantités restent stockées en ml.
 
 ### Liste de courses
 
