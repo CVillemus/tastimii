@@ -75,6 +75,15 @@ Dernière mise à jour : 11/11/2026.
   - la saison pourrait être proposée par défaut selon le mois en cours (« recettes d'hiver » en
     novembre).
 
+### Partout dans l'app
+
+- [ ] **Modale de confirmation pour les actions définitives** (supprimer une recette, un ingrédient,
+      un type, vider la liste de courses). Aujourd'hui l'app utilise la fenêtre native du navigateur
+      (`confirm()`), austère et différente sur chaque téléphone. Piste : un composant partagé
+      `shared/confirmation-dialog` (élément `<dialog>`), aux couleurs de l'app, qui dit ce qui sera
+      supprimé et ses conséquences (« Supprimer la recette « Lentilles saucisse » ? C'est
+      définitif. »), avec un bouton rouge « Supprimer » et « Annuler » mis en avant.
+
 ### Autres fonctionnalités
 
 - [ ] **Notation des recettes** : étoiles, smileys ou simple coup de cœur. Par profil (Corentin /
