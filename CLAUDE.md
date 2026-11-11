@@ -67,6 +67,8 @@ src/app/
 
 ## Git
 
+Les idées pour la suite de l'app sont dans `docs/idees.md` : à mettre à jour quand une idée est faite, abandonnée ou nouvelle.
+
 Le projet est modifié depuis deux PC, parfois en même temps : au début de chaque session, suivre la skill `synchro-pc` (`.claude/skills/synchro-pc/SKILL.md`) : fetch/pull, puis les actions laissées par l'autre PC. Refaire un fetch/pull avant chaque commit et chaque push.
 
 Conventional Commits en français, minuscules, sans point final (< 72 caractères). Les hooks Husky lancent Prettier, `tsc` et commitlint.

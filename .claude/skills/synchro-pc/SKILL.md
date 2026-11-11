@@ -21,6 +21,9 @@ Toujours parler en français à l'utilisateur.
 3. Lire la section « Actions en attente » ci-dessous et faire celles qui concernent ce PC.
 4. Une fois une action faite, la retirer de la liste, puis committer et pousser ce fichier
    (`chore: actions de synchro faites sur <PC>`), pour que l'autre PC ne la refasse pas.
+5. Présenter à l'utilisateur les idées en attente de `docs/idees.md` (un résumé court, par page),
+   et lui demander s'il veut en traiter une. Quand une idée est faite ou abandonnée, mettre à jour
+   ce fichier.
 
 Avant chaque commit et chaque push : refaire `git fetch` / `git pull`.
 
