@@ -18,12 +18,22 @@ export type IngredientRow = {
   created_at: string;
 };
 
+/** Une étape telle que stockée dans `recipe.preparation_steps` (jsonb). */
+export type RecipePreparationStepJson = {
+  title: string;
+  content_html: string;
+};
+
 export type RecipeRow = {
   id: string;
   title: string;
   base_servings: number;
   preparation_minutes: number | null;
+  /** Ancienne colonne des étapes (texte simple), remplacée par `preparation_steps`. Ne plus l'utiliser. */
   steps: string[];
+  preparation_steps: RecipePreparationStepJson[];
+  /** Chemin de la photo dans le bucket Storage `recipe-photos`, ou `null` sans photo. */
+  photo_path: string | null;
   /** Texte riche (HTML de l'éditeur) : description libre, remarques. Vide = ''. */
   description: string;
   created_at: string;
@@ -37,6 +47,17 @@ export type RecipeIngredientRow = {
   quantity: number | null;
   unit: string;
   position: number;
+};
+
+export type TagRow = {
+  id: string;
+  name: string;
+  created_at: string;
+};
+
+export type RecipeTagRow = {
+  recipe_id: string;
+  tag_id: string;
 };
 
 export type ShoppingListRecipeRow = {
@@ -77,6 +98,18 @@ export type Database = {
         Insert: Pick<RecipeIngredientRow, 'recipe_id' | 'ingredient_id' | 'position'> &
           Partial<RecipeIngredientRow>;
         Update: Partial<RecipeIngredientRow>;
+        Relationships: [];
+      };
+      tag: {
+        Row: TagRow;
+        Insert: Pick<TagRow, 'name'> & Partial<TagRow>;
+        Update: Partial<TagRow>;
+        Relationships: [];
+      };
+      recipe_tag: {
+        Row: RecipeTagRow;
+        Insert: RecipeTagRow;
+        Update: Partial<RecipeTagRow>;
         Relationships: [];
       };
       shopping_list_recipe: {

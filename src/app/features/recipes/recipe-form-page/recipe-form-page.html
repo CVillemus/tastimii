@@ -52,6 +52,97 @@
       </div>
 
       <section>
+        <h2 class="section-title">Photo</h2>
+        <div class="recipe-photo-field">
+          @if (displayedPhotoUrl(); as photoUrl) {
+            <img class="recipe-photo-field__preview" [src]="photoUrl" alt="Photo de la recette" />
+          } @else {
+            <div class="recipe-photo-field__empty">Pas encore de photo</div>
+          }
+          <div class="recipe-photo-field__actions">
+            <label class="button button--small recipe-photo-field__choose">
+              @if (isPreparingPhoto()) {
+                Préparation de la photo…
+              } @else if (displayedPhotoUrl() !== null) {
+                Changer la photo
+              } @else {
+                Ajouter une photo
+              }
+              <input
+                class="visually-hidden"
+                type="file"
+                accept="image/*"
+                [disabled]="isPreparingPhoto()"
+                (change)="chooseRecipePhoto($event)"
+              />
+            </label>
+            @if (displayedPhotoUrl() !== null) {
+              <button
+                class="button button--quiet button--danger button--small"
+                type="button"
+                (click)="removeRecipePhoto()"
+              >
+                Retirer la photo
+              </button>
+            }
+          </div>
+          @if (photoErrorMessage() !== null) {
+            <p class="field-error" role="alert">{{ photoErrorMessage() }}</p>
+          }
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title">Tags</h2>
+        @if (tagsResource.hasValue()) {
+          @if (tagsResource.value().length > 0) {
+            <ul class="tag-choices" aria-label="Tags de la recette">
+              @for (tag of tagsResource.value(); track tag.id) {
+                <li>
+                  <button
+                    class="tag-chip"
+                    type="button"
+                    [class.tag-chip--selected]="isTagSelected(tag.id)"
+                    [attr.aria-pressed]="isTagSelected(tag.id)"
+                    (click)="toggleTag(tag.id)"
+                  >
+                    {{ tag.name }}
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+          <div class="new-tag">
+            <label class="visually-hidden" for="new-tag-name">Nouveau tag</label>
+            <input
+              id="new-tag-name"
+              type="text"
+              autocomplete="off"
+              placeholder="Nouveau tag : Végétarien"
+              [value]="newTagName()"
+              (input)="updateNewTagName($event)"
+              (keydown.enter)="$event.preventDefault(); addNewTag()"
+            />
+            <button
+              class="button button--small"
+              type="button"
+              [disabled]="isCreatingTag()"
+              (click)="addNewTag()"
+            >
+              Ajouter
+            </button>
+          </div>
+          @if (tagErrorMessage() !== null) {
+            <p class="field-error" role="alert">{{ tagErrorMessage() }}</p>
+          }
+        } @else if (tagsResource.error()) {
+          <p class="error-message">Impossible de charger les tags.</p>
+        } @else {
+          <p class="muted">Chargement des tags…</p>
+        }
+      </section>
+
+      <section>
         <h2 class="section-title">Description</h2>
         <app-rich-text-editor
           editorLabel="Description"
@@ -159,22 +250,31 @@
         <ol class="step-lines">
           @for (stepField of recipeForm.steps; track stepField) {
             <li class="step-line">
-              <span class="step-line__number" aria-hidden="true">{{ $index + 1 }}</span>
-              <label class="visually-hidden" [for]="'step-' + $index">Étape {{ $index + 1 }}</label>
-              <textarea
-                [id]="'step-' + $index"
-                rows="3"
-                placeholder="Décrivez l'étape"
-                [formField]="stepField.instruction"
-              ></textarea>
-              <button
-                class="icon-button icon-button--quiet"
-                type="button"
-                [attr.aria-label]="'Retirer l’étape ' + ($index + 1)"
-                (click)="removeStep($index)"
-              >
-                ×
-              </button>
+              <div class="step-line__header">
+                <label class="step-line__label" [for]="'step-title-' + $index">
+                  Étape {{ $index + 1 }}
+                </label>
+                <button
+                  class="icon-button icon-button--quiet"
+                  type="button"
+                  [attr.aria-label]="'Retirer l’étape ' + ($index + 1)"
+                  (click)="removeStep($index)"
+                >
+                  ×
+                </button>
+              </div>
+              <input
+                [id]="'step-title-' + $index"
+                class="step-line__title"
+                type="text"
+                placeholder="Titre de l’étape (facultatif) : Faire la préparation"
+                [formField]="stepField.title"
+              />
+              <app-rich-text-editor
+                [editorLabel]="'Texte de l’étape ' + ($index + 1)"
+                placeholder="Mélanger la farine et les œufs…"
+                [formField]="stepField.contentHtml"
+              />
             </li>
           }
         </ol>

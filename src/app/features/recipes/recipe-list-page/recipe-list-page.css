@@ -1,31 +1,60 @@
-/* Mobile : titre et bouton sur une ligne, recherche en dessous. */
+/* Mobile : titre puis recherche ; le bouton « Nouvelle recette » flotte en bas à droite. */
 .recipe-list-header {
   display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-areas:
-    'title add'
-    'search search';
-  align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
-.recipe-list-header h1 {
-  grid-area: title;
+.new-recipe-button {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(var(--bottom-navigation-height) + env(safe-area-inset-bottom) + 1rem);
+  z-index: 5;
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0;
+  border-radius: 50%;
+  box-shadow: 0 0.25rem 0.75rem var(--color-shadow);
 }
 
-.recipe-list-header__add {
-  grid-area: add;
+.new-recipe-button__plus {
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1;
 }
 
-.recipe-search {
-  grid-area: search;
+.new-recipe-button__label {
+  display: none;
 }
 
-/* Mobile : une liste compacte, vignette à gauche. */
+/* Mobile : les filtres défilent sur une ligne. */
+.tag-filters {
+  list-style: none;
+  margin: 0 calc(-1 * var(--page-gutter)) 0.75rem;
+  padding: 0 var(--page-gutter) 0.25rem;
+  display: flex;
+  gap: 0.375rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tag-filters .tag-chip {
+  white-space: nowrap;
+}
+
+.recipe-card__tags {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* Mobile : une liste compacte, vignette à gauche. La marge du bas laisse la place au bouton flottant. */
 .recipe-list {
   list-style: none;
-  margin: 0;
+  margin: 0 0 4.5rem;
   padding: 0;
   display: grid;
 }
@@ -48,7 +77,7 @@
 }
 
 .recipe-card__title {
-  font-size: 1rem;
+  font-size: 1.125rem;
   line-height: 1.25;
 }
 
@@ -69,12 +98,39 @@
 @media (min-width: 48rem) {
   .recipe-list-header {
     grid-template-columns: 1fr minmax(0, 20rem) auto;
-    grid-template-areas: 'title search add';
+    align-items: center;
     gap: 1.25rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .new-recipe-button {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-control);
+    box-shadow: none;
+    gap: 0.375rem;
+  }
+
+  .new-recipe-button__plus {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  .new-recipe-button__label {
+    display: inline;
+  }
+
+  .tag-filters {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    margin: 0 0 2rem;
+    padding: 0;
   }
 
   .recipe-list {
+    margin-bottom: 0;
     grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
     gap: 2rem 1.5rem;
   }
@@ -97,7 +153,7 @@
   }
 
   .recipe-card__title {
-    font-size: 1.25rem;
+    font-size: 1.4375rem;
   }
 
   .recipe-card:hover .recipe-card__title {

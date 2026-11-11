@@ -4,11 +4,18 @@
 
 Tastimii : le carnet de recettes de Corentin et Marine, utilisé sur leurs téléphones.
 
-- **Recettes** : titre, nombre de parts de base, durée, description libre en texte riche (en tête de recette, éditeur Tiptap, stockée en HTML), ingrédients (quantité + unité), étapes.
+- **Recettes** : titre, nombre de parts de base, durée, photo (bucket Storage public `recipe-photos`, réduite à 1600 px avant l'envoi), description libre en texte riche (en tête de recette, éditeur Tiptap, stockée en HTML), ingrédients (quantité + unité), étapes avec un titre facultatif et un texte riche (`recipe.preparation_steps`, jsonb).
+- **Tags** : une recette a zéro, un ou plusieurs tags (`tag`, `recipe_tag`), créés depuis le formulaire. La liste filtre par tags : une recette doit avoir tous les tags choisis.
 - **Ingrédients** rangés dans des **familles** en arbre : Cuisses de poulet → Poulet → Viande. Une famille sans parent est un **rayon** de la liste de courses.
 - **Liste de courses** : on met des recettes au menu avec un nombre de parts. Les quantités sont recalculées (`parts voulues ÷ parts de base`), additionnées par ingrédient et par unité, puis rangées par rayon, avec des cases à cocher enregistrées en base.
 - **Aucune sécurité voulue** : pas de comptes, tout le monde peut tout faire.
 - **Pas de temps réel** : la liste se recharge à l'ouverture ou avec le bouton « Actualiser ».
+
+## Données réelles
+
+Depuis le 11/11/2026, Corentin et Marine saisissent leurs vraies recettes. Tout changement de schéma passe par un nouveau script `supabase/migrations/00N_*.sql` qui **reprend les données existantes**. De préférence, ajouter sans supprimer (la version en ligne continue de marcher), et nettoyer les anciennes colonnes dans un script suivant. Pendant les tests, ne créer et ne supprimer que des recettes préfixées `TEST`.
+
+L'ancienne colonne `recipe.steps` (text[]) n'est plus utilisée depuis le script 003 : à supprimer dans un prochain script de nettoyage.
 
 ## Stack
 

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   input,
@@ -31,13 +32,23 @@ import {
   SUGGESTED_UNITS,
 } from '../../../core/ingredients/ingredient.model';
 import { IngredientsApi } from '../../../core/ingredients/ingredients-api';
-import { Recipe, RecipeDraft, RecipeDraftIngredientLine } from '../../../core/recipes/recipe.model';
+import {
+  Recipe,
+  RecipeDraft,
+  RecipeDraftIngredientLine,
+  RecipeStep,
+} from '../../../core/recipes/recipe.model';
+import { RecipePhotosApi } from '../../../core/recipes/recipe-photos-api';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
+import { resizeRecipePhoto } from '../../../core/recipes/resize-recipe-photo';
+import { compareTagsByName, normalizeTagName, RecipeTag } from '../../../core/tags/tag.model';
+import { TagsApi } from '../../../core/tags/tags-api';
 import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
 import {
   createEmptyIngredientLine,
   createEmptyRecipeFormModel,
   createEmptyStep,
+  isFilledStep,
   normalizeIngredientName,
   RecipeFormIngredientLine,
   RecipeFormModel,
@@ -51,6 +62,15 @@ type FamilyOption = {
   label: string;
 };
 
+/**
+ * Ce qu'on fera de la photo à l'enregistrement : rien, envoyer la nouvelle, ou retirer l'actuelle.
+ * `previewUrl` est une adresse locale (`blob:`) pour l'aperçu avant l'envoi.
+ */
+type RecipePhotoChoice =
+  | { kind: 'unchanged' }
+  | { kind: 'new'; resizedPhoto: Blob; previewUrl: string }
+  | { kind: 'removed' };
+
 /** Création (`/recettes/nouvelle`) et modification (`/recettes/:recipeId/modifier`) d'une recette. */
 @Component({
   selector: 'app-recipe-form-page',
@@ -62,6 +82,8 @@ type FamilyOption = {
 export class RecipeFormPage {
   private readonly recipesApi: RecipesApi = inject(RecipesApi);
   private readonly ingredientsApi: IngredientsApi = inject(IngredientsApi);
+  private readonly recipePhotosApi: RecipePhotosApi = inject(RecipePhotosApi);
+  private readonly tagsApi: TagsApi = inject(TagsApi);
   private readonly router: Router = inject(Router);
 
   /** Présent seulement en modification (vient de l'URL). */
@@ -75,6 +97,10 @@ export class RecipeFormPage {
     resource({
       loader: (): Promise<IngredientCatalog> => this.ingredientsApi.fetchIngredientCatalog(),
     });
+
+  protected readonly tagsResource: ResourceRef<RecipeTag[] | undefined> = resource({
+    loader: (): Promise<RecipeTag[]> => this.tagsApi.fetchTags(),
+  });
 
   /** En création, `params` vaut `undefined` : la resource ne charge rien. */
   private readonly existingRecipeResource: ResourceRef<Recipe | undefined> = resource({
@@ -152,6 +178,35 @@ export class RecipeFormPage {
     },
   );
 
+  private readonly photoChoiceState: WritableSignal<RecipePhotoChoice> = signal({
+    kind: 'unchanged',
+  });
+
+  /** Photo affichée dans le formulaire : la nouvelle, l'actuelle, ou aucune. */
+  protected readonly displayedPhotoUrl: Signal<string | null> = computed(() => {
+    const photoChoice: RecipePhotoChoice = this.photoChoiceState();
+    if (photoChoice.kind === 'new') {
+      return photoChoice.previewUrl;
+    }
+    if (photoChoice.kind === 'removed' || !this.existingRecipeResource.hasValue()) {
+      return null;
+    }
+    return this.existingRecipeResource.value().photoUrl;
+  });
+
+  private readonly isPreparingPhotoState: WritableSignal<boolean> = signal(false);
+  protected readonly isPreparingPhoto: Signal<boolean> = this.isPreparingPhotoState.asReadonly();
+  private readonly photoErrorMessageState: WritableSignal<string | null> = signal(null);
+  protected readonly photoErrorMessage: Signal<string | null> =
+    this.photoErrorMessageState.asReadonly();
+
+  protected readonly newTagName: WritableSignal<string> = signal('');
+  private readonly isCreatingTagState: WritableSignal<boolean> = signal(false);
+  protected readonly isCreatingTag: Signal<boolean> = this.isCreatingTagState.asReadonly();
+  private readonly tagErrorMessageState: WritableSignal<string | null> = signal(null);
+  protected readonly tagErrorMessage: Signal<string | null> =
+    this.tagErrorMessageState.asReadonly();
+
   private readonly saveErrorMessageState: WritableSignal<string | null> = signal(null);
   protected readonly saveErrorMessage: Signal<string | null> =
     this.saveErrorMessageState.asReadonly();
@@ -163,6 +218,87 @@ export class RecipeFormPage {
         this.recipeFormModel.set(toRecipeFormModel(this.existingRecipeResource.value()));
       }
     });
+
+    inject(DestroyRef).onDestroy(() => this.revokePhotoPreview());
+  }
+
+  /** Réduit la photo choisie (appareil photo ou galerie) et l'affiche en aperçu. */
+  protected async chooseRecipePhoto(changeEvent: Event): Promise<void> {
+    const photoInput: HTMLInputElement = changeEvent.target as HTMLInputElement;
+    const photoFile: File | undefined = photoInput.files?.[0];
+    photoInput.value = '';
+    if (photoFile === undefined) {
+      return;
+    }
+    this.photoErrorMessageState.set(null);
+    this.isPreparingPhotoState.set(true);
+    try {
+      const resizedPhoto: Blob = await resizeRecipePhoto(photoFile);
+      this.revokePhotoPreview();
+      this.photoChoiceState.set({
+        kind: 'new',
+        resizedPhoto,
+        previewUrl: URL.createObjectURL(resizedPhoto),
+      });
+    } catch {
+      this.photoErrorMessageState.set("Cette image n'a pas pu être lue. Essayez une autre photo.");
+    } finally {
+      this.isPreparingPhotoState.set(false);
+    }
+  }
+
+  protected isTagSelected(tagId: string): boolean {
+    return this.recipeFormModel().tagIds.includes(tagId);
+  }
+
+  protected toggleTag(tagId: string): void {
+    this.recipeFormModel.update((formModel: RecipeFormModel) => ({
+      ...formModel,
+      tagIds: formModel.tagIds.includes(tagId)
+        ? formModel.tagIds.filter((selectedTagId: string) => selectedTagId !== tagId)
+        : [...formModel.tagIds, tagId],
+    }));
+  }
+
+  protected updateNewTagName(inputEvent: Event): void {
+    this.newTagName.set((inputEvent.target as HTMLInputElement).value);
+  }
+
+  /** Crée le tag tapé (ou reprend celui qui existe déjà sous ce nom) et le coche. */
+  protected async addNewTag(): Promise<void> {
+    const tagName: string = this.newTagName().trim();
+    if (tagName.length === 0 || !this.tagsResource.hasValue()) {
+      return;
+    }
+    const existingTag: RecipeTag | undefined = this.tagsResource
+      .value()
+      .find((tag: RecipeTag) => normalizeTagName(tag.name) === normalizeTagName(tagName));
+    if (existingTag !== undefined) {
+      if (!this.isTagSelected(existingTag.id)) {
+        this.toggleTag(existingTag.id);
+      }
+      this.newTagName.set('');
+      return;
+    }
+    this.isCreatingTagState.set(true);
+    this.tagErrorMessageState.set(null);
+    try {
+      const createdTag: RecipeTag = await this.tagsApi.createTag(tagName);
+      this.tagsResource.update((tags: RecipeTag[]) =>
+        [...tags, createdTag].sort(compareTagsByName),
+      );
+      this.toggleTag(createdTag.id);
+      this.newTagName.set('');
+    } catch {
+      this.tagErrorMessageState.set("Le tag n'a pas pu être créé.");
+    } finally {
+      this.isCreatingTagState.set(false);
+    }
+  }
+
+  protected removeRecipePhoto(): void {
+    this.revokePhotoPreview();
+    this.photoChoiceState.set({ kind: 'removed' });
   }
 
   /** Vrai si un nom est tapé et ne correspond à aucun ingrédient connu. */
@@ -251,18 +387,50 @@ export class RecipeFormPage {
       baseServings: formModel.baseServings,
       preparationMinutes: formModel.preparationMinutes,
       descriptionHtml: formModel.descriptionHtml,
-      steps: formModel.steps
-        .map((step: RecipeFormStep) => step.instruction.trim())
-        .filter((instruction: string) => instruction.length > 0),
+      tagIds: formModel.tagIds,
+      steps: formModel.steps.filter(isFilledStep).map((formStep: RecipeFormStep): RecipeStep => ({
+        title: formStep.title,
+        contentHtml: formStep.contentHtml,
+      })),
       ingredientLines: draftIngredientLines,
     };
 
     const existingRecipeId: string | undefined = this.recipeId();
+    let savedRecipeId: string;
     if (existingRecipeId === undefined) {
-      return this.recipesApi.createRecipe(recipeDraft);
+      savedRecipeId = await this.recipesApi.createRecipe(recipeDraft);
+    } else {
+      await this.recipesApi.updateRecipe(existingRecipeId, recipeDraft);
+      savedRecipeId = existingRecipeId;
     }
-    await this.recipesApi.updateRecipe(existingRecipeId, recipeDraft);
-    return existingRecipeId;
+    await this.saveRecipePhoto(savedRecipeId);
+    return savedRecipeId;
+  }
+
+  /** Envoie la nouvelle photo ou retire l'actuelle, puis supprime l'ancien fichier. */
+  private async saveRecipePhoto(recipeId: string): Promise<void> {
+    const photoChoice: RecipePhotoChoice = this.photoChoiceState();
+    if (photoChoice.kind === 'unchanged') {
+      return;
+    }
+    const previousPhotoPath: string | null = this.existingRecipeResource.hasValue()
+      ? this.existingRecipeResource.value().photoPath
+      : null;
+    const newPhotoPath: string | null =
+      photoChoice.kind === 'new'
+        ? await this.recipePhotosApi.uploadRecipePhoto(recipeId, photoChoice.resizedPhoto)
+        : null;
+    await this.recipePhotosApi.updateRecipePhotoPath(recipeId, newPhotoPath);
+    if (previousPhotoPath !== null) {
+      await this.recipePhotosApi.deleteRecipePhoto(previousPhotoPath);
+    }
+  }
+
+  private revokePhotoPreview(): void {
+    const photoChoice: RecipePhotoChoice = this.photoChoiceState();
+    if (photoChoice.kind === 'new') {
+      URL.revokeObjectURL(photoChoice.previewUrl);
+    }
   }
 
   private async findOrCreateIngredientId(

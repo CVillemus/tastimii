@@ -5,7 +5,11 @@
     @let recipe = recipeResource.value();
 
     <header class="recipe-hero">
-      <app-recipe-photo class="recipe-hero__photo" />
+      <app-recipe-photo
+        class="recipe-hero__photo"
+        [photoUrl]="recipe.photoUrl"
+        [photoDescription]="recipe.title"
+      />
       <div class="recipe-hero__text">
         <h1>{{ recipe.title }}</h1>
         <p class="recipe-meta">
@@ -14,6 +18,13 @@
           }
           <span>{{ recipe.baseServings }} parts</span>
         </p>
+        @if (recipe.tags.length > 0) {
+          <ul class="recipe-tags" aria-label="Tags">
+            @for (recipeTag of recipe.tags; track recipeTag.id) {
+              <li class="tag-label">{{ recipeTag.name }}</li>
+            }
+          </ul>
+        }
         <a class="button button--small" [routerLink]="['/recettes', recipe.id, 'modifier']">
           Modifier la recette
         </a>
@@ -132,8 +143,15 @@
           <ol class="step-list">
             @for (step of recipe.steps; track $index) {
               <li class="step-list__step">
-                <span class="step-list__number" aria-hidden="true">{{ $index + 1 }}</span>
-                <p class="step-list__text">{{ step }}</p>
+                <h3 class="step-list__title">
+                  <span class="step-list__number">Étape {{ $index + 1 }}</span>
+                  @if (step.title.length > 0) {
+                    <span> : {{ step.title }}</span>
+                  }
+                </h3>
+                @if (step.contentHtml.length > 0) {
+                  <div class="rich-text step-list__content" [innerHTML]="step.contentHtml"></div>
+                }
               </li>
             }
           </ol>

@@ -1,4 +1,5 @@
-import { Recipe, RecipeIngredientLine } from '../../../core/recipes/recipe.model';
+import { Recipe, RecipeIngredientLine, RecipeStep } from '../../../core/recipes/recipe.model';
+import { RecipeTag } from '../../../core/tags/tag.model';
 
 /** Valeurs du formulaire de recette (Signal Forms). */
 export type RecipeFormModel = {
@@ -9,6 +10,8 @@ export type RecipeFormModel = {
   steps: RecipeFormStep[];
   /** Description libre en texte riche (HTML). */
   descriptionHtml: string;
+  /** Identifiants des tags choisis. */
+  tagIds: string[];
 };
 
 /**
@@ -22,8 +25,10 @@ export type RecipeFormIngredientLine = {
   newIngredientFamilyId: string;
 };
 
+/** Une étape du formulaire : un titre court facultatif et un texte riche (HTML). */
 export type RecipeFormStep = {
-  instruction: string;
+  title: string;
+  contentHtml: string;
 };
 
 export const DEFAULT_BASE_SERVINGS: number = 4;
@@ -33,7 +38,7 @@ export function createEmptyIngredientLine(): RecipeFormIngredientLine {
 }
 
 export function createEmptyStep(): RecipeFormStep {
-  return { instruction: '' };
+  return { title: '', contentHtml: '' };
 }
 
 export function createEmptyRecipeFormModel(): RecipeFormModel {
@@ -44,6 +49,7 @@ export function createEmptyRecipeFormModel(): RecipeFormModel {
     ingredientLines: [createEmptyIngredientLine()],
     steps: [createEmptyStep()],
     descriptionHtml: '',
+    tagIds: [],
   };
 }
 
@@ -66,10 +72,19 @@ export function toRecipeFormModel(recipe: Recipe): RecipeFormModel {
         : [createEmptyIngredientLine()],
     steps:
       recipe.steps.length > 0
-        ? recipe.steps.map((instruction: string): RecipeFormStep => ({ instruction }))
+        ? recipe.steps.map((recipeStep: RecipeStep): RecipeFormStep => ({
+            title: recipeStep.title,
+            contentHtml: recipeStep.contentHtml,
+          }))
         : [createEmptyStep()],
     descriptionHtml: recipe.descriptionHtml,
+    tagIds: recipe.tags.map((recipeTag: RecipeTag) => recipeTag.id),
   };
+}
+
+/** Une étape est gardée si elle a un titre ou un texte. */
+export function isFilledStep(formStep: RecipeFormStep): boolean {
+  return formStep.title.trim().length > 0 || formStep.contentHtml.length > 0;
 }
 
 /** Comparaison de noms d'ingrédients sans tenir compte des majuscules ni des espaces autour. */

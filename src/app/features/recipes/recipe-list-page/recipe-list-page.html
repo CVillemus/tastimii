@@ -13,10 +13,45 @@
         />
       </div>
     }
-    <a class="button button--primary recipe-list-header__add" routerLink="/recettes/nouvelle">
-      + Nouvelle recette
+    <!-- Bouton flottant en bas à droite sur mobile, dans l'en-tête sur desktop. -->
+    <a
+      class="button button--primary new-recipe-button"
+      routerLink="/recettes/nouvelle"
+      aria-label="Nouvelle recette"
+    >
+      <span class="new-recipe-button__plus" aria-hidden="true">+</span>
+      <span class="new-recipe-button__label" aria-hidden="true">Nouvelle recette</span>
     </a>
   </div>
+
+  @if (filterTags().length > 0) {
+    <ul class="tag-filters" aria-label="Filtrer par tag">
+      <li>
+        <button
+          class="tag-chip"
+          type="button"
+          [class.tag-chip--selected]="selectedTagIds().size === 0"
+          [attr.aria-pressed]="selectedTagIds().size === 0"
+          (click)="clearTagFilters()"
+        >
+          Toutes
+        </button>
+      </li>
+      @for (filterTag of filterTags(); track filterTag.id) {
+        <li>
+          <button
+            class="tag-chip"
+            type="button"
+            [class.tag-chip--selected]="selectedTagIds().has(filterTag.id)"
+            [attr.aria-pressed]="selectedTagIds().has(filterTag.id)"
+            (click)="toggleTagFilter(filterTag.id)"
+          >
+            {{ filterTag.name }}
+          </button>
+        </li>
+      }
+    </ul>
+  }
 
   @if (recipeSummariesResource.hasValue()) {
     @if (recipeSummariesResource.value().length > 0) {
@@ -24,7 +59,7 @@
         @for (recipeSummary of matchingRecipeSummaries(); track recipeSummary.id) {
           <li>
             <a class="recipe-card" [routerLink]="['/recettes', recipeSummary.id]">
-              <app-recipe-photo class="recipe-card__photo" />
+              <app-recipe-photo class="recipe-card__photo" [photoUrl]="recipeSummary.photoUrl" />
               <div class="recipe-card__text">
                 <h2 class="recipe-card__title">{{ recipeSummary.title }}</h2>
                 <p class="recipe-card__meta">
@@ -33,12 +68,28 @@
                   }
                   {{ recipeSummary.baseServings }} parts
                 </p>
+                @if (recipeSummary.tags.length > 0) {
+                  <ul class="recipe-card__tags" aria-label="Tags">
+                    @for (recipeTag of recipeSummary.tags; track recipeTag.id) {
+                      <li class="tag-label">{{ recipeTag.name }}</li>
+                    }
+                  </ul>
+                }
               </div>
             </a>
           </li>
         } @empty {
           <li class="status-message">
-            Aucune recette ne correspond à « {{ recipeSearchText() }} ».
+            Aucune recette ne correspond à ces critères.
+            @if (hasActiveFilters()) {
+              <button
+                class="button button--quiet button--small"
+                type="button"
+                (click)="clearAllFilters()"
+              >
+                Retirer les filtres
+              </button>
+            }
           </li>
         }
       </ul>

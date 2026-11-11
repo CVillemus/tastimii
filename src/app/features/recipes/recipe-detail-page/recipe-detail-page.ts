@@ -19,6 +19,7 @@ import {
   scaleQuantity,
 } from '../../../core/recipes/quantity';
 import { Recipe, RecipeIngredientLine } from '../../../core/recipes/recipe.model';
+import { RecipePhotosApi } from '../../../core/recipes/recipe-photos-api';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import { ShoppingListApi } from '../../../core/shopping-list/shopping-list-api';
 import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
@@ -43,6 +44,7 @@ const MINIMUM_SERVINGS: number = 1;
 export class RecipeDetailPage {
   private readonly recipesApi: RecipesApi = inject(RecipesApi);
   private readonly shoppingListApi: ShoppingListApi = inject(ShoppingListApi);
+  private readonly recipePhotosApi: RecipePhotosApi = inject(RecipePhotosApi);
   private readonly router: Router = inject(Router);
 
   /** Vient de l'URL `/recettes/:recipeId`. */
@@ -149,6 +151,10 @@ export class RecipeDetailPage {
       return;
     }
     await this.recipesApi.deleteRecipe(recipe.id);
+    // La photo n'est pas supprimée avec la recette : on retire aussi le fichier du stockage.
+    if (recipe.photoPath !== null) {
+      await this.recipePhotosApi.deleteRecipePhoto(recipe.photoPath);
+    }
     await this.router.navigate(['/recettes']);
   }
 }

@@ -1,13 +1,23 @@
 import { inject, Injectable } from '@angular/core';
-import { IngredientRow, RecipeIngredientRow, RecipeRow } from '../supabase/database.types';
+import {
+  IngredientRow,
+  RecipeIngredientRow,
+  RecipePreparationStepJson,
+  RecipeRow,
+  RecipeTagRow,
+  TagRow,
+} from '../supabase/database.types';
 import { SUPABASE_CLIENT, TastimiiSupabaseClient } from '../supabase/supabase-client';
 import {
   Recipe,
   RecipeDraft,
   RecipeDraftIngredientLine,
   RecipeIngredientLine,
+  RecipeStep,
   RecipeSummary,
 } from './recipe.model';
+import { compareTagsByName, RecipeTag } from '../tags/tag.model';
+import { RECIPE_PHOTOS_BUCKET } from './recipe-photos-api';
 
 /** Appels Supabase des recettes. */
 @Injectable({ providedIn: 'root' })
@@ -22,7 +32,10 @@ export class RecipesApi {
     if (error !== null) {
       throw error;
     }
-    return recipeRows.map(toRecipeSummary);
+    const tagsByRecipeId: Map<string, RecipeTag[]> = await this.fetchTagsByRecipeId();
+    return recipeRows.map((recipeRow: RecipeRow) =>
+      this.toRecipeSummary(recipeRow, tagsByRecipeId.get(recipeRow.id) ?? []),
+    );
   }
 
   async fetchRecipe(recipeId: string): Promise<Recipe> {
@@ -40,14 +53,21 @@ export class RecipesApi {
     if (recipeIngredientsResponse.error !== null) {
       throw recipeIngredientsResponse.error;
     }
+    const tagsByRecipeId: Map<string, RecipeTag[]> = await this.fetchTagsByRecipeId(recipeId);
     const ingredientNamesById: Map<string, string> = await this.fetchIngredientNamesById(
       recipeIngredientsResponse.data.map(
         (recipeIngredientRow: RecipeIngredientRow) => recipeIngredientRow.ingredient_id,
       ),
     );
     return {
-      ...toRecipeSummary(recipeResponse.data),
-      steps: recipeResponse.data.steps,
+      ...this.toRecipeSummary(recipeResponse.data, tagsByRecipeId.get(recipeId) ?? []),
+      photoPath: recipeResponse.data.photo_path,
+      steps: recipeResponse.data.preparation_steps.map(
+        (preparationStep: RecipePreparationStepJson): RecipeStep => ({
+          title: preparationStep.title,
+          contentHtml: preparationStep.content_html,
+        }),
+      ),
       descriptionHtml: recipeResponse.data.description,
       ingredientLines: recipeIngredientsResponse.data.map(
         (recipeIngredientRow: RecipeIngredientRow): RecipeIngredientLine => ({
@@ -71,6 +91,7 @@ export class RecipesApi {
       throw error;
     }
     await this.insertRecipeIngredientLines(createdRecipeRow.id, recipeDraft.ingredientLines);
+    await this.insertRecipeTags(createdRecipeRow.id, recipeDraft.tagIds);
     return createdRecipeRow.id;
   }
 
@@ -91,6 +112,14 @@ export class RecipesApi {
       throw deleteLinesError;
     }
     await this.insertRecipeIngredientLines(recipeId, recipeDraft.ingredientLines);
+    const { error: deleteTagsError } = await this.supabaseClient
+      .from('recipe_tag')
+      .delete()
+      .eq('recipe_id', recipeId);
+    if (deleteTagsError !== null) {
+      throw deleteTagsError;
+    }
+    await this.insertRecipeTags(recipeId, recipeDraft.tagIds);
   }
 
   async deleteRecipe(recipeId: string): Promise<void> {
@@ -132,6 +161,73 @@ export class RecipesApi {
     }
   }
 
+  private async insertRecipeTags(recipeId: string, tagIds: string[]): Promise<void> {
+    if (tagIds.length === 0) {
+      return;
+    }
+    const { error } = await this.supabaseClient
+      .from('recipe_tag')
+      .insert(
+        tagIds.map((tagId: string): RecipeTagRow => ({ recipe_id: recipeId, tag_id: tagId })),
+      );
+    if (error !== null) {
+      throw error;
+    }
+  }
+
+  /** Tags de toutes les recettes, ou d'une seule si `recipeId` est donné. */
+  private async fetchTagsByRecipeId(recipeId?: string): Promise<Map<string, RecipeTag[]>> {
+    const [recipeTagsResponse, tagsResponse] = await Promise.all([
+      recipeId === undefined
+        ? this.supabaseClient.from('recipe_tag').select('*')
+        : this.supabaseClient.from('recipe_tag').select('*').eq('recipe_id', recipeId),
+      this.supabaseClient.from('tag').select('*'),
+    ]);
+    if (recipeTagsResponse.error !== null) {
+      throw recipeTagsResponse.error;
+    }
+    if (tagsResponse.error !== null) {
+      throw tagsResponse.error;
+    }
+    const tagsById: Map<string, RecipeTag> = new Map(
+      tagsResponse.data.map((tagRow: TagRow): [string, RecipeTag] => [
+        tagRow.id,
+        { id: tagRow.id, name: tagRow.name },
+      ]),
+    );
+    const tagsByRecipeId: Map<string, RecipeTag[]> = new Map();
+    for (const recipeTagRow of recipeTagsResponse.data) {
+      const recipeTag: RecipeTag | undefined = tagsById.get(recipeTagRow.tag_id);
+      if (recipeTag !== undefined) {
+        tagsByRecipeId.set(recipeTagRow.recipe_id, [
+          ...(tagsByRecipeId.get(recipeTagRow.recipe_id) ?? []),
+          recipeTag,
+        ]);
+      }
+    }
+    for (const recipeTags of tagsByRecipeId.values()) {
+      recipeTags.sort(compareTagsByName);
+    }
+    return tagsByRecipeId;
+  }
+
+  private toRecipeSummary(recipeRow: RecipeRow, recipeTags: RecipeTag[]): RecipeSummary {
+    return {
+      id: recipeRow.id,
+      title: recipeRow.title,
+      baseServings: recipeRow.base_servings,
+      preparationMinutes: recipeRow.preparation_minutes,
+      photoUrl:
+        recipeRow.photo_path === null ? null : this.buildRecipePhotoUrl(recipeRow.photo_path),
+      tags: recipeTags,
+    };
+  }
+
+  private buildRecipePhotoUrl(photoPath: string): string {
+    return this.supabaseClient.storage.from(RECIPE_PHOTOS_BUCKET).getPublicUrl(photoPath).data
+      .publicUrl;
+  }
+
   private async fetchIngredientNamesById(ingredientIds: string[]): Promise<Map<string, string>> {
     if (ingredientIds.length === 0) {
       return new Map<string, string>();
@@ -149,23 +245,22 @@ export class RecipesApi {
   }
 }
 
-function toRecipeSummary(recipeRow: RecipeRow): RecipeSummary {
-  return {
-    id: recipeRow.id,
-    title: recipeRow.title,
-    baseServings: recipeRow.base_servings,
-    preparationMinutes: recipeRow.preparation_minutes,
-  };
-}
-
 function toRecipeColumns(
   recipeDraft: RecipeDraft,
-): Pick<RecipeRow, 'title' | 'base_servings' | 'preparation_minutes' | 'steps' | 'description'> {
+): Pick<
+  RecipeRow,
+  'title' | 'base_servings' | 'preparation_minutes' | 'preparation_steps' | 'description'
+> {
   return {
     title: recipeDraft.title.trim(),
     base_servings: recipeDraft.baseServings,
     preparation_minutes: recipeDraft.preparationMinutes,
-    steps: recipeDraft.steps,
+    preparation_steps: recipeDraft.steps.map(
+      (recipeStep: RecipeStep): RecipePreparationStepJson => ({
+        title: recipeStep.title.trim(),
+        content_html: recipeStep.contentHtml,
+      }),
+    ),
     description: recipeDraft.descriptionHtml,
   };
 }

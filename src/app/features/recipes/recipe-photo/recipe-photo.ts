@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, InputSignal } from '@angular/core';
 
 /**
- * Photo d'une recette. Pour l'instant, un emplacement beige avec une assiette :
- * la taille est donnée par le parent (largeur, hauteur ou aspect-ratio).
+ * Photo d'une recette, recadrée pour remplir son emplacement. Sans photo, un emplacement
+ * beige avec une assiette. La taille est donnée par le parent (largeur, hauteur…).
  */
 @Component({
   selector: 'app-recipe-photo',
@@ -10,4 +10,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './recipe-photo.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RecipePhoto {}
+export class RecipePhoto {
+  readonly photoUrl: InputSignal<string | null> = input.required<string | null>();
+  /** Texte alternatif ; vide pour une vignette décorative à côté du titre. */
+  readonly photoDescription: InputSignal<string> = input<string>('');
+}
