@@ -33,6 +33,7 @@ import {
 import { IngredientsApi } from '../../../core/ingredients/ingredients-api';
 import { Recipe, RecipeDraft, RecipeDraftIngredientLine } from '../../../core/recipes/recipe.model';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
+import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
 import {
   createEmptyIngredientLine,
   createEmptyRecipeFormModel,
@@ -53,7 +54,7 @@ type FamilyOption = {
 /** Création (`/recettes/nouvelle`) et modification (`/recettes/:recipeId/modifier`) d'une recette. */
 @Component({
   selector: 'app-recipe-form-page',
-  imports: [FormField, RouterLink],
+  imports: [FormField, RouterLink, RichTextEditor],
   templateUrl: './recipe-form-page.html',
   styleUrl: './recipe-form-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -249,7 +250,7 @@ export class RecipeFormPage {
       title: formModel.title,
       baseServings: formModel.baseServings,
       preparationMinutes: formModel.preparationMinutes,
-      notes: formModel.notes,
+      descriptionHtml: formModel.descriptionHtml,
       steps: formModel.steps
         .map((step: RecipeFormStep) => step.instruction.trim())
         .filter((instruction: string) => instruction.length > 0),

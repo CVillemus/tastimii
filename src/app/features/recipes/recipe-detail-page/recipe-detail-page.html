@@ -4,132 +4,152 @@
   @if (recipeResource.hasValue()) {
     @let recipe = recipeResource.value();
 
-    <h1>{{ recipe.title }}</h1>
-    <p class="muted recipe-meta">
-      Pour {{ recipe.baseServings }} parts
-      @if (recipe.preparationMinutes !== null) {
-        · {{ formatPreparationTime(recipe.preparationMinutes) }}
-      }
-    </p>
-
-    <h2 class="section-title">Ingrédients</h2>
-    <div class="card">
-      <div class="servings-picker">
-        <span>Pour</span>
-        <button
-          class="icon-button"
-          type="button"
-          aria-label="Une part de moins"
-          (click)="decreaseWantedServings()"
-        >
-          −
-        </button>
-        <strong class="servings-picker__value" aria-live="polite">{{ wantedServings() }}</strong>
-        <button
-          class="icon-button"
-          type="button"
-          aria-label="Une part de plus"
-          (click)="increaseWantedServings()"
-        >
-          +
-        </button>
-        <span>parts</span>
-      </div>
-
-      @if (scaledIngredientLines().length > 0) {
-        <ul class="ingredient-list">
-          @for (scaledIngredientLine of scaledIngredientLines(); track $index) {
-            <li class="ingredient-list__line">
-              <span>{{ scaledIngredientLine.ingredientName }}</span>
-              <span class="ingredient-list__quantity">{{
-                scaledIngredientLine.formattedQuantity
-              }}</span>
-            </li>
+    <header class="recipe-hero">
+      <app-recipe-photo class="recipe-hero__photo" />
+      <div class="recipe-hero__text">
+        <h1>{{ recipe.title }}</h1>
+        <p class="recipe-meta">
+          @if (recipe.preparationMinutes !== null) {
+            <span>{{ formatPreparationTime(recipe.preparationMinutes) }}</span>
           }
-        </ul>
-      } @else {
-        <p class="muted">Aucun ingrédient pour l'instant.</p>
-      }
-
-      <button
-        class="button button--primary add-to-shopping-list"
-        type="button"
-        [disabled]="isAddingToShoppingList()"
-        (click)="addRecipeToShoppingList()"
-      >
-        Ajouter aux courses ({{ wantedServings() }} parts)
-      </button>
-      @if (lastAddedServings() !== null) {
-        <p class="added-confirmation" role="status">
-          Ajoutée pour {{ lastAddedServings() }} parts.
-          <a routerLink="/courses">Voir la liste</a>
+          <span>{{ recipe.baseServings }} parts</span>
         </p>
+        <a class="button button--small" [routerLink]="['/recettes', recipe.id, 'modifier']">
+          Modifier la recette
+        </a>
+      </div>
+    </header>
+
+    <section class="recipe-description" aria-label="Description">
+      @if (descriptionDraft() !== null) {
+        <app-rich-text-editor
+          editorLabel="Description"
+          placeholder="Une description, une remarque, une variante…"
+          [value]="descriptionDraft() ?? ''"
+          (valueChange)="updateDescriptionDraft($event)"
+        />
+        @if (descriptionErrorMessage() !== null) {
+          <p class="error-message" role="alert">{{ descriptionErrorMessage() }}</p>
+        }
+        <div class="recipe-description__actions">
+          <button
+            class="button button--primary button--small"
+            type="button"
+            [disabled]="isSavingDescription()"
+            (click)="saveDescription()"
+          >
+            Enregistrer
+          </button>
+          <button
+            class="button button--quiet button--small"
+            type="button"
+            (click)="cancelEditingDescription()"
+          >
+            Annuler
+          </button>
+        </div>
+      } @else if (recipe.descriptionHtml.length > 0) {
+        <div class="rich-text" [innerHTML]="recipe.descriptionHtml"></div>
+        <button
+          class="button button--quiet button--small recipe-description__edit"
+          type="button"
+          (click)="startEditingDescription(recipe)"
+        >
+          Modifier la description
+        </button>
+      } @else {
+        <button
+          class="button button--quiet button--small recipe-description__edit"
+          type="button"
+          (click)="startEditingDescription(recipe)"
+        >
+          + Ajouter une description ou une remarque
+        </button>
       }
+    </section>
+
+    <div class="recipe-body">
+      <aside class="recipe-ingredients">
+        <div class="recipe-ingredients__header">
+          <h2>Ingrédients</h2>
+          <div class="servings-picker">
+            <button
+              class="icon-button"
+              type="button"
+              aria-label="Une part de moins"
+              (click)="decreaseWantedServings()"
+            >
+              −
+            </button>
+            <strong class="servings-picker__value" aria-live="polite"
+              >{{ wantedServings() }} parts</strong
+            >
+            <button
+              class="icon-button"
+              type="button"
+              aria-label="Une part de plus"
+              (click)="increaseWantedServings()"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        @if (scaledIngredientLines().length > 0) {
+          <ul class="ingredient-list">
+            @for (scaledIngredientLine of scaledIngredientLines(); track $index) {
+              <li class="ingredient-list__line">
+                <span>{{ scaledIngredientLine.ingredientName }}</span>
+                <span class="ingredient-list__quantity">{{
+                  scaledIngredientLine.formattedQuantity
+                }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="muted">Aucun ingrédient pour l'instant.</p>
+        }
+
+        <button
+          class="button button--primary add-to-shopping-list"
+          type="button"
+          [disabled]="isAddingToShoppingList()"
+          (click)="addRecipeToShoppingList()"
+        >
+          Ajouter aux courses ({{ wantedServings() }} parts)
+        </button>
+        @if (lastAddedServings() !== null) {
+          <p class="added-confirmation" role="status">
+            Ajoutée pour {{ lastAddedServings() }} parts.
+            <a routerLink="/courses">Voir la liste</a>
+          </p>
+        }
+      </aside>
+
+      <section class="recipe-steps">
+        <h2>Préparation</h2>
+        @if (recipe.steps.length > 0) {
+          <ol class="step-list">
+            @for (step of recipe.steps; track $index) {
+              <li class="step-list__step">
+                <span class="step-list__number" aria-hidden="true">{{ $index + 1 }}</span>
+                <p class="step-list__text">{{ step }}</p>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="muted">Aucune étape pour l'instant.</p>
+        }
+      </section>
     </div>
 
-    <h2 class="section-title">Préparation</h2>
-    @if (recipe.steps.length > 0) {
-      <ol class="step-list">
-        @for (step of recipe.steps; track $index) {
-          <li class="step-list__step">
-            <span class="step-list__number" aria-hidden="true">{{ $index + 1 }}</span>
-            <p class="step-list__text">{{ step }}</p>
-          </li>
-        }
-      </ol>
-    } @else {
-      <p class="muted">Aucune étape pour l'instant.</p>
-    }
-
-    @if (recipe.notes.length > 0) {
-      <h2 class="section-title">Notes</h2>
-      <p class="notes card">{{ recipe.notes }}</p>
-    }
-
-    <h2 class="section-title">Commentaires</h2>
-    @if (recipeCommentsResource.hasValue()) {
-      <ul class="comment-list">
-        @for (recipeComment of recipeCommentsResource.value(); track recipeComment.id) {
-          <li class="card">
-            <p class="comment__content">{{ recipeComment.content }}</p>
-            <div class="comment__footer">
-              <span class="muted">{{ formatCommentDate(recipeComment.createdAt) }}</span>
-              <button
-                class="button button--quiet button--small"
-                type="button"
-                (click)="deleteRecipeComment(recipeComment)"
-              >
-                Supprimer
-              </button>
-            </div>
-          </li>
-        }
-      </ul>
-    } @else if (recipeCommentsResource.error()) {
-      <p class="error-message">Impossible de charger les commentaires.</p>
-    } @else {
-      <p class="muted">Chargement des commentaires…</p>
-    }
-
-    <form class="comment-form" (submit)="postRecipeComment($event)">
-      <label for="new-comment">Ajouter un commentaire</label>
-      <textarea
-        id="new-comment"
-        placeholder="Un peu moins de sel la prochaine fois"
-        [value]="newCommentContent()"
-        (input)="updateNewCommentContent($event)"
-      ></textarea>
-      <button class="button" type="submit" [disabled]="isPostingComment()">Publier</button>
-    </form>
-
     <div class="recipe-actions">
-      <a class="button" [routerLink]="['/recettes', recipe.id, 'modifier']">Modifier la recette</a>
       <button
-        class="button button--quiet button--danger"
+        class="button button--quiet button--danger button--small"
         type="button"
         (click)="deleteRecipe(recipe)"
       >
-        Supprimer
+        Supprimer la recette
       </button>
     </div>
   } @else if (recipeResource.error()) {

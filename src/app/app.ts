@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
-/** Coquille de l'application : en-tête, page courante, barre d'onglets en bas. */
+/** Coquille de l'application : en-tête avec la navigation (en bas de l'écran sur mobile), page courante. */
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],

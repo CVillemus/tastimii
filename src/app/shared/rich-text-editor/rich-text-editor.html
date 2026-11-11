@@ -1,0 +1,18 @@
+<div class="rich-text-editor__toolbar" role="toolbar" aria-label="Mise en forme">
+  @for (toolbarButton of toolbarButtons; track toolbarButton.format) {
+    <button
+      type="button"
+      class="rich-text-editor__tool"
+      [class]="'rich-text-editor__tool--' + toolbarButton.format"
+      [class.rich-text-editor__tool--active]="activeFormats()[toolbarButton.format]"
+      [attr.aria-label]="toolbarButton.label"
+      [attr.aria-pressed]="activeFormats()[toolbarButton.format]"
+      [title]="toolbarButton.label"
+      (mousedown)="$event.preventDefault()"
+      (click)="applyFormat(toolbarButton.format)"
+    >
+      {{ toolbarButton.symbol }}
+    </button>
+  }
+</div>
+<div #editorHost class="rich-text-editor__host"></div>

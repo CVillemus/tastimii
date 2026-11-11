@@ -1,21 +1,15 @@
 import { inject, Injectable } from '@angular/core';
-import {
-  IngredientRow,
-  RecipeCommentRow,
-  RecipeIngredientRow,
-  RecipeRow,
-} from '../supabase/database.types';
+import { IngredientRow, RecipeIngredientRow, RecipeRow } from '../supabase/database.types';
 import { SUPABASE_CLIENT, TastimiiSupabaseClient } from '../supabase/supabase-client';
 import {
   Recipe,
-  RecipeComment,
   RecipeDraft,
   RecipeDraftIngredientLine,
   RecipeIngredientLine,
   RecipeSummary,
 } from './recipe.model';
 
-/** Appels Supabase des recettes et de leurs commentaires. */
+/** Appels Supabase des recettes. */
 @Injectable({ providedIn: 'root' })
 export class RecipesApi {
   private readonly supabaseClient: TastimiiSupabaseClient = inject(SUPABASE_CLIENT);
@@ -54,7 +48,7 @@ export class RecipesApi {
     return {
       ...toRecipeSummary(recipeResponse.data),
       steps: recipeResponse.data.steps,
-      notes: recipeResponse.data.notes,
+      descriptionHtml: recipeResponse.data.description,
       ingredientLines: recipeIngredientsResponse.data.map(
         (recipeIngredientRow: RecipeIngredientRow): RecipeIngredientLine => ({
           ingredientId: recipeIngredientRow.ingredient_id,
@@ -106,29 +100,12 @@ export class RecipesApi {
     }
   }
 
-  async fetchRecipeComments(recipeId: string): Promise<RecipeComment[]> {
-    const { data: commentRows, error } = await this.supabaseClient
-      .from('recipe_comment')
-      .select('*')
-      .eq('recipe_id', recipeId)
-      .order('created_at');
-    if (error !== null) {
-      throw error;
-    }
-    return commentRows.map(toRecipeComment);
-  }
-
-  async postRecipeComment(recipeId: string, commentContent: string): Promise<void> {
+  /** Modifie seulement la description, depuis la fiche recette. */
+  async updateRecipeDescription(recipeId: string, descriptionHtml: string): Promise<void> {
     const { error } = await this.supabaseClient
-      .from('recipe_comment')
-      .insert({ recipe_id: recipeId, content: commentContent.trim() });
-    if (error !== null) {
-      throw error;
-    }
-  }
-
-  async deleteRecipeComment(commentId: string): Promise<void> {
-    const { error } = await this.supabaseClient.from('recipe_comment').delete().eq('id', commentId);
+      .from('recipe')
+      .update({ description: descriptionHtml, updated_at: new Date().toISOString() })
+      .eq('id', recipeId);
     if (error !== null) {
       throw error;
     }
@@ -183,16 +160,12 @@ function toRecipeSummary(recipeRow: RecipeRow): RecipeSummary {
 
 function toRecipeColumns(
   recipeDraft: RecipeDraft,
-): Pick<RecipeRow, 'title' | 'base_servings' | 'preparation_minutes' | 'steps' | 'notes'> {
+): Pick<RecipeRow, 'title' | 'base_servings' | 'preparation_minutes' | 'steps' | 'description'> {
   return {
     title: recipeDraft.title.trim(),
     base_servings: recipeDraft.baseServings,
     preparation_minutes: recipeDraft.preparationMinutes,
     steps: recipeDraft.steps,
-    notes: recipeDraft.notes.trim(),
+    description: recipeDraft.descriptionHtml,
   };
-}
-
-function toRecipeComment(commentRow: RecipeCommentRow): RecipeComment {
-  return { id: commentRow.id, content: commentRow.content, createdAt: commentRow.created_at };
 }

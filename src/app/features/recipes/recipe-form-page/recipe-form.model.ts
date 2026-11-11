@@ -7,7 +7,8 @@ export type RecipeFormModel = {
   preparationMinutes: number | null;
   ingredientLines: RecipeFormIngredientLine[];
   steps: RecipeFormStep[];
-  notes: string;
+  /** Description libre en texte riche (HTML). */
+  descriptionHtml: string;
 };
 
 /**
@@ -42,7 +43,7 @@ export function createEmptyRecipeFormModel(): RecipeFormModel {
     preparationMinutes: null,
     ingredientLines: [createEmptyIngredientLine()],
     steps: [createEmptyStep()],
-    notes: '',
+    descriptionHtml: '',
   };
 }
 
@@ -67,7 +68,7 @@ export function toRecipeFormModel(recipe: Recipe): RecipeFormModel {
       recipe.steps.length > 0
         ? recipe.steps.map((instruction: string): RecipeFormStep => ({ instruction }))
         : [createEmptyStep()],
-    notes: recipe.notes,
+    descriptionHtml: recipe.descriptionHtml,
   };
 }
 

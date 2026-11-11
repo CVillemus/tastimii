@@ -21,6 +21,10 @@
     "@angular/platform-browser": "^22.2.0",
     "@angular/router": "^22.2.0",
     "@supabase/supabase-js": "^2.119.0",
+    "@tiptap/core": "3.33.1",
+    "@tiptap/extensions": "3.33.1",
+    "@tiptap/pm": "3.33.1",
+    "@tiptap/starter-kit": "3.33.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

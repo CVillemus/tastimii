@@ -13,11 +13,12 @@ import { RouterLink } from '@angular/router';
 import { formatPreparationTime } from '../../../core/recipes/quantity';
 import { RecipeSummary } from '../../../core/recipes/recipe.model';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
+import { RecipePhoto } from '../recipe-photo/recipe-photo';
 
 /** Accueil : toutes nos recettes, avec une recherche par titre. */
 @Component({
   selector: 'app-recipe-list-page',
-  imports: [RouterLink],
+  imports: [RouterLink, RecipePhoto],
   templateUrl: './recipe-list-page.html',
   styleUrl: './recipe-list-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

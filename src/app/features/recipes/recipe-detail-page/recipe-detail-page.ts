@@ -18,9 +18,11 @@ import {
   formatQuantityWithUnit,
   scaleQuantity,
 } from '../../../core/recipes/quantity';
-import { Recipe, RecipeComment, RecipeIngredientLine } from '../../../core/recipes/recipe.model';
+import { Recipe, RecipeIngredientLine } from '../../../core/recipes/recipe.model';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import { ShoppingListApi } from '../../../core/shopping-list/shopping-list-api';
+import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
+import { RecipePhoto } from '../recipe-photo/recipe-photo';
 
 /** Ingrédient affiché avec sa quantité recalculée pour le nombre de parts choisi. */
 type ScaledIngredientLine = {
@@ -29,14 +31,11 @@ type ScaledIngredientLine = {
 };
 
 const MINIMUM_SERVINGS: number = 1;
-const commentDateFormat: Intl.DateTimeFormat = new Intl.DateTimeFormat('fr-FR', {
-  dateStyle: 'long',
-});
 
-/** Une recette : ingrédients (recalculés selon les parts), étapes, notes, commentaires. */
+/** Une recette : description en tête, ingrédients (recalculés selon les parts), étapes. */
 @Component({
   selector: 'app-recipe-detail-page',
-  imports: [RouterLink],
+  imports: [RouterLink, RecipePhoto, RichTextEditor],
   templateUrl: './recipe-detail-page.html',
   styleUrl: './recipe-detail-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,12 +51,6 @@ export class RecipeDetailPage {
   protected readonly recipeResource: ResourceRef<Recipe | undefined> = resource({
     params: (): { recipeId: string } => ({ recipeId: this.recipeId() }),
     loader: ({ params }): Promise<Recipe> => this.recipesApi.fetchRecipe(params.recipeId),
-  });
-
-  protected readonly recipeCommentsResource: ResourceRef<RecipeComment[] | undefined> = resource({
-    params: (): { recipeId: string } => ({ recipeId: this.recipeId() }),
-    loader: ({ params }): Promise<RecipeComment[]> =>
-      this.recipesApi.fetchRecipeComments(params.recipeId),
   });
 
   /** Parts choisies : celles de la recette au départ, modifiables avec − et +. */
@@ -88,9 +81,16 @@ export class RecipeDetailPage {
   protected readonly isAddingToShoppingList: Signal<boolean> =
     this.isAddingToShoppingListState.asReadonly();
 
-  protected readonly newCommentContent: WritableSignal<string> = signal('');
-  private readonly isPostingCommentState: WritableSignal<boolean> = signal(false);
-  protected readonly isPostingComment: Signal<boolean> = this.isPostingCommentState.asReadonly();
+  /** Brouillon de la description pendant qu'on la modifie depuis la fiche ; `null` = lecture. */
+  private readonly descriptionDraftState: WritableSignal<string | null> = signal(null);
+  protected readonly descriptionDraft: Signal<string | null> =
+    this.descriptionDraftState.asReadonly();
+  private readonly isSavingDescriptionState: WritableSignal<boolean> = signal(false);
+  protected readonly isSavingDescription: Signal<boolean> =
+    this.isSavingDescriptionState.asReadonly();
+  private readonly descriptionErrorMessageState: WritableSignal<string | null> = signal(null);
+  protected readonly descriptionErrorMessage: Signal<string | null> =
+    this.descriptionErrorMessageState.asReadonly();
 
   protected readonly formatPreparationTime: (preparationMinutes: number) => string =
     formatPreparationTime;
@@ -113,32 +113,35 @@ export class RecipeDetailPage {
     }
   }
 
-  protected updateNewCommentContent(inputEvent: Event): void {
-    this.newCommentContent.set((inputEvent.target as HTMLTextAreaElement).value);
+  protected startEditingDescription(recipe: Recipe): void {
+    this.descriptionErrorMessageState.set(null);
+    this.descriptionDraftState.set(recipe.descriptionHtml);
   }
 
-  protected async postRecipeComment(submitEvent: Event): Promise<void> {
-    submitEvent.preventDefault();
-    const commentContent: string = this.newCommentContent().trim();
-    if (commentContent.length === 0) {
+  protected updateDescriptionDraft(descriptionHtml: string): void {
+    this.descriptionDraftState.set(descriptionHtml);
+  }
+
+  protected cancelEditingDescription(): void {
+    this.descriptionDraftState.set(null);
+  }
+
+  protected async saveDescription(): Promise<void> {
+    const descriptionHtml: string | null = this.descriptionDraft();
+    if (descriptionHtml === null || !this.recipeResource.hasValue()) {
       return;
     }
-    this.isPostingCommentState.set(true);
+    this.isSavingDescriptionState.set(true);
+    this.descriptionErrorMessageState.set(null);
     try {
-      await this.recipesApi.postRecipeComment(this.recipeId(), commentContent);
-      this.newCommentContent.set('');
-      this.recipeCommentsResource.reload();
+      await this.recipesApi.updateRecipeDescription(this.recipeId(), descriptionHtml);
+      this.recipeResource.update((recipe: Recipe): Recipe => ({ ...recipe, descriptionHtml }));
+      this.descriptionDraftState.set(null);
+    } catch {
+      this.descriptionErrorMessageState.set("La description n'a pas pu être enregistrée.");
     } finally {
-      this.isPostingCommentState.set(false);
+      this.isSavingDescriptionState.set(false);
     }
-  }
-
-  protected async deleteRecipeComment(recipeComment: RecipeComment): Promise<void> {
-    if (!confirm('Supprimer ce commentaire ?')) {
-      return;
-    }
-    await this.recipesApi.deleteRecipeComment(recipeComment.id);
-    this.recipeCommentsResource.reload();
   }
 
   protected async deleteRecipe(recipe: Recipe): Promise<void> {
@@ -147,9 +150,5 @@ export class RecipeDetailPage {
     }
     await this.recipesApi.deleteRecipe(recipe.id);
     await this.router.navigate(['/recettes']);
-  }
-
-  protected formatCommentDate(createdAt: string): string {
-    return commentDateFormat.format(new Date(createdAt));
   }
 }

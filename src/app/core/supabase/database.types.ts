@@ -24,7 +24,8 @@ export type RecipeRow = {
   base_servings: number;
   preparation_minutes: number | null;
   steps: string[];
-  notes: string;
+  /** Texte riche (HTML de l'éditeur) : description libre, remarques. Vide = ''. */
+  description: string;
   created_at: string;
   updated_at: string;
 };
@@ -36,13 +37,6 @@ export type RecipeIngredientRow = {
   quantity: number | null;
   unit: string;
   position: number;
-};
-
-export type RecipeCommentRow = {
-  id: string;
-  recipe_id: string;
-  content: string;
-  created_at: string;
 };
 
 export type ShoppingListRecipeRow = {
@@ -83,12 +77,6 @@ export type Database = {
         Insert: Pick<RecipeIngredientRow, 'recipe_id' | 'ingredient_id' | 'position'> &
           Partial<RecipeIngredientRow>;
         Update: Partial<RecipeIngredientRow>;
-        Relationships: [];
-      };
-      recipe_comment: {
-        Row: RecipeCommentRow;
-        Insert: Pick<RecipeCommentRow, 'recipe_id' | 'content'> & Partial<RecipeCommentRow>;
-        Update: Partial<RecipeCommentRow>;
         Relationships: [];
       };
       shopping_list_recipe: {

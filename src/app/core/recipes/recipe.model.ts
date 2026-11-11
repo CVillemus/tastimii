@@ -17,7 +17,8 @@ export type RecipeIngredientLine = {
 /** Recette complète, pour la page de détail et le formulaire de modification. */
 export type Recipe = RecipeSummary & {
   steps: string[];
-  notes: string;
+  /** Description libre en texte riche (HTML), affichée en tête de la recette. */
+  descriptionHtml: string;
   ingredientLines: RecipeIngredientLine[];
 };
 
@@ -27,7 +28,7 @@ export type RecipeDraft = {
   baseServings: number;
   preparationMinutes: number | null;
   steps: string[];
-  notes: string;
+  descriptionHtml: string;
   ingredientLines: RecipeDraftIngredientLine[];
 };
 
@@ -35,10 +36,4 @@ export type RecipeDraftIngredientLine = {
   ingredientId: string;
   quantity: number | null;
   unit: string;
-};
-
-export type RecipeComment = {
-  id: string;
-  content: string;
-  createdAt: string;
 };

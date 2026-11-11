@@ -1,32 +1,39 @@
 <div class="page">
   <div class="recipe-list-header">
     <h1>Nos recettes</h1>
-    <a class="button button--primary" routerLink="/recettes/nouvelle">+ Ajouter</a>
+    @if (recipeSummariesResource.hasValue() && recipeSummariesResource.value().length > 0) {
+      <div class="recipe-search">
+        <label class="visually-hidden" for="recipe-search">Chercher une recette</label>
+        <input
+          id="recipe-search"
+          type="search"
+          placeholder="Chercher une recette"
+          [value]="recipeSearchText()"
+          (input)="updateRecipeSearchText($event)"
+        />
+      </div>
+    }
+    <a class="button button--primary recipe-list-header__add" routerLink="/recettes/nouvelle">
+      + Nouvelle recette
+    </a>
   </div>
 
   @if (recipeSummariesResource.hasValue()) {
     @if (recipeSummariesResource.value().length > 0) {
-      <label class="visually-hidden" for="recipe-search">Chercher une recette</label>
-      <input
-        id="recipe-search"
-        class="recipe-search"
-        type="search"
-        placeholder="Chercher une recette"
-        [value]="recipeSearchText()"
-        (input)="updateRecipeSearchText($event)"
-      />
-
       <ul class="recipe-list">
         @for (recipeSummary of matchingRecipeSummaries(); track recipeSummary.id) {
           <li>
-            <a class="recipe-card card" [routerLink]="['/recettes', recipeSummary.id]">
-              <h2 class="recipe-card__title">{{ recipeSummary.title }}</h2>
-              <p class="recipe-card__meta muted">
-                {{ recipeSummary.baseServings }} parts
-                @if (recipeSummary.preparationMinutes !== null) {
-                  · {{ formatPreparationTime(recipeSummary.preparationMinutes) }}
-                }
-              </p>
+            <a class="recipe-card" [routerLink]="['/recettes', recipeSummary.id]">
+              <app-recipe-photo class="recipe-card__photo" />
+              <div class="recipe-card__text">
+                <h2 class="recipe-card__title">{{ recipeSummary.title }}</h2>
+                <p class="recipe-card__meta">
+                  @if (recipeSummary.preparationMinutes !== null) {
+                    {{ formatPreparationTime(recipeSummary.preparationMinutes) }} ·
+                  }
+                  {{ recipeSummary.baseServings }} parts
+                </p>
+              </div>
             </a>
           </li>
         } @empty {
@@ -36,9 +43,9 @@
         }
       </ul>
     } @else {
-      <div class="empty-state card">
+      <div class="empty-state">
         <h2>Le carnet est vide</h2>
-        <p class="muted">Ajoutez votre première recette : ingrédients, étapes et notes.</p>
+        <p class="muted">Ajoutez votre première recette : ingrédients, étapes et description.</p>
         <a class="button button--primary" routerLink="/recettes/nouvelle">Ajouter une recette</a>
       </div>
     }

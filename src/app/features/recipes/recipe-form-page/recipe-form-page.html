@@ -1,4 +1,4 @@
-<div class="page">
+<div class="page page--narrow">
   @if (isEditingExistingRecipe()) {
     <a class="back-link" [routerLink]="['/recettes', recipeId()]">‹ Annuler</a>
     <h1>Modifier la recette</h1>
@@ -50,6 +50,15 @@
           />
         </div>
       </div>
+
+      <section>
+        <h2 class="section-title">Description</h2>
+        <app-rich-text-editor
+          editorLabel="Description"
+          placeholder="Une description, une remarque, une variante…"
+          [formField]="recipeForm.descriptionHtml"
+        />
+      </section>
 
       <section>
         <h2 class="section-title">Ingrédients</h2>
@@ -170,17 +179,6 @@
           }
         </ol>
         <button class="button" type="button" (click)="addStep()">+ Ajouter une étape</button>
-      </section>
-
-      <section>
-        <h2 class="section-title">Notes</h2>
-        <label class="visually-hidden" for="recipe-notes">Notes</label>
-        <textarea
-          id="recipe-notes"
-          rows="4"
-          placeholder="Astuces, variantes, accompagnements…"
-          [formField]="recipeForm.notes"
-        ></textarea>
       </section>
 
       @if (saveErrorMessage() !== null) {

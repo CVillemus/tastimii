@@ -4,14 +4,22 @@
 }
 
 .app-header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-background);
+}
+
+.app-header__inner {
   max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: calc(0.875rem + env(safe-area-inset-top)) var(--page-gutter) 0;
+  padding: calc(0.625rem + env(safe-area-inset-top)) var(--page-gutter) 0.625rem;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
 }
 
 .app-header__brand {
   font-family: var(--font-title);
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-accent);
   text-decoration: none;
@@ -21,7 +29,8 @@
   padding-bottom: calc(var(--bottom-navigation-height) + env(safe-area-inset-bottom));
 }
 
-.bottom-navigation {
+/* Mobile : barre d'onglets fixée en bas, à portée du pouce. */
+.main-navigation {
   position: fixed;
   inset: auto 0 0 0;
   display: flex;
@@ -32,7 +41,7 @@
   z-index: 10;
 }
 
-.bottom-navigation__tab {
+.main-navigation__tab {
   flex: 1;
   max-width: 12.5rem;
   height: var(--bottom-navigation-height);
@@ -41,14 +50,14 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--color-ink-muted);
   text-decoration: none;
 }
 
-.bottom-navigation__tab svg {
-  width: 1.5rem;
-  height: 1.5rem;
+.main-navigation__tab svg {
+  width: 1.375rem;
+  height: 1.375rem;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
@@ -56,7 +65,58 @@
   stroke-linejoin: round;
 }
 
-.bottom-navigation__tab--active {
+.main-navigation__tab--active {
   color: var(--color-accent);
   font-weight: 700;
+}
+
+/* Desktop : les onglets deviennent des liens dans l'en-tête, qui reste visible en haut. */
+@media (min-width: 48rem) {
+  .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .app-header__inner {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .app-header__brand {
+    font-size: 1.625rem;
+  }
+
+  .app-main {
+    padding-bottom: 0;
+  }
+
+  .main-navigation {
+    position: static;
+    gap: 2rem;
+    border-top: none;
+    padding-bottom: 0;
+    background: none;
+  }
+
+  .main-navigation__tab {
+    flex: none;
+    height: auto;
+    flex-direction: row;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: var(--color-ink);
+    padding: 0.25rem 0;
+    border-bottom: 2px solid transparent;
+  }
+
+  .main-navigation__tab svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .main-navigation__tab--active {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+  }
 }
