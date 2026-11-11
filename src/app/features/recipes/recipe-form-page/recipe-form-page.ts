@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import {
   applyEach,
+  disabled,
   FieldTree,
   form,
   FormField,
@@ -45,15 +46,20 @@ import { compareTagsByName, normalizeTagName, RecipeTag } from '../../../core/ta
 import { TagsApi } from '../../../core/tags/tags-api';
 import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
 import {
+  buildUnitChoices,
+  COUNT_UNIT_CHOICE,
   createEmptyIngredientLine,
   createEmptyRecipeFormModel,
   createEmptyStep,
   isFilledStep,
+  NO_UNIT_CHOICE,
   normalizeIngredientName,
   RecipeFormIngredientLine,
   RecipeFormModel,
   RecipeFormStep,
   toRecipeFormModel,
+  toStoredQuantityAndUnit,
+  UnitChoice,
 } from './recipe-form.model';
 
 /**
@@ -133,7 +139,10 @@ export class RecipeFormPage {
       : [],
   );
 
-  protected readonly suggestedUnits: readonly string[] = SUGGESTED_UNITS;
+  protected readonly unitChoices: readonly UnitChoice[] = buildUnitChoices(SUGGESTED_UNITS);
+  private readonly listedUnitChoiceValues: ReadonlySet<string> = new Set(
+    this.unitChoices.map((unitChoice: UnitChoice) => unitChoice.value),
+  );
 
   private readonly recipeFormModel: WritableSignal<RecipeFormModel> = signal(
     createEmptyRecipeFormModel(),
@@ -148,6 +157,10 @@ export class RecipeFormPage {
       min(recipeFormPath.preparationMinutes, 1, { message: 'Au moins une minute.' });
       applyEach(recipeFormPath.ingredientLines, (ingredientLinePath) => {
         min(ingredientLinePath.quantity, 0.01, { message: 'La quantité doit être positive.' });
+        disabled(
+          ingredientLinePath.quantity,
+          ({ valueOf }) => valueOf(ingredientLinePath.unit) === NO_UNIT_CHOICE,
+        );
         validate(ingredientLinePath.newIngredientTypeId, ({ value, valueOf }) =>
           this.isNewIngredientName(valueOf(ingredientLinePath.ingredientName)) && value() === ''
             ? {
@@ -289,14 +302,28 @@ export class RecipeFormPage {
     return normalizedName.length > 0 && !this.ingredientsByNormalizedName().has(normalizedName);
   }
 
-  /** En choisissant un ingrédient connu, on reprend son unité habituelle si l'unité est vide. */
+  /** En choisissant un ingrédient connu, on reprend son unité habituelle si « Nombre » est choisi. */
   protected fillDefaultUnit(ingredientLineField: FieldTree<RecipeFormIngredientLine>): void {
     const knownIngredient: Ingredient | undefined = this.ingredientsByNormalizedName().get(
       normalizeIngredientName(ingredientLineField.ingredientName().value()),
     );
-    if (knownIngredient !== undefined && ingredientLineField.unit().value() === '') {
+    if (knownIngredient !== undefined && ingredientLineField.unit().value() === COUNT_UNIT_CHOICE) {
       ingredientLineField.unit().value.set(knownIngredient.defaultUnit);
     }
+  }
+
+  /** « Aucune unité » n'a pas de quantité : on vide le champ, qui est désactivé. */
+  protected clearQuantityWithoutUnit(
+    ingredientLineField: FieldTree<RecipeFormIngredientLine>,
+  ): void {
+    if (ingredientLineField.unit().value() === NO_UNIT_CHOICE) {
+      ingredientLineField.quantity().value.set(null);
+    }
+  }
+
+  /** Vrai pour une unité tapée autrefois à la main, absente de la liste : on la garde comme choix. */
+  protected isUnlistedUnit(unitChoice: string): boolean {
+    return !this.listedUnitChoiceValues.has(unitChoice);
   }
 
   protected addIngredientLine(): void {
@@ -359,8 +386,7 @@ export class RecipeFormPage {
       const ingredientId: string = await this.findOrCreateIngredientId(ingredientLine);
       draftIngredientLines.push({
         ingredientId,
-        quantity: ingredientLine.quantity,
-        unit: ingredientLine.unit,
+        ...toStoredQuantityAndUnit(ingredientLine.quantity, ingredientLine.unit),
       });
     }
 
@@ -427,7 +453,7 @@ export class RecipeFormPage {
     const createdIngredient: Ingredient = await this.ingredientsApi.createIngredient(
       ingredientLine.ingredientName,
       ingredientLine.newIngredientTypeId,
-      ingredientLine.unit,
+      toStoredQuantityAndUnit(ingredientLine.quantity, ingredientLine.unit).unit,
     );
     // Si le même nouvel ingrédient apparaît deux fois, la deuxième ligne le retrouvera.
     this.ingredientCatalogResource.update((ingredientCatalog: IngredientCatalog | undefined) =>

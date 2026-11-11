@@ -338,6 +338,11 @@ input[type='checkbox'] {
 
 /* ---- Texte riche (description d'une recette, à l'affichage comme dans l'éditeur) ---- */
 
+/* Un lien collé (Instagram…) est un seul long mot : on le coupe plutôt que d'élargir la page. */
+.rich-text {
+  overflow-wrap: anywhere;
+}
+
 .rich-text > :first-child {
   margin-top: 0;
 }

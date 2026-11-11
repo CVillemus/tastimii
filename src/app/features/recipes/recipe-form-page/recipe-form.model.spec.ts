@@ -1,0 +1,36 @@
+import { describe, expect, it } from 'vitest';
+import {
+  buildUnitChoices,
+  COUNT_UNIT_CHOICE,
+  NO_UNIT_CHOICE,
+  toStoredQuantityAndUnit,
+  toUnitChoice,
+  UnitChoice,
+} from './recipe-form.model';
+
+describe("unités d'une ligne d'ingrédient", () => {
+  it('propose « Nombre » et « Aucune unité » avant les unités habituelles', () => {
+    expect(buildUnitChoices(['g', 'kg']).map((unitChoice: UnitChoice) => unitChoice.value)).toEqual(
+      [COUNT_UNIT_CHOICE, NO_UNIT_CHOICE, 'g', 'kg'],
+    );
+  });
+
+  it('relit une ligne enregistrée : une quantité sans unité est un nombre', () => {
+    expect(toUnitChoice(4, '')).toBe(COUNT_UNIT_CHOICE);
+    expect(toUnitChoice(null, '')).toBe(NO_UNIT_CHOICE);
+    expect(toUnitChoice(200, 'g')).toBe('g');
+    expect(toUnitChoice(null, 'pincée')).toBe('pincée');
+  });
+
+  it('enregistre « Nombre » comme une unité vide avec sa quantité', () => {
+    expect(toStoredQuantityAndUnit(4, COUNT_UNIT_CHOICE)).toEqual({ quantity: 4, unit: '' });
+  });
+
+  it('enregistre « Aucune unité » sans quantité, même si une quantité était tapée', () => {
+    expect(toStoredQuantityAndUnit(3, NO_UNIT_CHOICE)).toEqual({ quantity: null, unit: '' });
+  });
+
+  it('garde une unité habituelle telle quelle', () => {
+    expect(toStoredQuantityAndUnit(200, 'g')).toEqual({ quantity: 200, unit: 'g' });
+  });
+});

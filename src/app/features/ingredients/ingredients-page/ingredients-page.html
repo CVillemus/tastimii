@@ -40,19 +40,12 @@
             </div>
             <div>
               <label for="new-ingredient-unit">Unité habituelle (facultatif)</label>
-              <input
-                id="new-ingredient-unit"
-                type="text"
-                list="ingredient-units"
-                autocomplete="off"
-                placeholder="g"
-                [formField]="newIngredientForm.defaultUnit"
-              />
-              <datalist id="ingredient-units">
+              <select id="new-ingredient-unit" [formField]="newIngredientForm.defaultUnit">
+                <option value="">Nombre ou aucune unité</option>
                 @for (suggestedUnit of suggestedUnits; track suggestedUnit) {
-                  <option [value]="suggestedUnit"></option>
+                  <option [value]="suggestedUnit">{{ suggestedUnit }}</option>
                 }
-              </datalist>
+              </select>
             </div>
             <button class="button button--primary" type="submit">Ajouter l'ingrédient</button>
           </form>

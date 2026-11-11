@@ -17,6 +17,7 @@ export type RecipeFormModel = {
 /**
  * Une ligne d'ingrédient du formulaire. On tape le nom : s'il n'existe pas encore,
  * on choisit son type (`newIngredientTypeId`) et il est créé à l'enregistrement.
+ * `unit` est le choix de la liste : une unité (« g »), `COUNT_UNIT_CHOICE` ou `NO_UNIT_CHOICE`.
  */
 export type RecipeFormIngredientLine = {
   ingredientName: string;
@@ -24,6 +25,52 @@ export type RecipeFormIngredientLine = {
   unit: string;
   newIngredientTypeId: string;
 };
+
+/** Choix d'unité proposé dans la liste déroulante. */
+export type UnitChoice = {
+  value: string;
+  label: string;
+};
+
+/** « Nombre » : on compte les ingrédients (4 diots). Stocké comme une unité vide. */
+export const COUNT_UNIT_CHOICE: string = '';
+
+/**
+ * « Aucune unité » : ni unité ni quantité (sel, poivre…), affiché « au goût ».
+ * N'existe que dans le formulaire : en base, c'est une unité vide sans quantité.
+ */
+export const NO_UNIT_CHOICE: string = 'aucune-unite';
+
+/** Les deux choix sans unité en tête de liste, puis les unités habituelles. */
+export function buildUnitChoices(suggestedUnits: readonly string[]): UnitChoice[] {
+  return [
+    { value: COUNT_UNIT_CHOICE, label: 'Nombre (ex. 4 diots)' },
+    { value: NO_UNIT_CHOICE, label: 'Aucune unité (au goût)' },
+    ...suggestedUnits.map((suggestedUnit: string): UnitChoice => ({
+      value: suggestedUnit,
+      label: suggestedUnit,
+    })),
+  ];
+}
+
+/** Choix d'unité d'une ligne enregistrée : une unité vide sans quantité, c'est « Aucune unité ». */
+export function toUnitChoice(quantity: number | null, unit: string): string {
+  if (unit.length > 0) {
+    return unit;
+  }
+  return quantity === null ? NO_UNIT_CHOICE : COUNT_UNIT_CHOICE;
+}
+
+/** Quantité et unité à enregistrer : « Aucune unité » efface la quantité. */
+export function toStoredQuantityAndUnit(
+  quantity: number | null,
+  unitChoice: string,
+): { quantity: number | null; unit: string } {
+  if (unitChoice === NO_UNIT_CHOICE) {
+    return { quantity: null, unit: '' };
+  }
+  return { quantity, unit: unitChoice.trim() };
+}
 
 /** Une étape du formulaire : un titre court facultatif et un texte riche (HTML). */
 export type RecipeFormStep = {
@@ -65,7 +112,7 @@ export function toRecipeFormModel(recipe: Recipe): RecipeFormModel {
             (ingredientLine: RecipeIngredientLine): RecipeFormIngredientLine => ({
               ingredientName: ingredientLine.ingredientName,
               quantity: ingredientLine.quantity,
-              unit: ingredientLine.unit,
+              unit: toUnitChoice(ingredientLine.quantity, ingredientLine.unit),
               newIngredientTypeId: '',
             }),
           )

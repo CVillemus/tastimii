@@ -174,17 +174,13 @@
       <section>
         <h2 class="section-title">Ingrédients</h2>
         <p class="muted recipe-form__hint">
-          Quantités pour le nombre de parts ci-dessus. Laissez la quantité vide pour « au goût ».
+          Quantités pour le nombre de parts ci-dessus. Unité « Nombre » pour compter (4 diots), «
+          Aucune unité » pour le sel, le poivre… (au goût).
         </p>
 
         <datalist id="known-ingredients">
           @for (knownIngredient of knownIngredients(); track knownIngredient.id) {
             <option [value]="knownIngredient.name"></option>
-          }
-        </datalist>
-        <datalist id="suggested-units">
-          @for (suggestedUnit of suggestedUnits; track suggestedUnit) {
-            <option [value]="suggestedUnit"></option>
           }
         </datalist>
 
@@ -223,14 +219,20 @@
               </div>
               <div class="ingredient-line__unit">
                 <label [for]="'ingredient-unit-' + $index">Unité</label>
-                <input
+                <select
                   [id]="'ingredient-unit-' + $index"
-                  type="text"
-                  list="suggested-units"
-                  autocomplete="off"
-                  placeholder="g"
                   [formField]="ingredientLineField.unit"
-                />
+                  (change)="clearQuantityWithoutUnit(ingredientLineField)"
+                >
+                  @for (unitChoice of unitChoices; track unitChoice.value) {
+                    <option [value]="unitChoice.value">{{ unitChoice.label }}</option>
+                  }
+                  @if (isUnlistedUnit(ingredientLineField.unit().value())) {
+                    <option [value]="ingredientLineField.unit().value()">
+                      {{ ingredientLineField.unit().value() }}
+                    </option>
+                  }
+                </select>
               </div>
 
               @if (isNewIngredientName(ingredientLineField.ingredientName().value())) {

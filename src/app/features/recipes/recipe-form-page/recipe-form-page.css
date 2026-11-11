@@ -1,5 +1,7 @@
+/* `minmax(0, …)` : un lien long ou une option longue ne doit pas élargir la page sur mobile. */
 .recipe-form {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
   margin-top: 1.25rem;
 }
@@ -26,7 +28,7 @@
 
 .ingredient-line {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   gap: 0.5rem 0.75rem;
   padding: 0.75rem;
 }
@@ -182,7 +184,7 @@
 
   /* Une ligne par ingrédient : nom, quantité, unité, puis le bouton pour la retirer. */
   .ingredient-line {
-    grid-template-columns: minmax(0, 1fr) 7rem 7rem auto;
+    grid-template-columns: minmax(0, 1fr) 6.5rem 12rem auto;
     align-items: end;
     padding: 0.75rem 1rem;
   }

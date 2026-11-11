@@ -66,6 +66,7 @@
   /* 16 px minimum, sinon iOS zoome sur le champ. */
   font-size: 1rem;
   outline: none;
+  overflow-wrap: anywhere;
 }
 
 :host ::ng-deep .rich-text-editor__content p.is-editor-empty:first-child::before {
