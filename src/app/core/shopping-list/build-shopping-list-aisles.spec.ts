@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { IngredientCatalog } from '../ingredients/ingredient.model';
-import { buildShoppingListAisles, buildShoppingListLineKey } from './build-shopping-list-aisles';
-import { ShoppingListAisle, ShoppingListMenuRecipe } from './shopping-list.model';
+import {
+  buildItemsToCheckAtHome,
+  buildShoppingListAisles,
+  buildShoppingListLineKey,
+  buildToBuyKey,
+} from './build-shopping-list-aisles';
+import { AtHomeCheckItem, ShoppingListAisle, ShoppingListMenuRecipe } from './shopping-list.model';
 
 const ingredientCatalog: IngredientCatalog = {
   types: [
@@ -9,9 +14,15 @@ const ingredientCatalog: IngredientCatalog = {
     { id: 'legumes', name: 'Fruits et légumes' },
   ],
   ingredients: [
-    { id: 'cuisses', name: 'Cuisses de poulet', typeId: 'viande', defaultUnit: '' },
-    { id: 'citron', name: 'Citron', typeId: 'legumes', defaultUnit: '' },
-    { id: 'ail', name: 'Ail', typeId: 'legumes', defaultUnit: 'gousse' },
+    {
+      id: 'cuisses',
+      name: 'Cuisses de poulet',
+      typeId: 'viande',
+      defaultUnit: '',
+      isUsuallyAtHome: false,
+    },
+    { id: 'citron', name: 'Citron', typeId: 'legumes', defaultUnit: '', isUsuallyAtHome: false },
+    { id: 'ail', name: 'Ail', typeId: 'legumes', defaultUnit: 'gousse', isUsuallyAtHome: false },
   ],
 };
 
@@ -95,5 +106,77 @@ describe('liste de courses', () => {
       'Autres',
       'Fruits et légumes',
     ]);
+  });
+});
+
+describe('ingrédients souvent à la maison', () => {
+  const catalogWithButter: IngredientCatalog = {
+    types: [...ingredientCatalog.types, { id: 'cremerie', name: 'Crèmerie' }],
+    ingredients: [
+      ...ingredientCatalog.ingredients,
+      { id: 'beurre', name: 'Beurre', typeId: 'cremerie', defaultUnit: 'g', isUsuallyAtHome: true },
+    ],
+  };
+  const cake: ShoppingListMenuRecipe = {
+    menuEntryId: 'menu-3',
+    recipeId: 'gateau',
+    recipeTitle: 'Gâteau',
+    baseServings: 8,
+    wantedServings: 8,
+    ingredientLines: [{ ingredientId: 'beurre', quantity: 250, unit: 'g' }],
+  };
+  const lentils: ShoppingListMenuRecipe = {
+    menuEntryId: 'menu-4',
+    recipeId: 'lentilles',
+    recipeTitle: 'Lentilles saucisse',
+    baseServings: 2,
+    wantedServings: 4,
+    ingredientLines: [
+      { ingredientId: 'beurre', quantity: null, unit: '' },
+      { ingredientId: 'citron', quantity: 1, unit: '' },
+    ],
+  };
+
+  it("ne les met pas d'office dans la liste, mais dans « À vérifier » avec chaque recette", () => {
+    const aisles: ShoppingListAisle[] = buildShoppingListAisles(
+      [cake, lentils],
+      catalogWithButter,
+      new Set(),
+    );
+    expect(aisles.map((aisle: ShoppingListAisle) => aisle.aisleName)).toEqual([
+      'Fruits et légumes',
+    ]);
+
+    const itemsToCheckAtHome: AtHomeCheckItem[] = buildItemsToCheckAtHome(
+      [cake, lentils],
+      catalogWithButter,
+      new Set(),
+    );
+    expect(itemsToCheckAtHome).toEqual([
+      {
+        ingredientId: 'beurre',
+        ingredientName: 'Beurre',
+        toBuyKey: buildToBuyKey('beurre'),
+        isToBuy: false,
+        needs: [
+          { recipeTitle: 'Gâteau', quantity: 250, unit: 'g' },
+          { recipeTitle: 'Lentilles saucisse', quantity: null, unit: '' },
+        ],
+      },
+    ]);
+  });
+
+  it('les ajoute à leur rayon une fois cochés « à acheter »', () => {
+    const toBuyKeys: Set<string> = new Set([buildToBuyKey('beurre')]);
+    const aisles: ShoppingListAisle[] = buildShoppingListAisles(
+      [cake],
+      catalogWithButter,
+      toBuyKeys,
+    );
+    expect(aisles[0]).toMatchObject({
+      aisleName: 'Crèmerie',
+      lines: [{ ingredientName: 'Beurre', quantity: 250, unit: 'g' }],
+    });
+    expect(buildItemsToCheckAtHome([cake], catalogWithButter, toBuyKeys)[0].isToBuy).toBe(true);
   });
 });

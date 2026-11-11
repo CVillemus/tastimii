@@ -137,7 +137,13 @@ export class RichTextEditor implements FormValueControl<string> {
           codeBlock: false,
           blockquote: false,
           horizontalRule: false,
-          link: false,
+          // Une adresse tapée ou collée devient un lien ; dans l'éditeur, un clic ne l'ouvre pas.
+          link: {
+            autolink: true,
+            linkOnPaste: true,
+            openOnClick: false,
+            HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' },
+          },
           trailingNode: false,
         }),
         Placeholder.configure({ placeholder: this.placeholder() }),

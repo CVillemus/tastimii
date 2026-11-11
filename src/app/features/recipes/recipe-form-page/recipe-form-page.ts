@@ -24,6 +24,7 @@ import {
   submit,
   validate,
 } from '@angular/forms/signals';
+import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
 import { Router, RouterLink } from '@angular/router';
 import { sortIngredientTypesByName } from '../../../core/ingredients/ingredient-types';
 import {
@@ -39,6 +40,7 @@ import {
   RecipeDraftIngredientLine,
   RecipeStep,
 } from '../../../core/recipes/recipe.model';
+import { formatReadableQuantityHint } from '../../../core/recipes/quantity';
 import { RecipePhotosApi } from '../../../core/recipes/recipe-photos-api';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import { resizeRecipePhoto } from '../../../core/recipes/resize-recipe-photo';
@@ -52,6 +54,7 @@ import {
   createEmptyRecipeFormModel,
   createEmptyStep,
   isFilledStep,
+  moveArrayItem,
   NO_UNIT_CHOICE,
   normalizeIngredientName,
   RecipeFormIngredientLine,
@@ -74,7 +77,7 @@ type RecipePhotoChoice =
 /** Création (`/recettes/nouvelle`) et modification (`/recettes/:recipeId/modifier`) d'une recette. */
 @Component({
   selector: 'app-recipe-form-page',
-  imports: [FormField, RouterLink, RichTextEditor],
+  imports: [CdkDrag, CdkDragHandle, CdkDropList, FormField, RouterLink, RichTextEditor],
   templateUrl: './recipe-form-page.html',
   styleUrl: './recipe-form-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -140,6 +143,10 @@ export class RecipeFormPage {
   );
 
   protected readonly unitChoices: readonly UnitChoice[] = buildUnitChoices(SUGGESTED_UNITS);
+  protected readonly formatReadableQuantityHint: (
+    quantity: number | null,
+    unit: string,
+  ) => string | null = formatReadableQuantityHint;
   private readonly listedUnitChoiceValues: ReadonlySet<string> = new Set(
     this.unitChoices.map((unitChoice: UnitChoice) => unitChoice.value),
   );
@@ -330,6 +337,28 @@ export class RecipeFormPage {
     this.recipeFormModel.update((formModel: RecipeFormModel) => ({
       ...formModel,
       ingredientLines: [...formModel.ingredientLines, createEmptyIngredientLine()],
+    }));
+  }
+
+  /** Glisser-déposer d'un ingrédient : l'ordre du formulaire devient l'ordre d'affichage. */
+  protected moveIngredientLine(dropEvent: CdkDragDrop<unknown>): void {
+    this.reorderIngredientLines(dropEvent.previousIndex, dropEvent.currentIndex);
+  }
+
+  /** Au clavier : flèche haut / bas sur la poignée. */
+  protected moveIngredientLineByKeyboard(
+    lineIndex: number,
+    direction: -1 | 1,
+    keyboardEvent: Event,
+  ): void {
+    keyboardEvent.preventDefault();
+    this.reorderIngredientLines(lineIndex, lineIndex + direction);
+  }
+
+  private reorderIngredientLines(previousIndex: number, currentIndex: number): void {
+    this.recipeFormModel.update((formModel: RecipeFormModel) => ({
+      ...formModel,
+      ingredientLines: moveArrayItem(formModel.ingredientLines, previousIndex, currentIndex),
     }));
   }
 

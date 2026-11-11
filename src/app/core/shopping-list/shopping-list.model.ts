@@ -26,8 +26,28 @@ export type ShoppingListAisle = {
   lines: ShoppingListLine[];
 };
 
+/** Ce qu'une recette du menu demande d'un ingrédient « souvent à la maison ». */
+export type AtHomeCheckNeed = {
+  recipeTitle: string;
+  quantity: number | null;
+  unit: string;
+};
+
+/**
+ * Ingrédient « souvent à la maison » à vérifier avant de partir (« Beurre : 250 g pour le gâteau »).
+ * Coché « à acheter » (`isToBuy`), il rejoint aussi son rayon dans la liste.
+ */
+export type AtHomeCheckItem = {
+  ingredientId: string;
+  ingredientName: string;
+  toBuyKey: string;
+  isToBuy: boolean;
+  needs: AtHomeCheckNeed[];
+};
+
 /** Tout ce que la page des courses affiche. */
 export type ShoppingList = {
   menuRecipes: ShoppingListMenuRecipe[];
+  itemsToCheckAtHome: AtHomeCheckItem[];
   aisles: ShoppingListAisle[];
 };

@@ -17,6 +17,7 @@ import {
 import {
   Ingredient,
   IngredientCatalog,
+  IngredientChanges,
   IngredientType,
   IngredientTypeGroup,
   SUGGESTED_UNITS,
@@ -31,6 +32,17 @@ type NewIngredientFormModel = {
   ingredientName: string;
   typeId: string;
   defaultUnit: string;
+  isUsuallyAtHome: boolean;
+};
+
+type IngredientTypeRenameFormModel = {
+  typeName: string;
+};
+
+/** Message affiché sous un ingrédient dont la suppression a été refusée. */
+type IngredientDeletionRefusal = {
+  ingredientId: string;
+  message: string;
 };
 
 /** Gestion des types d'ingrédients (les rayons des courses) et des ingrédients. */
@@ -70,6 +82,13 @@ export class IngredientsPage {
   protected readonly actionErrorMessage: Signal<string | null> =
     this.actionErrorMessageState.asReadonly();
 
+  private readonly ingredientDeletionRefusalState: WritableSignal<IngredientDeletionRefusal | null> =
+    signal(null);
+  protected readonly ingredientDeletionRefusal: Signal<IngredientDeletionRefusal | null> =
+    this.ingredientDeletionRefusalState.asReadonly();
+
+  // ---- Ajout ----
+
   private readonly newIngredientTypeFormModel: WritableSignal<NewIngredientTypeFormModel> = signal({
     typeName: '',
   });
@@ -84,12 +103,48 @@ export class IngredientsPage {
     ingredientName: '',
     typeId: '',
     defaultUnit: '',
+    isUsuallyAtHome: false,
   });
   protected readonly newIngredientForm: FieldTree<NewIngredientFormModel> = form(
     this.newIngredientFormModel,
     (newIngredientPath) => {
       required(newIngredientPath.ingredientName, { message: "Donnez un nom à l'ingrédient." });
       required(newIngredientPath.typeId, { message: 'Choisissez un type.' });
+    },
+  );
+
+  // ---- Modification d'un ingrédient (un seul à la fois) ----
+
+  private readonly editedIngredientIdState: WritableSignal<string | null> = signal(null);
+  protected readonly editedIngredientId: Signal<string | null> =
+    this.editedIngredientIdState.asReadonly();
+
+  private readonly ingredientEditFormModel: WritableSignal<IngredientChanges> = signal({
+    name: '',
+    typeId: '',
+    defaultUnit: '',
+    isUsuallyAtHome: false,
+  });
+  protected readonly ingredientEditForm: FieldTree<IngredientChanges> = form(
+    this.ingredientEditFormModel,
+    (ingredientEditPath) => {
+      required(ingredientEditPath.name, { message: "Donnez un nom à l'ingrédient." });
+      required(ingredientEditPath.typeId, { message: 'Choisissez un type.' });
+    },
+  );
+
+  // ---- Renommage d'un type (un seul à la fois) ----
+
+  private readonly renamedTypeIdState: WritableSignal<string | null> = signal(null);
+  protected readonly renamedTypeId: Signal<string | null> = this.renamedTypeIdState.asReadonly();
+
+  private readonly typeRenameFormModel: WritableSignal<IngredientTypeRenameFormModel> = signal({
+    typeName: '',
+  });
+  protected readonly typeRenameForm: FieldTree<IngredientTypeRenameFormModel> = form(
+    this.typeRenameFormModel,
+    (typeRenamePath) => {
+      required(typeRenamePath.typeName, { message: 'Donnez un nom au type.' });
     },
   );
 
@@ -109,34 +164,119 @@ export class IngredientsPage {
   protected async submitNewIngredientForm(submitEvent: Event): Promise<void> {
     submitEvent.preventDefault();
     await submit(this.newIngredientForm, async () => {
-      const { ingredientName, typeId, defaultUnit }: NewIngredientFormModel =
+      const { ingredientName, typeId, defaultUnit, isUsuallyAtHome }: NewIngredientFormModel =
         this.newIngredientFormModel();
       await this.runCatalogAction(
-        () => this.ingredientsApi.createIngredient(ingredientName, typeId, defaultUnit),
+        () =>
+          this.ingredientsApi.createIngredient(
+            ingredientName,
+            typeId,
+            defaultUnit,
+            isUsuallyAtHome,
+          ),
         'Cet ingrédient existe peut-être déjà.',
       );
       // On garde le type choisi : on ajoute souvent plusieurs ingrédients d'un même rayon.
-      this.newIngredientForm().reset({ ingredientName: '', typeId, defaultUnit: '' });
+      this.newIngredientForm().reset({
+        ingredientName: '',
+        typeId,
+        defaultUnit: '',
+        isUsuallyAtHome: false,
+      });
       return undefined;
     });
   }
 
-  protected async changeIngredientType(ingredient: Ingredient, changeEvent: Event): Promise<void> {
-    const newTypeId: string = (changeEvent.target as HTMLSelectElement).value;
+  protected startEditingIngredient(ingredient: Ingredient): void {
+    this.renamedTypeIdState.set(null);
+    this.ingredientDeletionRefusalState.set(null);
+    this.ingredientEditForm().reset({
+      name: ingredient.name,
+      typeId: ingredient.typeId,
+      defaultUnit: ingredient.defaultUnit,
+      isUsuallyAtHome: ingredient.isUsuallyAtHome,
+    });
+    this.editedIngredientIdState.set(ingredient.id);
+  }
+
+  protected cancelEditingIngredient(): void {
+    this.editedIngredientIdState.set(null);
+  }
+
+  protected async submitIngredientEditForm(
+    ingredient: Ingredient,
+    submitEvent: Event,
+  ): Promise<void> {
+    submitEvent.preventDefault();
+    await submit(this.ingredientEditForm, async () => {
+      const ingredientChanges: IngredientChanges = this.ingredientEditFormModel();
+      const isSaved: boolean = await this.runCatalogAction(
+        () => this.ingredientsApi.updateIngredient(ingredient.id, ingredientChanges),
+        `Impossible d'enregistrer « ${ingredientChanges.name} » : ce nom existe peut-être déjà.`,
+      );
+      if (isSaved) {
+        this.editedIngredientIdState.set(null);
+      }
+      return undefined;
+    });
+  }
+
+  /** Bascule rapide « souvent à la maison », sans ouvrir la modification. */
+  protected async toggleIngredientUsuallyAtHome(ingredient: Ingredient): Promise<void> {
     await this.runCatalogAction(
-      () => this.ingredientsApi.changeIngredientType(ingredient.id, newTypeId),
-      `Impossible de changer le type de « ${ingredient.name} ».`,
+      () =>
+        this.ingredientsApi.updateIngredient(ingredient.id, {
+          name: ingredient.name,
+          typeId: ingredient.typeId,
+          defaultUnit: ingredient.defaultUnit,
+          isUsuallyAtHome: !ingredient.isUsuallyAtHome,
+        }),
+      `Impossible de modifier « ${ingredient.name} ».`,
     );
   }
 
+  protected startRenamingType(ingredientType: IngredientType): void {
+    this.editedIngredientIdState.set(null);
+    this.typeRenameForm().reset({ typeName: ingredientType.name });
+    this.renamedTypeIdState.set(ingredientType.id);
+  }
+
+  protected cancelRenamingType(): void {
+    this.renamedTypeIdState.set(null);
+  }
+
+  protected async submitTypeRenameForm(
+    ingredientType: IngredientType,
+    submitEvent: Event,
+  ): Promise<void> {
+    submitEvent.preventDefault();
+    await submit(this.typeRenameForm, async () => {
+      const { typeName }: IngredientTypeRenameFormModel = this.typeRenameFormModel();
+      const isSaved: boolean = await this.runCatalogAction(
+        () => this.ingredientsApi.renameIngredientType(ingredientType.id, typeName),
+        `Impossible de renommer « ${ingredientType.name} » : ce nom existe peut-être déjà.`,
+      );
+      if (isSaved) {
+        this.renamedTypeIdState.set(null);
+      }
+      return undefined;
+    });
+  }
+
   protected async deleteIngredient(ingredient: Ingredient): Promise<void> {
+    this.ingredientDeletionRefusalState.set(null);
     if (!confirm(`Supprimer l'ingrédient « ${ingredient.name} » ?`)) {
       return;
     }
-    await this.runCatalogAction(
-      () => this.ingredientsApi.deleteIngredient(ingredient.id),
-      `« ${ingredient.name} » est utilisé dans une recette : retirez-le d'abord de la recette.`,
-    );
+    try {
+      await this.ingredientsApi.deleteIngredient(ingredient.id);
+      this.ingredientCatalogResource.reload();
+    } catch {
+      this.ingredientDeletionRefusalState.set({
+        ingredientId: ingredient.id,
+        message: await this.explainIngredientDeletionRefusal(ingredient),
+      });
+    }
   }
 
   protected async deleteIngredientType(ingredientTypeGroup: IngredientTypeGroup): Promise<void> {
@@ -156,17 +296,44 @@ export class IngredientsPage {
     );
   }
 
-  /** Lance une modification du catalogue, affiche `failureMessage` si elle échoue, puis recharge. */
+  /** « Utilisé dans Lentilles saucisse : retirez-le d'abord de cette recette. » */
+  private async explainIngredientDeletionRefusal(ingredient: Ingredient): Promise<string> {
+    try {
+      const recipeTitles: string[] = await this.ingredientsApi.fetchRecipeTitlesUsingIngredient(
+        ingredient.id,
+      );
+      if (recipeTitles.length === 1) {
+        return `Utilisé dans « ${recipeTitles[0]} » : retirez-le d'abord de cette recette.`;
+      }
+      if (recipeTitles.length > 1) {
+        const quotedTitles: string = recipeTitles
+          .map((recipeTitle: string) => `« ${recipeTitle} »`)
+          .join(', ');
+        return `Utilisé dans ${quotedTitles} : retirez-le d'abord de ces recettes.`;
+      }
+    } catch {
+      // On retombe sur le message générique.
+    }
+    return `Impossible de supprimer « ${ingredient.name} ». Vérifiez la connexion.`;
+  }
+
+  /**
+   * Lance une modification du catalogue, affiche `failureMessage` si elle échoue, puis recharge.
+   * Renvoie `true` si la modification a réussi.
+   */
   private async runCatalogAction(
     catalogAction: () => Promise<unknown>,
     failureMessage: string,
-  ): Promise<void> {
+  ): Promise<boolean> {
     this.actionErrorMessageState.set(null);
+    let isSuccessful: boolean = true;
     try {
       await catalogAction();
     } catch {
       this.actionErrorMessageState.set(failureMessage);
+      isSuccessful = false;
     }
     this.ingredientCatalogResource.reload();
+    return isSuccessful;
   }
 }

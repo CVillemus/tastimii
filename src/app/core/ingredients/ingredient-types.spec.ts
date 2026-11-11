@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { groupIngredientsByType, sortIngredientTypesByName } from './ingredient-types';
 import { Ingredient, IngredientType, IngredientTypeGroup } from './ingredient.model';
 
@@ -11,9 +11,22 @@ const chickenThighs: Ingredient = {
   name: 'Cuisses de poulet',
   typeId: 'viande',
   defaultUnit: '',
+  isUsuallyAtHome: false,
 };
-const ham: Ingredient = { id: 'jambon', name: 'Jambon', typeId: 'viande', defaultUnit: 'g' };
-const butter: Ingredient = { id: 'beurre', name: 'Beurre', typeId: 'cremerie', defaultUnit: 'g' };
+const ham: Ingredient = {
+  id: 'jambon',
+  name: 'Jambon',
+  typeId: 'viande',
+  defaultUnit: 'g',
+  isUsuallyAtHome: false,
+};
+const butter: Ingredient = {
+  id: 'beurre',
+  name: 'Beurre',
+  typeId: 'cremerie',
+  defaultUnit: 'g',
+  isUsuallyAtHome: true,
+};
 
 describe("types d'ingrédients", () => {
   it('range chaque ingrédient directement dans son type, triés par nom', () => {

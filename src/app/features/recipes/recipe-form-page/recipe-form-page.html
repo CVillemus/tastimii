@@ -184,9 +184,25 @@
           }
         </datalist>
 
-        <ol class="ingredient-lines">
+        <!-- On réordonne les ingrédients en les faisant glisser par la poignée ⠿. -->
+        <ol
+          class="ingredient-lines"
+          cdkDropList
+          cdkDropListLockAxis="y"
+          (cdkDropListDropped)="moveIngredientLine($event)"
+        >
           @for (ingredientLineField of recipeForm.ingredientLines; track ingredientLineField) {
-            <li class="ingredient-line card">
+            <li class="ingredient-line card" cdkDrag>
+              <button
+                class="ingredient-line__drag-handle"
+                type="button"
+                cdkDragHandle
+                [attr.aria-label]="'Déplacer l’ingrédient ' + ($index + 1)"
+                (keydown.arrowup)="moveIngredientLineByKeyboard($index, -1, $event)"
+                (keydown.arrowdown)="moveIngredientLineByKeyboard($index, 1, $event)"
+              >
+                ⠿
+              </button>
               <div class="ingredient-line__name">
                 <label [for]="'ingredient-name-' + $index">Ingrédient</label>
                 <input
@@ -224,16 +240,29 @@
                   [formField]="ingredientLineField.unit"
                   (change)="clearQuantityWithoutUnit(ingredientLineField)"
                 >
+                  @let chosenUnit = ingredientLineField.unit().value();
+                  <!-- [selected] : les options arrivent après la valeur du champ. -->
                   @for (unitChoice of unitChoices; track unitChoice.value) {
-                    <option [value]="unitChoice.value">{{ unitChoice.label }}</option>
-                  }
-                  @if (isUnlistedUnit(ingredientLineField.unit().value())) {
-                    <option [value]="ingredientLineField.unit().value()">
-                      {{ ingredientLineField.unit().value() }}
+                    <option [value]="unitChoice.value" [selected]="unitChoice.value === chosenUnit">
+                      {{ unitChoice.label }}
                     </option>
+                  }
+                  @if (isUnlistedUnit(chosenUnit)) {
+                    <option [value]="chosenUnit" selected>{{ chosenUnit }}</option>
                   }
                 </select>
               </div>
+
+              @let readableQuantityHint =
+                formatReadableQuantityHint(
+                  ingredientLineField.quantity().value(),
+                  ingredientLineField.unit().value()
+                );
+              @if (readableQuantityHint !== null) {
+                <p class="ingredient-line__hint" aria-live="polite">
+                  S'affichera « {{ readableQuantityHint }} »
+                </p>
+              }
 
               @if (isNewIngredientName(ingredientLineField.ingredientName().value())) {
                 <div class="ingredient-line__new-type">

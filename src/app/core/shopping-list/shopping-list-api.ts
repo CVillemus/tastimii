@@ -7,7 +7,7 @@ import {
   ShoppingListRecipeRow,
 } from '../supabase/database.types';
 import { SUPABASE_CLIENT, TastimiiSupabaseClient } from '../supabase/supabase-client';
-import { buildShoppingListAisles } from './build-shopping-list-aisles';
+import { buildItemsToCheckAtHome, buildShoppingListAisles } from './build-shopping-list-aisles';
 import { ShoppingList, ShoppingListMenuRecipe } from './shopping-list.model';
 
 /** Appels Supabase de la liste de courses (une seule liste, partagée à deux). */
@@ -39,6 +39,7 @@ export class ShoppingListApi {
     );
     return {
       menuRecipes,
+      itemsToCheckAtHome: buildItemsToCheckAtHome(menuRecipes, ingredientCatalog, checkedLineKeys),
       aisles: buildShoppingListAisles(menuRecipes, ingredientCatalog, checkedLineKeys),
     };
   }

@@ -65,6 +65,41 @@
         </section>
 
         <section class="shopping-items" aria-labelledby="shopping-items-title">
+          @if (shoppingList.itemsToCheckAtHome.length > 0) {
+            <section class="at-home-check card" aria-labelledby="at-home-check-title">
+              <h2 id="at-home-check-title" class="at-home-check__title">
+                À vérifier avant de partir
+              </h2>
+              <p class="at-home-check__hint muted">
+                Souvent à la maison. S'il en manque, cochez « à acheter » : l'ingrédient rejoint la
+                liste.
+              </p>
+              <ul class="at-home-check__items">
+                @for (
+                  atHomeCheckItem of shoppingList.itemsToCheckAtHome;
+                  track atHomeCheckItem.ingredientId
+                ) {
+                  <li class="at-home-check__item">
+                    <div class="at-home-check__text">
+                      <strong>{{ atHomeCheckItem.ingredientName }}</strong>
+                      <span class="at-home-check__needs">{{
+                        formatAtHomeNeeds(atHomeCheckItem)
+                      }}</span>
+                    </div>
+                    <label class="at-home-check__to-buy">
+                      <input
+                        type="checkbox"
+                        [checked]="atHomeCheckItem.isToBuy"
+                        (change)="toggleAtHomeItemToBuy(atHomeCheckItem)"
+                      />
+                      à acheter
+                    </label>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+
           <h2 id="shopping-items-title" class="section-title">
             À acheter · {{ shoppingProgress().checkedLineCount }} /
             {{ shoppingProgress().totalLineCount }}

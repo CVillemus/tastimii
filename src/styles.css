@@ -374,6 +374,23 @@ input[type='checkbox'] {
   color: var(--color-accent);
 }
 
+/* ---- Glisser-déposer (Angular CDK) : l'aperçu est ajouté au <body>, hors des composants ---- */
+
+.cdk-drag-preview {
+  box-shadow: 0 0.5rem 1.5rem var(--color-shadow);
+  border-radius: var(--radius-card);
+  opacity: 0.95;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+
+.cdk-drag-animating,
+.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
 /* ---- Tags ---- */
 
 .tag-choices {

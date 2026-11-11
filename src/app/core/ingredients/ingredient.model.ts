@@ -10,6 +10,16 @@ export type Ingredient = {
   name: string;
   typeId: string;
   defaultUnit: string;
+  /** Souvent à la maison (sel, beurre…) : à vérifier avant les courses, pas à acheter d'office. */
+  isUsuallyAtHome: boolean;
+};
+
+/** Ce qu'on peut modifier sur un ingrédient depuis la page de gestion. */
+export type IngredientChanges = {
+  name: string;
+  typeId: string;
+  defaultUnit: string;
+  isUsuallyAtHome: boolean;
 };
 
 /** Catalogue complet, chargé en une fois : il reste petit (deux utilisateurs). */
@@ -24,13 +34,13 @@ export type IngredientTypeGroup = {
   ingredients: Ingredient[];
 };
 
-/** Unités proposées dans les formulaires (on peut en taper d'autres). */
+/**
+ * Unités proposées dans les formulaires. Poids et volumes toujours dans la plus petite unité
+ * (g, ml) : l'affichage passe tout seul en kg, cl ou l (voir `toReadableQuantity`).
+ */
 export const SUGGESTED_UNITS: readonly string[] = [
   'g',
-  'kg',
   'ml',
-  'cl',
-  'l',
   'c. à soupe',
   'c. à café',
   'pincée',

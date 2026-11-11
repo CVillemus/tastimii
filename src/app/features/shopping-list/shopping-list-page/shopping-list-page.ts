@@ -10,6 +10,8 @@ import {
 import { RouterLink } from '@angular/router';
 import { formatQuantityWithUnit } from '../../../core/recipes/quantity';
 import {
+  AtHomeCheckItem,
+  AtHomeCheckNeed,
   ShoppingList,
   ShoppingListAisle,
   ShoppingListLine,
@@ -66,6 +68,26 @@ export class ShoppingListPage {
     } catch {
       this.setLineCheckedOnScreen(toggledLine.lineKey, !isNowChecked);
     }
+  }
+
+  /** Coché « à acheter », un ingrédient souvent à la maison rejoint son rayon : on recharge. */
+  protected async toggleAtHomeItemToBuy(atHomeCheckItem: AtHomeCheckItem): Promise<void> {
+    if (atHomeCheckItem.isToBuy) {
+      await this.shoppingListApi.uncheckShoppingListLine(atHomeCheckItem.toBuyKey);
+    } else {
+      await this.shoppingListApi.checkShoppingListLine(atHomeCheckItem.toBuyKey);
+    }
+    this.shoppingListResource.reload();
+  }
+
+  /** « 250 g pour Gâteau · au goût pour Lentilles saucisse ». */
+  protected formatAtHomeNeeds(atHomeCheckItem: AtHomeCheckItem): string {
+    return atHomeCheckItem.needs
+      .map(
+        (atHomeCheckNeed: AtHomeCheckNeed) =>
+          `${formatQuantityWithUnit(atHomeCheckNeed.quantity, atHomeCheckNeed.unit)} pour ${atHomeCheckNeed.recipeTitle}`,
+      )
+      .join(' · ');
   }
 
   protected async decreaseMenuRecipeServings(menuRecipe: ShoppingListMenuRecipe): Promise<void> {

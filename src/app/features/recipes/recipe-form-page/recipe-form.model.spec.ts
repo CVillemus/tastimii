@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildUnitChoices,
   COUNT_UNIT_CHOICE,
+  moveArrayItem,
   NO_UNIT_CHOICE,
   toStoredQuantityAndUnit,
   toUnitChoice,
@@ -28,6 +29,13 @@ describe("unités d'une ligne d'ingrédient", () => {
 
   it('enregistre « Aucune unité » sans quantité, même si une quantité était tapée', () => {
     expect(toStoredQuantityAndUnit(3, NO_UNIT_CHOICE)).toEqual({ quantity: null, unit: '' });
+  });
+
+  it('déplace une ligne vers le haut ou le bas, sans sortir du tableau', () => {
+    expect(moveArrayItem(['a', 'b', 'c'], 2, 0)).toEqual(['c', 'a', 'b']);
+    expect(moveArrayItem(['a', 'b', 'c'], 0, 1)).toEqual(['b', 'a', 'c']);
+    expect(moveArrayItem(['a', 'b', 'c'], 0, -1)).toEqual(['a', 'b', 'c']);
+    expect(moveArrayItem(['a', 'b', 'c'], 2, 3)).toEqual(['a', 'b', 'c']);
   });
 
   it('garde une unité habituelle telle quelle', () => {

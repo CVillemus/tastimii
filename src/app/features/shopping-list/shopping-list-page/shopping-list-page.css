@@ -45,6 +45,60 @@
   margin-left: auto;
 }
 
+/* « À vérifier avant de partir » : posé sur un fond doux pour se distinguer des rayons. */
+.at-home-check {
+  margin-bottom: var(--block-gap);
+  background: var(--color-accent-soft);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.at-home-check__title {
+  font-size: var(--font-size-section-title);
+  color: var(--color-accent-hover);
+}
+
+.at-home-check__hint {
+  margin: 0.25rem 0 0.5rem;
+  font-size: var(--font-size-small);
+}
+
+.at-home-check__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.at-home-check__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.at-home-check__text {
+  display: grid;
+  min-width: 0;
+}
+
+.at-home-check__needs {
+  font-size: var(--font-size-small);
+  color: var(--color-ink-muted);
+}
+
+.at-home-check__to-buy {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+  margin: 0;
+  font-size: var(--font-size-small);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
 .aisle {
   margin-bottom: 0.75rem;
   padding: 0.75rem 1rem;

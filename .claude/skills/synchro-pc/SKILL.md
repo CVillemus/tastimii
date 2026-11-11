@@ -52,6 +52,14 @@ Rien d'autre : pas de migration Supabase, pas de nouvelle variable, pas d'outil 
       déjà été lancé sur la base Supabase (partagée par les deux PC). Le relancer échouerait sur la
       contrainte `ingredient_family_sans_parent`, qui existe déjà.
 
+### Depuis le même PC, le 11/11/2026 : « souvent à la maison », unités g/ml, glisser-déposer, liens
+
+- [ ] `git pull`, puis **`npm ci`** : nouvelle dépendance `@angular/cdk` (glisser-déposer des
+      ingrédients). Sans `npm ci`, l'app ne compile pas.
+- [ ] **Ne pas relancer** `supabase/migrations/006_souvent_a_la_maison_et_unites_de_base.sql` : il est
+      lancé une seule fois sur la base Supabase partagée (le relancer échouerait sur la colonne
+      `is_usually_at_home`, qui existe déjà, et multiplierait de nouveau les quantités converties).
+
 ### À faire un jour (sur n'importe quel PC, pas urgent)
 
 - [ ] Dans `.github/workflows/deploy-github-pages.yml`, mettre à jour `actions/upload-pages-artifact`

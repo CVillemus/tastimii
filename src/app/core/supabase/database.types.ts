@@ -18,6 +18,8 @@ export type IngredientRow = {
   /** Type de l'ingrédient (ligne de `ingredient_family`). */
   family_id: string;
   default_unit: string;
+  /** Souvent à la maison (script 006). */
+  is_usually_at_home: boolean;
   created_at: string;
 };
 

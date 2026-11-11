@@ -55,7 +55,7 @@
               </button>
             </div>
           } @else if (recipe.descriptionHtml.length > 0) {
-            <div class="rich-text" [innerHTML]="recipe.descriptionHtml"></div>
+            <div class="rich-text" [innerHTML]="recipe.descriptionHtml | linkifyRichText"></div>
             <button
               class="button button--quiet button--small recipe-description__edit"
               type="button"
@@ -151,7 +151,10 @@
                   }
                 </h3>
                 @if (step.contentHtml.length > 0) {
-                  <div class="rich-text step-list__content" [innerHTML]="step.contentHtml"></div>
+                  <div
+                    class="rich-text step-list__content"
+                    [innerHTML]="step.contentHtml | linkifyRichText"
+                  ></div>
                 }
               </li>
             }

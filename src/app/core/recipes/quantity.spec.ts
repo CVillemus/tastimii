@@ -3,6 +3,7 @@ import {
   formatPreparationTime,
   formatQuantity,
   formatQuantityWithUnit,
+  formatReadableQuantityHint,
   scaleQuantity,
 } from './quantity';
 
@@ -25,6 +26,23 @@ describe('quantités', () => {
   it("colle l'unité à la quantité", () => {
     expect(formatQuantityWithUnit(200, 'g')).toBe('200 g');
     expect(formatQuantityWithUnit(2, '')).toBe('2');
+  });
+
+  it("affiche les grammes et millilitres dans l'unité la plus lisible", () => {
+    expect(formatQuantityWithUnit(1500, 'g')).toBe('1,5 kg');
+    expect(formatQuantityWithUnit(999, 'g')).toBe('999 g');
+    expect(formatQuantityWithUnit(1000, 'ml')).toBe('1 l');
+    expect(formatQuantityWithUnit(250, 'ml')).toBe('25 cl');
+    expect(formatQuantityWithUnit(15, 'ml')).toBe('1,5 cl');
+    expect(formatQuantityWithUnit(5, 'ml')).toBe('5 ml');
+    expect(formatQuantityWithUnit(2, 'c. à soupe')).toBe('2 c. à soupe');
+  });
+
+  it("aide la saisie quand l'unité lisible diffère", () => {
+    expect(formatReadableQuantityHint(1000, 'ml')).toBe('1 l');
+    expect(formatReadableQuantityHint(500, 'g')).toBeNull();
+    expect(formatReadableQuantityHint(null, 'ml')).toBeNull();
+    expect(formatReadableQuantityHint(4, '')).toBeNull();
   });
 
   it('écrit les durées en heures et minutes', () => {

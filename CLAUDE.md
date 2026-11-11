@@ -7,7 +7,9 @@ Tastimii : le carnet de recettes de Corentin et Marine, utilisé sur leurs tél�
 - **Recettes** : titre, nombre de parts de base, durée, photo (bucket Storage public `recipe-photos`, réduite à 1600 px avant l'envoi), description libre en texte riche (en tête de recette, éditeur Tiptap, stockée en HTML), ingrédients (quantité + unité), étapes avec un titre facultatif et un texte riche (`recipe.preparation_steps`, jsonb).
 - **Tags** : une recette a zéro, un ou plusieurs tags (`tag`, `recipe_tag`), créés depuis le formulaire. La liste filtre par tags : une recette doit avoir tous les tags choisis.
 - **Ingrédients** : chacun a directement un **type** (Cuisses de poulet → Viande), sans sous-types. Le type est le **rayon** de la liste de courses. En base, un type est une ligne de `ingredient_family` (l'ingrédient pointe dessus par `family_id`) ; dans le code, on parle de `IngredientType` / `typeId`.
+- **Unités** : poids et volumes stockés dans la plus petite unité (g, ml), affichés dans la plus lisible (`toReadableQuantity` : 1500 g → 1,5 kg, 250 ml → 25 cl, 1000 ml → 1 l). Dans le formulaire, « Nombre » = unité vide avec quantité (4 diots), « Aucune unité » = unité vide sans quantité (au goût).
 - **Liste de courses** : on met des recettes au menu avec un nombre de parts. Les quantités sont recalculées (`parts voulues ÷ parts de base`), additionnées par ingrédient et par unité, puis rangées par rayon, avec des cases à cocher enregistrées en base.
+- **Souvent à la maison** (`ingredient.is_usually_at_home`) : ces ingrédients (sel, beurre, bouillon…) ne vont pas d'office dans la liste mais dans « À vérifier avant de partir », avec la quantité par recette. Cochés « à acheter » (clé `a-acheter|<ingredient_id>` dans `shopping_list_checked_line`), ils rejoignent leur rayon.
 - **Aucune sécurité voulue** : pas de comptes, tout le monde peut tout faire.
 - **Pas de temps réel** : la liste se recharge à l'ouverture ou avec le bouton « Actualiser ».
 
@@ -22,6 +24,7 @@ Depuis le 11/11/2026, Corentin et Marine saisissent leurs vraies recettes. Tout 
 ## Stack
 
 - Angular 22, zoneless, composants standalone, signals, Signal Forms, `resource()`, nouveau control flow.
+- `@angular/cdk` pour le glisser-déposer (ordre des ingrédients dans le formulaire, au doigt comme à la souris).
 - Supabase (offre gratuite) : Postgres + API générée. Schéma et règles RLS dans `supabase/migrations/`.
   Les types de la base sont écrits à la main dans `core/supabase/database.types.ts` (des `type`, pas des `interface`).
 - GitHub Pages, déployé par `.github/workflows/deploy-github-pages.yml` à chaque push sur `main`.
@@ -59,6 +62,7 @@ src/app/
     ingredients/    gestion des types et des ingrédients
   shared/
     rich-text-editor/  éditeur de texte riche (Tiptap), compatible `[formField]`
+    rich-text/         liens cliquables à l'affichage (`linkifyRichText`)
 ```
 
 ## Git

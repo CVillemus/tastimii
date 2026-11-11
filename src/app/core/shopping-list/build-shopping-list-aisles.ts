@@ -1,7 +1,12 @@
 import { compareByFrenchName } from '../ingredients/ingredient-types';
 import { Ingredient, IngredientCatalog, IngredientType } from '../ingredients/ingredient.model';
 import { scaleQuantity } from '../recipes/quantity';
-import { ShoppingListAisle, ShoppingListLine, ShoppingListMenuRecipe } from './shopping-list.model';
+import {
+  AtHomeCheckItem,
+  ShoppingListAisle,
+  ShoppingListLine,
+  ShoppingListMenuRecipe,
+} from './shopping-list.model';
 
 /** Ligne en cours de calcul : on garde son type (son rayon) pour le regroupement final. */
 type ShoppingListLineWithAisle = ShoppingListLine & {
@@ -21,10 +26,78 @@ function normalizeUnit(unit: string): string {
 }
 
 /**
+ * Clé enregistrée quand un ingrédient « souvent à la maison » est coché « à acheter ».
+ * Elle vit dans la même table que les lignes cochées, sans risque de collision (préfixe).
+ */
+export function buildToBuyKey(ingredientId: string): string {
+  return `a-acheter|${ingredientId}`;
+}
+
+/** Vrai si l'ingrédient va dans la liste : pas « souvent à la maison », ou coché « à acheter ». */
+function isOnShoppingList(
+  ingredient: Ingredient | undefined,
+  checkedLineKeys: ReadonlySet<string>,
+): boolean {
+  return (
+    ingredient === undefined ||
+    !ingredient.isUsuallyAtHome ||
+    checkedLineKeys.has(buildToBuyKey(ingredient.id))
+  );
+}
+
+/**
+ * Ingrédients « souvent à la maison » demandés par le menu, à vérifier avant de partir :
+ * pour chacun, ce que chaque recette demande (quantité ramenée aux parts voulues). Triés par nom.
+ */
+export function buildItemsToCheckAtHome(
+  menuRecipes: readonly ShoppingListMenuRecipe[],
+  ingredientCatalog: IngredientCatalog,
+  checkedLineKeys: ReadonlySet<string>,
+): AtHomeCheckItem[] {
+  const ingredientsById: Map<string, Ingredient> = new Map(
+    ingredientCatalog.ingredients.map((ingredient: Ingredient) => [ingredient.id, ingredient]),
+  );
+  const itemsByIngredientId: Map<string, AtHomeCheckItem> = new Map();
+
+  for (const menuRecipe of menuRecipes) {
+    for (const ingredientLine of menuRecipe.ingredientLines) {
+      const ingredient: Ingredient | undefined = ingredientsById.get(ingredientLine.ingredientId);
+      if (ingredient === undefined || !ingredient.isUsuallyAtHome) {
+        continue;
+      }
+      const toBuyKey: string = buildToBuyKey(ingredient.id);
+      const item: AtHomeCheckItem = itemsByIngredientId.get(ingredient.id) ?? {
+        ingredientId: ingredient.id,
+        ingredientName: ingredient.name,
+        toBuyKey,
+        isToBuy: checkedLineKeys.has(toBuyKey),
+        needs: [],
+      };
+      item.needs.push({
+        recipeTitle: menuRecipe.recipeTitle,
+        quantity: scaleQuantity(
+          ingredientLine.quantity,
+          menuRecipe.baseServings,
+          menuRecipe.wantedServings,
+        ),
+        unit: ingredientLine.unit.trim(),
+      });
+      itemsByIngredientId.set(ingredient.id, item);
+    }
+  }
+
+  return [...itemsByIngredientId.values()].sort(
+    (firstItem: AtHomeCheckItem, secondItem: AtHomeCheckItem) =>
+      compareByFrenchName({ name: firstItem.ingredientName }, { name: secondItem.ingredientName }),
+  );
+}
+
+/**
  * Calcule la liste de courses :
- * 1. chaque quantité est ramenée au nombre de parts voulu,
- * 2. les mêmes ingrédients dans la même unité sont additionnés,
- * 3. les lignes sont rangées par rayon (le type de l'ingrédient),
+ * 1. les ingrédients « souvent à la maison » n'y vont que s'ils sont cochés « à acheter »,
+ * 2. chaque quantité est ramenée au nombre de parts voulu,
+ * 3. les mêmes ingrédients dans la même unité sont additionnés,
+ * 4. les lignes sont rangées par rayon (le type de l'ingrédient),
  *    les lignes cochées à la fin de leur rayon.
  */
 export function buildShoppingListAisles(
@@ -46,6 +119,9 @@ export function buildShoppingListAisles(
   for (const menuRecipe of menuRecipes) {
     for (const ingredientLine of menuRecipe.ingredientLines) {
       const ingredient: Ingredient | undefined = ingredientsById.get(ingredientLine.ingredientId);
+      if (!isOnShoppingList(ingredient, checkedLineKeys)) {
+        continue;
+      }
       const lineKey: string = buildShoppingListLineKey(
         ingredientLine.ingredientId,
         ingredientLine.unit,

@@ -22,6 +22,7 @@ import { Recipe, RecipeIngredientLine } from '../../../core/recipes/recipe.model
 import { RecipePhotosApi } from '../../../core/recipes/recipe-photos-api';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import { ShoppingListApi } from '../../../core/shopping-list/shopping-list-api';
+import { LinkifyRichTextPipe } from '../../../shared/rich-text/linkify-rich-text.pipe';
 import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
 import { RecipePhoto } from '../recipe-photo/recipe-photo';
 
@@ -36,7 +37,7 @@ const MINIMUM_SERVINGS: number = 1;
 /** Une recette : description en tête, ingrédients (recalculés selon les parts), étapes. */
 @Component({
   selector: 'app-recipe-detail-page',
-  imports: [RouterLink, RecipePhoto, RichTextEditor],
+  imports: [LinkifyRichTextPipe, RouterLink, RecipePhoto, RichTextEditor],
   templateUrl: './recipe-detail-page.html',
   styleUrl: './recipe-detail-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

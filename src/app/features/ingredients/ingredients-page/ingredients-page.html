@@ -4,7 +4,8 @@
     Chaque ingrédient a un type (Viande, Crèmerie…) : c'est son rayon dans la liste de courses.
   </p>
 
-  @if (actionErrorMessage() !== null) {
+  <!-- Pendant une modification, l'erreur s'affiche dans le formulaire de l'ingrédient. -->
+  @if (actionErrorMessage() !== null && editedIngredientId() === null) {
     <p class="error-message" role="alert">{{ actionErrorMessage() }}</p>
   }
 
@@ -47,6 +48,10 @@
                 }
               </select>
             </div>
+            <label class="checkbox-field">
+              <input type="checkbox" [formField]="newIngredientForm.isUsuallyAtHome" />
+              Souvent à la maison (à vérifier avant les courses)
+            </label>
             <button class="button button--primary" type="submit">Ajouter l'ingrédient</button>
           </form>
         </details>
@@ -73,59 +78,206 @@
           ingredientTypeGroup of ingredientTypeGroups();
           track ingredientTypeGroup.ingredientType.id
         ) {
+          @let ingredientType = ingredientTypeGroup.ingredientType;
           <li class="ingredient-type card">
-            <div class="ingredient-type__header">
-              <h2 class="ingredient-type__name">
-                {{ ingredientTypeGroup.ingredientType.name }}
-                <span class="ingredient-type__count">{{
-                  ingredientTypeGroup.ingredients.length
-                }}</span>
-              </h2>
-              <button
-                class="button button--quiet button--small"
-                type="button"
-                [attr.aria-label]="'Supprimer le type ' + ingredientTypeGroup.ingredientType.name"
-                (click)="deleteIngredientType(ingredientTypeGroup)"
+            @if (renamedTypeId() === ingredientType.id) {
+              <form
+                class="type-rename-form"
+                novalidate
+                (submit)="submitTypeRenameForm(ingredientType, $event)"
               >
-                Supprimer
-              </button>
-            </div>
+                <label class="visually-hidden" [for]="'type-name-' + ingredientType.id">
+                  Nouveau nom du type
+                </label>
+                <input
+                  [id]="'type-name-' + ingredientType.id"
+                  type="text"
+                  [formField]="typeRenameForm.typeName"
+                />
+                <button class="button button--primary button--small" type="submit">OK</button>
+                <button
+                  class="button button--quiet button--small"
+                  type="button"
+                  (click)="cancelRenamingType()"
+                >
+                  Annuler
+                </button>
+              </form>
+            } @else {
+              <div class="ingredient-type__header">
+                <h2 class="ingredient-type__name">
+                  {{ ingredientType.name }}
+                  <span class="ingredient-type__count">{{
+                    ingredientTypeGroup.ingredients.length
+                  }}</span>
+                </h2>
+                <div class="ingredient-type__actions">
+                  <button
+                    class="icon-button icon-button--quiet"
+                    type="button"
+                    [attr.aria-label]="'Renommer le type ' + ingredientType.name"
+                    title="Renommer"
+                    (click)="startRenamingType(ingredientType)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 20h4L19 9l-4-4L4 16z" />
+                      <path d="M13.5 6.5l4 4" />
+                    </svg>
+                  </button>
+                  <button
+                    class="icon-button icon-button--quiet"
+                    type="button"
+                    [attr.aria-label]="'Supprimer le type ' + ingredientType.name"
+                    title="Supprimer"
+                    (click)="deleteIngredientType(ingredientTypeGroup)"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            }
 
             @if (ingredientTypeGroup.ingredients.length > 0) {
               <ul class="ingredient-type__ingredients">
                 @for (ingredient of ingredientTypeGroup.ingredients; track ingredient.id) {
                   <li class="ingredient-row">
-                    <span class="ingredient-row__name">
-                      {{ ingredient.name }}
-                      @if (ingredient.defaultUnit.length > 0) {
-                        <span class="muted">({{ ingredient.defaultUnit }})</span>
-                      }
-                    </span>
-                    <label class="visually-hidden" [for]="'ingredient-type-' + ingredient.id">
-                      Type de {{ ingredient.name }}
-                    </label>
-                    <select
-                      class="ingredient-row__type"
-                      [id]="'ingredient-type-' + ingredient.id"
-                      (change)="changeIngredientType(ingredient, $event)"
-                    >
-                      @for (ingredientType of sortedIngredientTypes(); track ingredientType.id) {
-                        <option
-                          [value]="ingredientType.id"
-                          [selected]="ingredientType.id === ingredient.typeId"
+                    @if (editedIngredientId() === ingredient.id) {
+                      <form
+                        class="ingredient-edit-form"
+                        novalidate
+                        (submit)="submitIngredientEditForm(ingredient, $event)"
+                      >
+                        <div class="ingredient-edit-form__name">
+                          <label [for]="'edit-ingredient-name-' + ingredient.id">Nom</label>
+                          <input
+                            [id]="'edit-ingredient-name-' + ingredient.id"
+                            type="text"
+                            [formField]="ingredientEditForm.name"
+                          />
+                        </div>
+                        <div>
+                          <label [for]="'edit-ingredient-type-' + ingredient.id">Type</label>
+                          <select
+                            [id]="'edit-ingredient-type-' + ingredient.id"
+                            [formField]="ingredientEditForm.typeId"
+                          >
+                            <!-- [selected] : les options arrivent après la valeur du champ. -->
+                            @for (typeOption of sortedIngredientTypes(); track typeOption.id) {
+                              <option
+                                [value]="typeOption.id"
+                                [selected]="typeOption.id === ingredientEditForm.typeId().value()"
+                              >
+                                {{ typeOption.name }}
+                              </option>
+                            }
+                          </select>
+                        </div>
+                        <div>
+                          <label [for]="'edit-ingredient-unit-' + ingredient.id">
+                            Unité habituelle
+                          </label>
+                          <select
+                            [id]="'edit-ingredient-unit-' + ingredient.id"
+                            [formField]="ingredientEditForm.defaultUnit"
+                          >
+                            @let editedDefaultUnit = ingredientEditForm.defaultUnit().value();
+                            <option value="" [selected]="editedDefaultUnit === ''">
+                              Nombre ou aucune unité
+                            </option>
+                            @for (suggestedUnit of suggestedUnits; track suggestedUnit) {
+                              <option
+                                [value]="suggestedUnit"
+                                [selected]="suggestedUnit === editedDefaultUnit"
+                              >
+                                {{ suggestedUnit }}
+                              </option>
+                            }
+                            @if (
+                              editedDefaultUnit !== '' &&
+                              !suggestedUnits.includes(editedDefaultUnit)
+                            ) {
+                              <option [value]="editedDefaultUnit" selected>
+                                {{ editedDefaultUnit }}
+                              </option>
+                            }
+                          </select>
+                        </div>
+                        <label class="checkbox-field ingredient-edit-form__wide">
+                          <input type="checkbox" [formField]="ingredientEditForm.isUsuallyAtHome" />
+                          Souvent à la maison (à vérifier avant les courses)
+                        </label>
+                        @if (actionErrorMessage() !== null) {
+                          <p class="error-message ingredient-edit-form__wide">
+                            {{ actionErrorMessage() }}
+                          </p>
+                        }
+                        <div class="ingredient-edit-form__actions ingredient-edit-form__wide">
+                          <button class="button button--primary button--small" type="submit">
+                            Enregistrer
+                          </button>
+                          <button
+                            class="button button--quiet button--small"
+                            type="button"
+                            (click)="cancelEditingIngredient()"
+                          >
+                            Annuler
+                          </button>
+                        </div>
+                      </form>
+                    } @else {
+                      <div class="ingredient-row__view">
+                        <span class="ingredient-row__name">
+                          {{ ingredient.name }}
+                          @if (ingredient.defaultUnit.length > 0) {
+                            <span class="muted">({{ ingredient.defaultUnit }})</span>
+                          }
+                        </span>
+                        <button
+                          class="icon-button icon-button--quiet ingredient-row__at-home"
+                          type="button"
+                          [class.ingredient-row__at-home--active]="ingredient.isUsuallyAtHome"
+                          [attr.aria-pressed]="ingredient.isUsuallyAtHome"
+                          [attr.aria-label]="'Souvent à la maison : ' + ingredient.name"
+                          [title]="
+                            ingredient.isUsuallyAtHome
+                              ? 'Souvent à la maison : à vérifier avant les courses'
+                              : 'Marquer « souvent à la maison »'
+                          "
+                          (click)="toggleIngredientUsuallyAtHome(ingredient)"
                         >
-                          {{ ingredientType.name }}
-                        </option>
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 11l8-7 8 7" />
+                            <path d="M6 9.5V20h12V9.5" />
+                            <path d="M10 20v-5h4v5" />
+                          </svg>
+                        </button>
+                        <button
+                          class="icon-button icon-button--quiet"
+                          type="button"
+                          [attr.aria-label]="'Modifier ' + ingredient.name"
+                          title="Modifier"
+                          (click)="startEditingIngredient(ingredient)"
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 20h4L19 9l-4-4L4 16z" />
+                            <path d="M13.5 6.5l4 4" />
+                          </svg>
+                        </button>
+                        <button
+                          class="icon-button icon-button--quiet"
+                          type="button"
+                          [attr.aria-label]="'Supprimer ' + ingredient.name"
+                          (click)="deleteIngredient(ingredient)"
+                        >
+                          ×
+                        </button>
+                      </div>
+                      @if (ingredientDeletionRefusal()?.ingredientId === ingredient.id) {
+                        <p class="ingredient-row__refusal" role="alert">
+                          {{ ingredientDeletionRefusal()?.message }}
+                        </p>
                       }
-                    </select>
-                    <button
-                      class="icon-button icon-button--quiet"
-                      type="button"
-                      [attr.aria-label]="'Supprimer ' + ingredient.name"
-                      (click)="deleteIngredient(ingredient)"
-                    >
-                      ×
-                    </button>
+                    }
                   </li>
                 }
               </ul>

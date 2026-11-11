@@ -129,6 +129,27 @@ export function toRecipeFormModel(recipe: Recipe): RecipeFormModel {
   };
 }
 
+/**
+ * Copie du tableau où l'élément `previousIndex` est déplacé en `currentIndex` (bornes respectées).
+ * Sert à réordonner les ingrédients par glisser-déposer ou au clavier.
+ */
+export function moveArrayItem<T>(
+  items: readonly T[],
+  previousIndex: number,
+  currentIndex: number,
+): T[] {
+  const movedItems: T[] = [...items];
+  const lastIndex: number = items.length - 1;
+  const fromIndex: number = Math.min(Math.max(previousIndex, 0), lastIndex);
+  const toIndex: number = Math.min(Math.max(currentIndex, 0), lastIndex);
+  if (items.length === 0 || fromIndex === toIndex) {
+    return movedItems;
+  }
+  const [movedItem] = movedItems.splice(fromIndex, 1);
+  movedItems.splice(toIndex, 0, movedItem);
+  return movedItems;
+}
+
 /** Une étape est gardée si elle a un titre ou un texte. */
 export function isFilledStep(formStep: RecipeFormStep): boolean {
   return formStep.title.trim().length > 0 || formStep.contentHtml.length > 0;
