@@ -46,6 +46,10 @@ Dernière mise à jour : 11/11/2026.
 - [ ] **Ajouter aux courses depuis les vignettes** de la liste des recettes, sans ouvrir la recette
       (bouton « + » sur la carte, avec le nombre de parts de base). Retirer alors le bouton de la
       fiche ? À discuter : sur la fiche, on peut choisir le nombre de parts avant d'ajouter.
+- [ ] **Voir dans la liste des recettes celles déjà au menu des courses**, avec leur nombre de parts
+      (badge « Au menu · 4 parts » sur la vignette, ou un aperçu « Au menu » en haut de la liste),
+      mis à jour dès qu'on ajoute ou retire une recette. Va bien avec « Ajouter aux courses depuis
+      les vignettes » : on verrait tout de suite le résultat, et on pourrait ajuster les parts.
 - [ ] **Description → « Astuces et variantes »** : renommer la section et l'orienter vers les tips
       et modifications possibles (four ou air fryer, version végétarienne…).
 - [ ] **Signaler les incohérences ingrédients ↔ étapes** : un ingrédient cité dans les étapes mais
