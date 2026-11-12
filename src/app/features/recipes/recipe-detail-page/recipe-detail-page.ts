@@ -18,12 +18,16 @@ import {
   formatQuantityWithUnit,
   scaleQuantity,
 } from '../../../core/recipes/quantity';
-import { Recipe, RecipeIngredientLine } from '../../../core/recipes/recipe.model';
+import {
+  parseRecipeOrigin,
+  Recipe,
+  RecipeIngredientLine,
+  RecipeOrigin,
+} from '../../../core/recipes/recipe.model';
 import { RecipePhotosApi } from '../../../core/recipes/recipe-photos-api';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import { ShoppingListApi } from '../../../core/shopping-list/shopping-list-api';
 import { LinkifyRichTextPipe } from '../../../shared/rich-text/linkify-rich-text.pipe';
-import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
 import { RecipePhoto } from '../recipe-photo/recipe-photo';
 
 /** Ingrédient affiché avec sa quantité recalculée pour le nombre de parts choisi. */
@@ -34,10 +38,10 @@ type ScaledIngredientLine = {
 
 const MINIMUM_SERVINGS: number = 1;
 
-/** Une recette : description en tête, ingrédients (recalculés selon les parts), étapes. */
+/** Une recette : astuces en tête, ingrédients (recalculés selon les parts), étapes. */
 @Component({
   selector: 'app-recipe-detail-page',
-  imports: [LinkifyRichTextPipe, RouterLink, RecipePhoto, RichTextEditor],
+  imports: [LinkifyRichTextPipe, RouterLink, RecipePhoto],
   templateUrl: './recipe-detail-page.html',
   styleUrl: './recipe-detail-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -84,19 +88,9 @@ export class RecipeDetailPage {
   protected readonly isAddingToShoppingList: Signal<boolean> =
     this.isAddingToShoppingListState.asReadonly();
 
-  /** Brouillon de la description pendant qu'on la modifie depuis la fiche ; `null` = lecture. */
-  private readonly descriptionDraftState: WritableSignal<string | null> = signal(null);
-  protected readonly descriptionDraft: Signal<string | null> =
-    this.descriptionDraftState.asReadonly();
-  private readonly isSavingDescriptionState: WritableSignal<boolean> = signal(false);
-  protected readonly isSavingDescription: Signal<boolean> =
-    this.isSavingDescriptionState.asReadonly();
-  private readonly descriptionErrorMessageState: WritableSignal<string | null> = signal(null);
-  protected readonly descriptionErrorMessage: Signal<string | null> =
-    this.descriptionErrorMessageState.asReadonly();
-
   protected readonly formatPreparationTime: (preparationMinutes: number) => string =
     formatPreparationTime;
+  protected readonly parseRecipeOrigin: (origin: string) => RecipeOrigin | null = parseRecipeOrigin;
 
   protected decreaseWantedServings(): void {
     this.wantedServings.update((servings: number) => Math.max(MINIMUM_SERVINGS, servings - 1));
@@ -113,37 +107,6 @@ export class RecipeDetailPage {
       this.lastAddedServingsState.set(this.wantedServings());
     } finally {
       this.isAddingToShoppingListState.set(false);
-    }
-  }
-
-  protected startEditingDescription(recipe: Recipe): void {
-    this.descriptionErrorMessageState.set(null);
-    this.descriptionDraftState.set(recipe.descriptionHtml);
-  }
-
-  protected updateDescriptionDraft(descriptionHtml: string): void {
-    this.descriptionDraftState.set(descriptionHtml);
-  }
-
-  protected cancelEditingDescription(): void {
-    this.descriptionDraftState.set(null);
-  }
-
-  protected async saveDescription(): Promise<void> {
-    const descriptionHtml: string | null = this.descriptionDraft();
-    if (descriptionHtml === null || !this.recipeResource.hasValue()) {
-      return;
-    }
-    this.isSavingDescriptionState.set(true);
-    this.descriptionErrorMessageState.set(null);
-    try {
-      await this.recipesApi.updateRecipeDescription(this.recipeId(), descriptionHtml);
-      this.recipeResource.update((recipe: Recipe): Recipe => ({ ...recipe, descriptionHtml }));
-      this.descriptionDraftState.set(null);
-    } catch {
-      this.descriptionErrorMessageState.set("La description n'a pas pu être enregistrée.");
-    } finally {
-      this.isSavingDescriptionState.set(false);
     }
   }
 

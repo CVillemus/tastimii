@@ -445,6 +445,7 @@ export class RecipeFormPage {
       baseServings: formModel.baseServings,
       preparationMinutes: formModel.preparationMinutes,
       descriptionHtml: formModel.descriptionHtml,
+      origin: formModel.origin,
       tagIds: formModel.tagIds,
       steps: formModel.steps.filter(isFilledStep).map((formStep: RecipeFormStep): RecipeStep => ({
         title: formStep.title,

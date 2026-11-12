@@ -51,6 +51,17 @@
         </div>
       </div>
 
+      <div>
+        <label for="recipe-origin">Origine (facultatif)</label>
+        <input
+          id="recipe-origin"
+          type="text"
+          autocomplete="off"
+          placeholder="Un lien, un livre (Saveurs), une personne…"
+          [formField]="recipeForm.origin"
+        />
+      </div>
+
       <!-- Desktop : photo, tags et bouton d'enregistrement dans une colonne à droite qui reste visible. -->
       <div class="recipe-form__aside">
         <section>
@@ -163,10 +174,10 @@
       </div>
 
       <section>
-        <h2 class="section-title">Description</h2>
+        <h2 class="section-title">Astuces et variantes</h2>
         <app-rich-text-editor
-          editorLabel="Description"
-          placeholder="Une description, une remarque, une variante…"
+          editorLabel="Astuces et variantes"
+          placeholder="Four ou air fryer, version végétarienne, ce qu'on changera la prochaine fois…"
           [formField]="recipeForm.descriptionHtml"
         />
       </section>

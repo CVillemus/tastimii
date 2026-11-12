@@ -31,14 +31,6 @@ Dernière mise à jour : 12/11/2026.
 
 ### Recettes
 
-- [ ] **Fiche recette plus épurée** : retirer « Modifier la description » (et « + Ajouter une
-      description », la modification en place sur la fiche) ; remplacer le bouton « Modifier la
-      recette » par une icône crayon en haut à droite de la carte d'en-tête. Tout se modifie alors
-      depuis le formulaire.
-- [ ] **Description → « Astuces et variantes »** : renommer la section et l'orienter vers les tips
-      et modifications possibles (four ou air fryer, version végétarienne…).
-- [ ] **Origine de la recette** : lien web ou nom d'un livre (« Saveurs », Instagram…). Donne une idée
-      de la difficulté. Champ texte libre, affiché comme lien si c'est une adresse web.
 - [ ] **Photos** : la qualité dépend de la photo prise. Côté poids, pas d'inquiétude à court terme
       (voir « Réponses déjà apportées »). Piste : passer en WebP pour diviser le poids par ~2.
 - [ ] **Signaler les incohérences ingrédients ↔ étapes** : un ingrédient cité dans les étapes mais
@@ -117,6 +109,13 @@ Dernière mise à jour : 12/11/2026.
       devient alors un compteur « − ✓ 2 parts + » (sous 1 part, la recette sort du menu), avec un
       liseré de couleur sur desktop. On voit ainsi d'un coup d'œil les recettes au menu. Le bouton
       « Ajouter aux courses » de la fiche recette est gardé.
+- [x] **Fiche recette plus épurée** : plus de modification de la description sur la fiche ; un
+      crayon en haut à droite de l'en-tête ouvre le formulaire, où tout se modifie. Photo moins
+      haute et moins large.
+- [x] **Description → « Astuces et variantes »** (tips, four ou air fryer, variantes…).
+- [x] **Origine de la recette** : champ libre dans le formulaire (lien, livre, personne), affiché
+      « Origine : … » à côté de la durée et des parts ; une adresse web devient un lien au nom du
+      site (« instagram.com ») (migration 008).
 
 ### 11/11/2026
 

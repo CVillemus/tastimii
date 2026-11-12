@@ -69,6 +69,13 @@ Rien d'autre : pas de migration Supabase, pas de nouvelle variable, pas d'outil 
 - [ ] **Ne pas relancer** `supabase/migrations/007_unites_abregees_cs_cc_ml.sql` : il est lancé une
       seule fois sur la base Supabase partagée (sans danger s'il était relancé, mais inutile).
 
+### Depuis le même PC, le 12/11/2026 : fiche épurée, astuces, origine des recettes
+
+- [ ] `git pull`. Pas de nouvelle dépendance : pas besoin de `npm ci`.
+- [ ] **Ne pas relancer** `supabase/migrations/008_origine_des_recettes.sql` : il est lancé une seule
+      fois sur la base Supabase partagée (le relancer échouerait sur la colonne `origin`, qui existe
+      déjà).
+
 ### À faire un jour (sur n'importe quel PC, pas urgent)
 
 - [ ] Dans `.github/workflows/deploy-github-pages.yml`, mettre à jour `actions/upload-pages-artifact`

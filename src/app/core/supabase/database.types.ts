@@ -39,8 +39,10 @@ export type RecipeRow = {
   preparation_steps: RecipePreparationStepJson[];
   /** Chemin de la photo dans le bucket Storage `recipe-photos`, ou `null` sans photo. */
   photo_path: string | null;
-  /** Texte riche (HTML de l'éditeur) : description libre, remarques. Vide = ''. */
+  /** Texte riche (HTML de l'éditeur) : astuces et variantes. Vide = ''. */
   description: string;
+  /** Origine : lien web, livre, personne… Vide = '' (script 008). */
+  origin: string;
   created_at: string;
   updated_at: string;
 };

@@ -9,8 +9,10 @@ export type RecipeFormModel = {
   preparationMinutes: number | null;
   ingredientLines: RecipeFormIngredientLine[];
   steps: RecipeFormStep[];
-  /** Description libre en texte riche (HTML). */
+  /** Astuces et variantes en texte riche (HTML). */
   descriptionHtml: string;
+  /** Origine : lien web, livre, personne… */
+  origin: string;
   /** Identifiants des tags choisis. */
   tagIds: string[];
 };
@@ -141,6 +143,7 @@ export function createEmptyRecipeFormModel(): RecipeFormModel {
       contentHtml: '',
     })),
     descriptionHtml: '',
+    origin: '',
     tagIds: [],
   };
 }
@@ -170,6 +173,7 @@ export function toRecipeFormModel(recipe: Recipe): RecipeFormModel {
           }))
         : [createEmptyStep()],
     descriptionHtml: recipe.descriptionHtml,
+    origin: recipe.origin,
     tagIds: recipe.tags.map((recipeTag: RecipeTag) => recipeTag.id),
   };
 }

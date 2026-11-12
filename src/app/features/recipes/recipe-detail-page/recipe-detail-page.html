@@ -12,11 +12,24 @@
       />
       <div class="recipe-hero__text">
         <h1>{{ recipe.title }}</h1>
+        @let recipeOrigin = parseRecipeOrigin(recipe.origin);
         <p class="recipe-meta">
           @if (recipe.preparationMinutes !== null) {
             <span>{{ formatPreparationTime(recipe.preparationMinutes) }}</span>
           }
           <span>{{ recipe.baseServings }} parts</span>
+          @if (recipeOrigin !== null) {
+            <span class="recipe-meta__origin">
+              Origine :
+              @if (recipeOrigin.kind === 'link') {
+                <a [href]="recipeOrigin.url" target="_blank" rel="noopener noreferrer">{{
+                  recipeOrigin.label
+                }}</a>
+              } @else {
+                {{ recipeOrigin.text }}
+              }
+            </span>
+          }
         </p>
         @if (recipe.tags.length > 0) {
           <ul class="recipe-tags" aria-label="Tags">
@@ -26,58 +39,28 @@
           </ul>
         }
 
-        <section class="recipe-description" aria-label="Description">
-          @if (descriptionDraft() !== null) {
-            <app-rich-text-editor
-              editorLabel="Description"
-              placeholder="Une description, une remarque, une variante…"
-              [value]="descriptionDraft() ?? ''"
-              (valueChange)="updateDescriptionDraft($event)"
-            />
-            @if (descriptionErrorMessage() !== null) {
-              <p class="error-message" role="alert">{{ descriptionErrorMessage() }}</p>
-            }
-            <div class="recipe-description__actions">
-              <button
-                class="button button--primary button--small"
-                type="button"
-                [disabled]="isSavingDescription()"
-                (click)="saveDescription()"
-              >
-                Enregistrer
-              </button>
-              <button
-                class="button button--quiet button--small"
-                type="button"
-                (click)="cancelEditingDescription()"
-              >
-                Annuler
-              </button>
-            </div>
-          } @else if (recipe.descriptionHtml.length > 0) {
+        @if (recipe.descriptionHtml.length > 0) {
+          <section class="recipe-description" aria-labelledby="recipe-description-title">
+            <h2 id="recipe-description-title" class="recipe-description__title">
+              Astuces et variantes
+            </h2>
             <div class="rich-text" [innerHTML]="recipe.descriptionHtml | linkifyRichText"></div>
-            <button
-              class="button button--quiet button--small recipe-description__edit"
-              type="button"
-              (click)="startEditingDescription(recipe)"
-            >
-              Modifier la description
-            </button>
-          } @else {
-            <button
-              class="button button--quiet button--small recipe-description__edit"
-              type="button"
-              (click)="startEditingDescription(recipe)"
-            >
-              + Ajouter une description ou une remarque
-            </button>
-          }
-        </section>
-
-        <a class="button button--small" [routerLink]="['/recettes', recipe.id, 'modifier']">
-          Modifier la recette
-        </a>
+          </section>
+        }
       </div>
+
+      <!-- Tout se modifie depuis le formulaire : un crayon en haut à droite de l'en-tête. -->
+      <a
+        class="recipe-hero__edit"
+        title="Modifier la recette"
+        aria-label="Modifier la recette"
+        [routerLink]="['/recettes', recipe.id, 'modifier']"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 20h4L19 9l-4-4L4 16z" />
+          <path d="M13.5 6.5l4 4" />
+        </svg>
+      </a>
     </header>
 
     <div class="recipe-body">

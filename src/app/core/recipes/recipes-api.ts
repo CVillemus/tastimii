@@ -69,6 +69,8 @@ export class RecipesApi {
         }),
       ),
       descriptionHtml: recipeResponse.data.description,
+      // `?? ''` : avant le script 008, la colonne n'existe pas.
+      origin: recipeResponse.data.origin ?? '',
       ingredientLines: recipeIngredientsResponse.data.map(
         (recipeIngredientRow: RecipeIngredientRow): RecipeIngredientLine => ({
           ingredientId: recipeIngredientRow.ingredient_id,
@@ -124,17 +126,6 @@ export class RecipesApi {
 
   async deleteRecipe(recipeId: string): Promise<void> {
     const { error } = await this.supabaseClient.from('recipe').delete().eq('id', recipeId);
-    if (error !== null) {
-      throw error;
-    }
-  }
-
-  /** Modifie seulement la description, depuis la fiche recette. */
-  async updateRecipeDescription(recipeId: string, descriptionHtml: string): Promise<void> {
-    const { error } = await this.supabaseClient
-      .from('recipe')
-      .update({ description: descriptionHtml, updated_at: new Date().toISOString() })
-      .eq('id', recipeId);
     if (error !== null) {
       throw error;
     }
@@ -249,7 +240,7 @@ function toRecipeColumns(
   recipeDraft: RecipeDraft,
 ): Pick<
   RecipeRow,
-  'title' | 'base_servings' | 'preparation_minutes' | 'preparation_steps' | 'description'
+  'title' | 'base_servings' | 'preparation_minutes' | 'preparation_steps' | 'description' | 'origin'
 > {
   return {
     title: recipeDraft.title.trim(),
@@ -262,5 +253,6 @@ function toRecipeColumns(
       }),
     ),
     description: recipeDraft.descriptionHtml,
+    origin: recipeDraft.origin.trim(),
   };
 }
