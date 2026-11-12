@@ -21,6 +21,8 @@ describe("unités d'une ligne d'ingrédient", () => {
     expect(toUnitChoice(null, '')).toBe(NO_UNIT_CHOICE);
     expect(toUnitChoice(200, 'g')).toBe('g');
     expect(toUnitChoice(null, 'pincée')).toBe('pincée');
+    expect(toUnitChoice(250, 'ml')).toBe('mL');
+    expect(toUnitChoice(2, 'c. à soupe')).toBe('cs');
   });
 
   it('enregistre « Nombre » comme une unité vide avec sa quantité', () => {

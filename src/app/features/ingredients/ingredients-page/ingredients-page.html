@@ -42,7 +42,7 @@
             <div>
               <label for="new-ingredient-unit">Unité habituelle (facultatif)</label>
               <select id="new-ingredient-unit" [formField]="newIngredientForm.defaultUnit">
-                <option value="">Nombre ou aucune unité</option>
+                <option value="">nb ou aucune unité</option>
                 @for (suggestedUnit of suggestedUnits; track suggestedUnit) {
                   <option [value]="suggestedUnit">{{ suggestedUnit }}</option>
                 }
@@ -182,7 +182,7 @@
                           >
                             @let editedDefaultUnit = ingredientEditForm.defaultUnit().value();
                             <option value="" [selected]="editedDefaultUnit === ''">
-                              Nombre ou aucune unité
+                              nb ou aucune unité
                             </option>
                             @for (suggestedUnit of suggestedUnits; track suggestedUnit) {
                               <option

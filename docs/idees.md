@@ -3,7 +3,7 @@
 Liste vivante : on ajoute les idées au fil de l'eau, on les retire (ou on les coche) quand elles sont
 faites. Rien ici n'est encore décidé : chaque idée se discute avant d'être développée.
 
-Dernière mise à jour : 11/11/2026.
+Dernière mise à jour : 12/11/2026.
 
 ## Idées de l'utilisateur
 
@@ -23,14 +23,10 @@ Dernière mise à jour : 11/11/2026.
 
 ### Unités des ingrédients
 
-- [ ] **Raccourcir les libellés** : « Nombre (ex. 4 diots) » → « nb » dans la liste des unités.
-- [ ] **cs / cc** à la place de « c. à soupe » / « c. à café » : à valider (lisible pour tout le
-      monde ?). Si oui, une migration renomme les unités déjà enregistrées dans les recettes et les
-      unités habituelles des ingrédients (`c. à soupe` → `cs`, `c. à café` → `cc`), pour que les
-      lignes s'additionnent toujours dans la liste de courses.
-- [ ] **Litre en majuscule : « L » et non « l »** (1 L, 1,5 L ; et donc « cL », « mL » à harmoniser ?).
-      Simple : ce n'est que l'affichage (`toReadableQuantity` dans `core/recipes/quantity.ts`),
-      les quantités restent stockées en ml.
+- [x] **Raccourcir les libellés** : « Nombre (ex. 4 diots) » → « nb » (fait le 12/11/2026).
+- [x] **cs / cc** à la place de « c. à soupe » / « c. à café », avec la migration 007 qui renomme
+      les unités déjà enregistrées (fait le 12/11/2026).
+- [x] **Litres en majuscule** : L, cL, mL (fait le 12/11/2026 ; stockage en `mL`).
 
 ### Liste de courses
 

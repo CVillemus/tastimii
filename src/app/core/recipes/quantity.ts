@@ -45,8 +45,26 @@ const MILLILITERS_PER_LITER: number = 1000;
 const MILLILITERS_PER_CENTILITER: number = 10;
 
 /**
- * Les quantités sont stockées en g et en ml ; on les affiche dans l'unité la plus lisible :
- * 1500 g → 1,5 kg ; 1000 ml → 1 l ; 250 ml → 25 cl ; 5 ml reste 5 ml.
+ * Écriture affichée des unités enregistrées sous une autre forme (avant le script 007, ou tapées
+ * à la main) : les litres en majuscule (mL), les cuillères abrégées (cs, cc).
+ */
+const DISPLAYED_UNIT_BY_NORMALIZED_UNIT: ReadonlyMap<string, string> = new Map([
+  ['ml', 'mL'],
+  ['cl', 'cL'],
+  ['l', 'L'],
+  ['c. à soupe', 'cs'],
+  ['c. à café', 'cc'],
+]);
+
+/** Unité telle qu'on l'affiche : « ml » → « mL », « c. à soupe » → « cs », le reste tel quel. */
+export function formatUnit(unit: string): string {
+  const trimmedUnit: string = unit.trim();
+  return DISPLAYED_UNIT_BY_NORMALIZED_UNIT.get(trimmedUnit.toLowerCase()) ?? trimmedUnit;
+}
+
+/**
+ * Les quantités sont stockées en g et en mL ; on les affiche dans l'unité la plus lisible :
+ * 1500 g → 1,5 kg ; 1000 mL → 1 L ; 250 mL → 25 cL ; 5 mL reste 5 mL.
  */
 export function toReadableQuantity(quantity: number, unit: string): ReadableQuantity {
   const normalizedUnit: string = unit.trim().toLowerCase();
@@ -54,18 +72,18 @@ export function toReadableQuantity(quantity: number, unit: string): ReadableQuan
     return { quantity: quantity / GRAMS_PER_KILOGRAM, unit: 'kg' };
   }
   if (normalizedUnit === 'ml' && quantity >= MILLILITERS_PER_LITER) {
-    return { quantity: quantity / MILLILITERS_PER_LITER, unit: 'l' };
+    return { quantity: quantity / MILLILITERS_PER_LITER, unit: 'L' };
   }
   if (normalizedUnit === 'ml' && quantity >= MILLILITERS_PER_CENTILITER) {
-    return { quantity: quantity / MILLILITERS_PER_CENTILITER, unit: 'cl' };
+    return { quantity: quantity / MILLILITERS_PER_CENTILITER, unit: 'cL' };
   }
-  return { quantity, unit: unit.trim() };
+  return { quantity, unit: formatUnit(unit) };
 }
 
-/** Quantité et unité ensemble : « 200 g », « 1 l », « 2 », « au goût ». */
+/** Quantité et unité ensemble : « 200 g », « 1 L », « 2 cs », « 2 », « au goût ». */
 export function formatQuantityWithUnit(quantity: number | null, unit: string): string {
   if (quantity === null) {
-    return unit.length > 0 ? unit : 'au goût';
+    return unit.trim().length > 0 ? formatUnit(unit) : 'au goût';
   }
   const readableQuantity: ReadableQuantity = toReadableQuantity(quantity, unit);
   const formattedQuantity: string = formatQuantity(readableQuantity.quantity);
@@ -75,15 +93,15 @@ export function formatQuantityWithUnit(quantity: number | null, unit: string): s
 }
 
 /**
- * Aide affichée dans le formulaire, quand l'unité lisible diffère de la saisie :
- * « 1 l » pour 1000 ml. `null` sinon.
+ * Aide affichée dans le formulaire, quand la quantité s'affichera dans une autre unité que la
+ * saisie : « 1 L » pour 1000 mL. `null` sinon.
  */
 export function formatReadableQuantityHint(quantity: number | null, unit: string): string | null {
   if (quantity === null || quantity <= 0) {
     return null;
   }
   const readableQuantity: ReadableQuantity = toReadableQuantity(quantity, unit);
-  return readableQuantity.unit === unit.trim() ? null : formatQuantityWithUnit(quantity, unit);
+  return readableQuantity.quantity === quantity ? null : formatQuantityWithUnit(quantity, unit);
 }
 
 /** Durée lisible : « 45 min », « 1 h 10 ». */

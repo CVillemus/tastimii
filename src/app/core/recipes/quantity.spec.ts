@@ -28,20 +28,30 @@ describe('quantités', () => {
     expect(formatQuantityWithUnit(2, '')).toBe('2');
   });
 
-  it("affiche les grammes et millilitres dans l'unité la plus lisible", () => {
+  it("affiche les grammes et millilitres dans l'unité la plus lisible, litres en majuscule", () => {
     expect(formatQuantityWithUnit(1500, 'g')).toBe('1,5 kg');
     expect(formatQuantityWithUnit(999, 'g')).toBe('999 g');
-    expect(formatQuantityWithUnit(1000, 'ml')).toBe('1 l');
-    expect(formatQuantityWithUnit(250, 'ml')).toBe('25 cl');
-    expect(formatQuantityWithUnit(15, 'ml')).toBe('1,5 cl');
-    expect(formatQuantityWithUnit(5, 'ml')).toBe('5 ml');
-    expect(formatQuantityWithUnit(2, 'c. à soupe')).toBe('2 c. à soupe');
+    expect(formatQuantityWithUnit(1000, 'mL')).toBe('1 L');
+    expect(formatQuantityWithUnit(1500, 'mL')).toBe('1,5 L');
+    expect(formatQuantityWithUnit(250, 'mL')).toBe('25 cL');
+    expect(formatQuantityWithUnit(15, 'mL')).toBe('1,5 cL');
+    expect(formatQuantityWithUnit(5, 'mL')).toBe('5 mL');
+    expect(formatQuantityWithUnit(2, 'cs')).toBe('2 cs');
+  });
+
+  it("affiche les anciennes écritures d'unités sous leur forme abrégée", () => {
+    expect(formatQuantityWithUnit(5, 'ml')).toBe('5 mL');
+    expect(formatQuantityWithUnit(1000, 'ml')).toBe('1 L');
+    expect(formatQuantityWithUnit(2, 'c. à soupe')).toBe('2 cs');
+    expect(formatQuantityWithUnit(1, 'c. à café')).toBe('1 cc');
+    expect(formatQuantityWithUnit(null, 'c. à café')).toBe('cc');
   });
 
   it("aide la saisie quand l'unité lisible diffère", () => {
-    expect(formatReadableQuantityHint(1000, 'ml')).toBe('1 l');
+    expect(formatReadableQuantityHint(1000, 'mL')).toBe('1 L');
     expect(formatReadableQuantityHint(500, 'g')).toBeNull();
-    expect(formatReadableQuantityHint(null, 'ml')).toBeNull();
+    expect(formatReadableQuantityHint(5, 'ml')).toBeNull();
+    expect(formatReadableQuantityHint(null, 'mL')).toBeNull();
     expect(formatReadableQuantityHint(4, '')).toBeNull();
   });
 

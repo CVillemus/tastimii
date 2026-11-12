@@ -36,13 +36,14 @@ export type IngredientTypeGroup = {
 
 /**
  * Unités proposées dans les formulaires. Poids et volumes toujours dans la plus petite unité
- * (g, ml) : l'affichage passe tout seul en kg, cl ou l (voir `toReadableQuantity`).
+ * (g, mL) : l'affichage passe tout seul en kg, cL ou L (voir `toReadableQuantity`).
+ * cs = cuillère à soupe, cc = cuillère à café.
  */
 export const SUGGESTED_UNITS: readonly string[] = [
   'g',
-  'ml',
-  'c. à soupe',
-  'c. à café',
+  'mL',
+  'cs',
+  'cc',
   'pincée',
   'gousse',
   'brin',

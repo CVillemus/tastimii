@@ -1,3 +1,4 @@
+import { formatUnit } from '../../../core/recipes/quantity';
 import { Recipe, RecipeIngredientLine, RecipeStep } from '../../../core/recipes/recipe.model';
 import { RecipeTag } from '../../../core/tags/tag.model';
 
@@ -32,7 +33,7 @@ export type UnitChoice = {
   label: string;
 };
 
-/** « Nombre » : on compte les ingrédients (4 diots). Stocké comme une unité vide. */
+/** « nb » (nombre) : on compte les ingrédients (4 diots). Stocké comme une unité vide. */
 export const COUNT_UNIT_CHOICE: string = '';
 
 /**
@@ -44,7 +45,7 @@ export const NO_UNIT_CHOICE: string = 'aucune-unite';
 /** Les deux choix sans unité en tête de liste, puis les unités habituelles. */
 export function buildUnitChoices(suggestedUnits: readonly string[]): UnitChoice[] {
   return [
-    { value: COUNT_UNIT_CHOICE, label: 'Nombre (ex. 4 diots)' },
+    { value: COUNT_UNIT_CHOICE, label: 'nb' },
     { value: NO_UNIT_CHOICE, label: 'Aucune unité (au goût)' },
     ...suggestedUnits.map((suggestedUnit: string): UnitChoice => ({
       value: suggestedUnit,
@@ -55,8 +56,9 @@ export function buildUnitChoices(suggestedUnits: readonly string[]): UnitChoice[
 
 /** Choix d'unité d'une ligne enregistrée : une unité vide sans quantité, c'est « Aucune unité ». */
 export function toUnitChoice(quantity: number | null, unit: string): string {
-  if (unit.length > 0) {
-    return unit;
+  if (unit.trim().length > 0) {
+    // « ml » → « mL », « c. à soupe » → « cs » : la forme proposée dans la liste.
+    return formatUnit(unit);
   }
   return quantity === null ? NO_UNIT_CHOICE : COUNT_UNIT_CHOICE;
 }

@@ -309,7 +309,7 @@ export class RecipeFormPage {
     return normalizedName.length > 0 && !this.ingredientsByNormalizedName().has(normalizedName);
   }
 
-  /** En choisissant un ingrédient connu, on reprend son unité habituelle si « Nombre » est choisi. */
+  /** En choisissant un ingrédient connu, on reprend son unité habituelle si « nb » est choisi. */
   protected fillDefaultUnit(ingredientLineField: FieldTree<RecipeFormIngredientLine>): void {
     const knownIngredient: Ingredient | undefined = this.ingredientsByNormalizedName().get(
       normalizeIngredientName(ingredientLineField.ingredientName().value()),

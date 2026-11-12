@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { formatUnit } from '../recipes/quantity';
 import { IngredientFamilyRow, IngredientRow } from '../supabase/database.types';
 import { SUPABASE_CLIENT, TastimiiSupabaseClient } from '../supabase/supabase-client';
 import {
@@ -155,7 +156,8 @@ function toIngredient(ingredientRow: IngredientRow): Ingredient {
     id: ingredientRow.id,
     name: ingredientRow.name,
     typeId: ingredientRow.family_id,
-    defaultUnit: ingredientRow.default_unit,
+    // « ml » → « mL », « c. à soupe » → « cs » : la forme proposée dans les listes d'unités.
+    defaultUnit: formatUnit(ingredientRow.default_unit),
     // `=== true` : avant le script 006, la colonne n'existe pas et la valeur est absente.
     isUsuallyAtHome: ingredientRow.is_usually_at_home === true,
   };
