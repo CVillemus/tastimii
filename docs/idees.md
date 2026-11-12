@@ -62,11 +62,25 @@ Dernière mise à jour : 12/11/2026.
       `shared/confirmation-dialog` (élément `<dialog>`), aux couleurs de l'app, qui dit ce qui sera
       supprimé et ses conséquences (« Supprimer la recette « Lentilles saucisse » ? C'est
       définitif. »), avec un bouton rouge « Supprimer » et « Annuler » mis en avant.
+- [ ] **Harmoniser les arrondis des formes** pour que tout soit cohérent (et satisfaisant à l'œil).
+      Aujourd'hui trois arrondis cohabitent : 0,5 rem pour les champs et boutons
+      (`--radius-control`), 0,75 rem pour les cartes (`--radius-card`), et des pilules / ronds
+      (tags, compteurs, boutons ronds). Piste : choisir une seule échelle (par ex. petit / moyen /
+      pilule), l'appliquer partout via les variables de `src/styles.css`, et vérifier les cas où une
+      forme est imbriquée dans une autre (l'arrondi intérieur doit être plus petit que l'extérieur).
+- [ ] **Typographie des quantités** : la police du texte (Atkinson Hyperlegible) dessine le zéro
+      barré (« 25Ø g »), pas joli dans les quantités. Piste : afficher les nombres (quantités, parts,
+      durées) avec une autre police ou une variante de chiffres sans zéro barré (chiffres de
+      Fraunces, ou une police système), en chiffres alignés pour que les colonnes restent nettes.
 
 ### Autres fonctionnalités
 
 - [ ] **Notation des recettes** : étoiles, smileys ou simple coup de cœur. Par profil (Corentin /
       Marine) ? Il faudrait alors choisir « qui je suis » sur l'appareil (sans vrai compte).
+- [ ] **« Le coup de cœur de X »** (X = une personne : Corentin, Marine, un ami…) : marquer qu'une
+      recette est le coup de cœur de quelqu'un, affiché sur la vignette et la fiche (« ❤️ Le coup de
+      cœur de Marine »), et pouvoir filtrer dessus. Proche de la notation ci-dessus : à concevoir
+      ensemble (une liste de personnes, sans vrais comptes).
 - [ ] **Compteur « cuisinée N fois »** (et date de la dernière fois) : bouton « Je l'ai cuisinée »,
       ou automatique quand la recette sort de la liste de courses.
 - [ ] **Chercher par ingrédient** : les recettes avec un ingrédient (« avec du poireau ») ou sans
