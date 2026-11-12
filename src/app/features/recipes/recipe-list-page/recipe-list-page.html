@@ -70,7 +70,11 @@
         @if (recipeSummariesResource.value().length > 0) {
           <ul class="recipe-list">
             @for (recipeSummary of matchingRecipeSummaries(); track recipeSummary.id) {
-              <li>
+              @let recipeMenuStatus = recipeMenuStatuses().get(recipeSummary.id);
+              <li
+                class="recipe-list__item"
+                [class.recipe-list__item--on-menu]="recipeMenuStatus !== undefined"
+              >
                 <a class="recipe-card" [routerLink]="['/recettes', recipeSummary.id]">
                   <app-recipe-photo
                     class="recipe-card__photo"
@@ -93,6 +97,62 @@
                     }
                   </div>
                 </a>
+
+                <!-- Hors du lien : un bouton dans un lien n'est pas valide. Posé sur la photo. -->
+                <div class="menu-control">
+                  @if (recipeMenuStatus === undefined) {
+                    <button
+                      class="menu-control__add"
+                      type="button"
+                      title="Ajouter aux courses"
+                      [attr.aria-label]="
+                        'Ajouter ' +
+                        recipeSummary.title +
+                        ' aux courses (' +
+                        recipeSummary.baseServings +
+                        ' parts)'
+                      "
+                      [disabled]="recipeIdsBeingAdded().has(recipeSummary.id)"
+                      (click)="addRecipeToShoppingList(recipeSummary)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 5h2l2 11h10l2-8H7" />
+                        <circle cx="9" cy="20" r="1.2" />
+                        <circle cx="17" cy="20" r="1.2" />
+                        <path d="M14 2.5v5M11.5 5h5" />
+                      </svg>
+                    </button>
+                  } @else {
+                    <div
+                      class="menu-control__stepper"
+                      role="group"
+                      [attr.aria-label]="recipeSummary.title + ' au menu des courses'"
+                    >
+                      <button
+                        type="button"
+                        [attr.aria-label]="
+                          recipeMenuStatus.lastMenuEntry.wantedServings <= 1
+                            ? 'Retirer ' + recipeSummary.title + ' des courses'
+                            : 'Une part de moins pour ' + recipeSummary.title
+                        "
+                        (click)="decreaseMenuServings(recipeMenuStatus)"
+                      >
+                        −
+                      </button>
+                      <span class="menu-control__servings" aria-live="polite">
+                        <span class="menu-control__on-menu" aria-hidden="true">✓</span>
+                        {{ recipeMenuStatus.totalServings }}&nbsp;parts
+                      </span>
+                      <button
+                        type="button"
+                        [attr.aria-label]="'Une part de plus pour ' + recipeSummary.title"
+                        (click)="increaseMenuServings(recipeMenuStatus)"
+                      >
+                        +
+                      </button>
+                    </div>
+                  }
+                </div>
               </li>
             } @empty {
               <li class="status-message">

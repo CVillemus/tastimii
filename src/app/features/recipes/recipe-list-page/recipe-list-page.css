@@ -95,6 +95,102 @@
   color: var(--color-ink-muted);
 }
 
+/*
+ * Ajout aux courses depuis la vignette. Mobile : à droite de la ligne ; desktop : en haut à droite
+ * de la photo. Avant l'ajout, un bouton panier « + » ; après, un compteur « − 4 parts + ».
+ */
+.recipe-list__item {
+  position: relative;
+}
+
+.recipe-list__item .recipe-card {
+  padding-right: 3.25rem;
+}
+
+.recipe-list__item--on-menu .recipe-card {
+  padding-right: 8.75rem;
+}
+
+.menu-control {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.menu-control__add {
+  display: grid;
+  place-items: center;
+  width: 2.625rem;
+  height: 2.625rem;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-accent);
+  box-shadow: 0 1px 3px var(--color-shadow-soft);
+  cursor: pointer;
+}
+
+.menu-control__add:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.menu-control__add:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.menu-control__add svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.menu-control__stepper {
+  display: inline-flex;
+  align-items: center;
+  height: 2.375rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  box-shadow: 0 1px 3px var(--color-shadow-soft);
+}
+
+.menu-control__stepper button {
+  width: 2.375rem;
+  height: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.menu-control__stepper button:hover {
+  background: var(--color-accent-hover);
+}
+
+.menu-control__servings {
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.menu-control__on-menu {
+  margin-right: 0.125rem;
+}
+
 .empty-state {
   text-align: center;
   padding: 2rem 1rem;
@@ -194,6 +290,29 @@
 
   .recipe-card:hover .recipe-card__title {
     color: var(--color-accent);
+  }
+
+  /* Desktop : le bouton et le compteur se posent en haut à droite de la photo. */
+  .recipe-list__item .recipe-card,
+  .recipe-list__item--on-menu .recipe-card {
+    padding-right: 0;
+  }
+
+  .recipe-list__item {
+    height: 100%;
+  }
+
+  .menu-control {
+    top: 0.625rem;
+    right: 0.625rem;
+    transform: none;
+  }
+
+  /* Une recette au menu se repère d'un coup d'œil : liseré de couleur autour de la carte. */
+  .recipe-list__item--on-menu .recipe-card {
+    box-shadow:
+      0 0 0 2px var(--color-accent),
+      0 1px 3px var(--color-shadow-soft);
   }
 
   .empty-state {

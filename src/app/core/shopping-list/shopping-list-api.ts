@@ -8,7 +8,15 @@ import {
 } from '../supabase/database.types';
 import { SUPABASE_CLIENT, TastimiiSupabaseClient } from '../supabase/supabase-client';
 import { buildItemsToCheckAtHome, buildShoppingListAisles } from './build-shopping-list-aisles';
-import { ShoppingList, ShoppingListMenuRecipe } from './shopping-list.model';
+import { MenuEntry, ShoppingList, ShoppingListMenuRecipe } from './shopping-list.model';
+
+function toMenuEntry(menuEntryRow: ShoppingListRecipeRow): MenuEntry {
+  return {
+    menuEntryId: menuEntryRow.id,
+    recipeId: menuEntryRow.recipe_id,
+    wantedServings: menuEntryRow.servings,
+  };
+}
 
 /** Appels Supabase de la liste de courses (une seule liste, partagée à deux). */
 @Injectable({ providedIn: 'root' })
@@ -44,13 +52,28 @@ export class ShoppingListApi {
     };
   }
 
-  async addRecipeToShoppingList(recipeId: string, wantedServings: number): Promise<void> {
-    const { error } = await this.supabaseClient
+  /** Les entrées du menu seules (recette + parts), pour la liste des recettes. */
+  async fetchMenuEntries(): Promise<MenuEntry[]> {
+    const { data: menuEntryRows, error } = await this.supabaseClient
       .from('shopping_list_recipe')
-      .insert({ recipe_id: recipeId, servings: wantedServings });
+      .select('*')
+      .order('added_at');
     if (error !== null) {
       throw error;
     }
+    return menuEntryRows.map(toMenuEntry);
+  }
+
+  async addRecipeToShoppingList(recipeId: string, wantedServings: number): Promise<MenuEntry> {
+    const { data: createdMenuEntryRow, error } = await this.supabaseClient
+      .from('shopping_list_recipe')
+      .insert({ recipe_id: recipeId, servings: wantedServings })
+      .select()
+      .single();
+    if (error !== null) {
+      throw error;
+    }
+    return toMenuEntry(createdMenuEntryRow);
   }
 
   async changeMenuRecipeServings(menuEntryId: string, wantedServings: number): Promise<void> {

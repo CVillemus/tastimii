@@ -10,6 +10,28 @@ export type ShoppingListMenuRecipe = {
   ingredientLines: RecipeDraftIngredientLine[];
 };
 
+/** Une entrée du menu des courses, sans le détail de la recette (pour la liste des recettes). */
+export type MenuEntry = {
+  menuEntryId: string;
+  recipeId: string;
+  wantedServings: number;
+};
+
+/**
+ * Une recette au menu, vue depuis sa vignette : total des parts (si elle a été ajoutée plusieurs
+ * fois) et la dernière entrée, celle que le compteur « − 4 parts + » modifie.
+ */
+export type RecipeMenuStatus = {
+  recipeId: string;
+  totalServings: number;
+  lastMenuEntry: MenuEntry;
+};
+
+/** Ce que fait « − » ou « + » sur le compteur d'une vignette. */
+export type MenuServingsChange =
+  | { kind: 'changeServings'; menuEntryId: string; wantedServings: number }
+  | { kind: 'removeFromMenu'; menuEntryId: string };
+
 /** Une ligne à acheter : un ingrédient dans une unité, toutes recettes confondues. */
 export type ShoppingListLine = {
   lineKey: string;

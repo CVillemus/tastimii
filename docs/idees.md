@@ -31,22 +31,6 @@ Dernière mise à jour : 12/11/2026.
 
 ### Recettes
 
-- [ ] **Ajouter aux courses depuis les vignettes** de la liste des recettes, sans ouvrir la recette
-      (bouton « + » en haut à droite de la photo). **En suspens** (12/11/2026) : crainte d'un
-      doublon avec le bouton de la fiche recette. Questions à trancher avant de coder :
-  - **Comment choisir les portions ?**
-    - *Ajout direct + compteur* : un clic ajoute la recette avec ses parts de base ; la vignette
-      affiche alors « Au menu » et un compteur « − 4 parts + » pour ajuster sur place (sous 1 part,
-      la recette sort du menu). Le plus rapide.
-    - *Petite fenêtre de choix* : le « + » ouvre une bulle « − 2 parts + » avec un bouton
-      « Ajouter aux courses ». Un clic de plus, mais on choisit avant d'ajouter.
-  - **Garder le bouton « Ajouter aux courses » sur la fiche ?** Oui : on y voit les quantités
-    recalculées avant d'ajouter. Non : la fiche est plus épurée, l'ajout se fait seulement depuis la
-    liste.
-  - Va de pair avec l'idée suivante (voir ce qui est déjà au menu).
-- [ ] **Voir dans la liste des recettes celles déjà au menu des courses**, avec leur nombre de parts
-      (badge « Au menu · 4 parts » sur la vignette, ou un aperçu « Au menu » en haut de la liste),
-      mis à jour dès qu'on ajoute ou retire une recette.
 - [ ] **Fiche recette plus épurée** : retirer « Modifier la description » (et « + Ajouter une
       description », la modification en place sur la fiche) ; remplacer le bouton « Modifier la
       recette » par une icône crayon en haut à droite de la carte d'en-tête. Tout se modifie alors
@@ -128,6 +112,11 @@ Dernière mise à jour : 12/11/2026.
       de feu, Lâcher prise, Le bouquet final, avec une légende dans le formulaire tant que le nom
       est gardé. Modifiables, supprimables ; les recettes existantes ne changent pas.
 - [x] **Glisser-déposer des étapes** dans le formulaire (poignée ⠿, au doigt ou à la souris).
+- [x] **Ajouter aux courses depuis les vignettes** : bouton panier en haut à droite de la photo
+      (à droite de la ligne sur mobile), qui ajoute la recette avec ses parts de base ; la vignette
+      devient alors un compteur « − ✓ 2 parts + » (sous 1 part, la recette sort du menu), avec un
+      liseré de couleur sur desktop. On voit ainsi d'un coup d'œil les recettes au menu. Le bouton
+      « Ajouter aux courses » de la fiche recette est gardé.
 
 ### 11/11/2026
 

@@ -13,6 +13,18 @@ import { RouterLink } from '@angular/router';
 import { formatPreparationTime } from '../../../core/recipes/quantity';
 import { RecipeSummary } from '../../../core/recipes/recipe.model';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
+import {
+  applyMenuServingsChange,
+  buildRecipeMenuStatuses,
+  planServingsDecrease,
+  planServingsIncrease,
+} from '../../../core/shopping-list/recipe-menu-status';
+import {
+  MenuEntry,
+  MenuServingsChange,
+  RecipeMenuStatus,
+} from '../../../core/shopping-list/shopping-list.model';
+import { ShoppingListApi } from '../../../core/shopping-list/shopping-list-api';
 import { collectUsedTags, filterBySelectedTags, RecipeTag } from '../../../core/tags/tag.model';
 import { RecipePhoto } from '../recipe-photo/recipe-photo';
 
@@ -26,6 +38,7 @@ import { RecipePhoto } from '../recipe-photo/recipe-photo';
 })
 export class RecipeListPage {
   private readonly recipesApi: RecipesApi = inject(RecipesApi);
+  private readonly shoppingListApi: ShoppingListApi = inject(ShoppingListApi);
 
   protected readonly recipeSummariesResource: ResourceRef<RecipeSummary[] | undefined> = resource({
     loader: (): Promise<RecipeSummary[]> => this.recipesApi.fetchRecipeSummaries(),
@@ -62,6 +75,82 @@ export class RecipeListPage {
 
   protected readonly formatPreparationTime: (preparationMinutes: number) => string =
     formatPreparationTime;
+
+  // ---- Menu des courses, depuis les vignettes ----
+
+  protected readonly menuEntriesResource: ResourceRef<MenuEntry[] | undefined> = resource({
+    loader: (): Promise<MenuEntry[]> => this.shoppingListApi.fetchMenuEntries(),
+  });
+
+  /** Recettes au menu, par identifiant de recette (total des parts, dernière entrée). */
+  protected readonly recipeMenuStatuses: Signal<Map<string, RecipeMenuStatus>> = computed(() =>
+    buildRecipeMenuStatuses(
+      this.menuEntriesResource.hasValue() ? this.menuEntriesResource.value() : [],
+    ),
+  );
+
+  /** Recettes en cours d'ajout (le bouton « + » attend la réponse de la base). */
+  private readonly recipeIdsBeingAddedState: WritableSignal<ReadonlySet<string>> = signal(
+    new Set(),
+  );
+  protected readonly recipeIdsBeingAdded: Signal<ReadonlySet<string>> =
+    this.recipeIdsBeingAddedState.asReadonly();
+
+  /** Les changements de parts partent dans l'ordre des clics, même si on clique vite. */
+  private menuSaveQueue: Promise<void> = Promise.resolve();
+
+  protected async addRecipeToShoppingList(recipeSummary: RecipeSummary): Promise<void> {
+    this.recipeIdsBeingAddedState.update(
+      (recipeIds: ReadonlySet<string>) => new Set([...recipeIds, recipeSummary.id]),
+    );
+    try {
+      const createdMenuEntry: MenuEntry = await this.shoppingListApi.addRecipeToShoppingList(
+        recipeSummary.id,
+        recipeSummary.baseServings,
+      );
+      this.menuEntriesResource.update((menuEntries: MenuEntry[] | undefined) => [
+        ...(menuEntries ?? []),
+        createdMenuEntry,
+      ]);
+    } catch {
+      this.menuEntriesResource.reload();
+    } finally {
+      this.recipeIdsBeingAddedState.update((recipeIds: ReadonlySet<string>) => {
+        const remainingRecipeIds: Set<string> = new Set(recipeIds);
+        remainingRecipeIds.delete(recipeSummary.id);
+        return remainingRecipeIds;
+      });
+    }
+  }
+
+  protected increaseMenuServings(recipeMenuStatus: RecipeMenuStatus): void {
+    this.applyMenuServingsChangeNow(planServingsIncrease(recipeMenuStatus));
+  }
+
+  protected decreaseMenuServings(recipeMenuStatus: RecipeMenuStatus): void {
+    this.applyMenuServingsChangeNow(planServingsDecrease(recipeMenuStatus));
+  }
+
+  /** L'écran change tout de suite ; la base suit derrière. En cas d'échec, on relit le menu. */
+  private applyMenuServingsChangeNow(menuServingsChange: MenuServingsChange): void {
+    this.menuEntriesResource.update((menuEntries: MenuEntry[] | undefined) =>
+      applyMenuServingsChange(menuEntries ?? [], menuServingsChange),
+    );
+    this.menuSaveQueue = this.menuSaveQueue.then(async () => {
+      try {
+        if (menuServingsChange.kind === 'removeFromMenu') {
+          await this.shoppingListApi.removeRecipeFromShoppingList(menuServingsChange.menuEntryId);
+        } else {
+          await this.shoppingListApi.changeMenuRecipeServings(
+            menuServingsChange.menuEntryId,
+            menuServingsChange.wantedServings,
+          );
+        }
+      } catch {
+        this.menuEntriesResource.reload();
+      }
+    });
+  }
 
   protected updateRecipeSearchText(inputEvent: Event): void {
     this.recipeSearchText.set((inputEvent.target as HTMLInputElement).value);
