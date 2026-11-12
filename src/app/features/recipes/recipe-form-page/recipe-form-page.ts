@@ -26,7 +26,10 @@ import {
 } from '@angular/forms/signals';
 import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
 import { Router, RouterLink } from '@angular/router';
-import { sortIngredientTypesByName } from '../../../core/ingredients/ingredient-types';
+import {
+  formatIngredientTypeLabel,
+  sortIngredientTypesByName,
+} from '../../../core/ingredients/ingredient-types';
 import {
   Ingredient,
   IngredientCatalog,
@@ -144,6 +147,8 @@ export class RecipeFormPage {
   );
 
   protected readonly unitChoices: readonly UnitChoice[] = buildUnitChoices(SUGGESTED_UNITS);
+  protected readonly formatIngredientTypeLabel: (ingredientType: IngredientType) => string =
+    formatIngredientTypeLabel;
   protected readonly findStarterStepLegend: (stepTitle: string) => string | null =
     findStarterStepLegend;
   protected readonly formatReadableQuantityHint: (

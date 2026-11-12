@@ -45,6 +45,8 @@ export type ShoppingListLine = {
 export type ShoppingListAisle = {
   ingredientTypeId: string;
   aisleName: string;
+  /** Emoji du type (🥩…), vide s'il n'y en a pas. */
+  aisleEmoji: string;
   lines: ShoppingListLine[];
 };
 

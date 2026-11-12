@@ -7,6 +7,8 @@
 export type IngredientFamilyRow = {
   id: string;
   name: string;
+  /** Emoji affiché devant le nom (🥩, 🧀…). Vide = '' (script 009). */
+  emoji: string;
   /** Ancien parent des sous-familles : toujours `null` depuis le script 005. Ne plus l'utiliser. */
   parent_family_id: string | null;
   created_at: string;

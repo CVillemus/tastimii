@@ -34,10 +34,10 @@ export class IngredientsApi {
     };
   }
 
-  async createIngredientType(typeName: string): Promise<IngredientType> {
+  async createIngredientType(typeName: string, typeEmoji: string): Promise<IngredientType> {
     const { data: createdTypeRow, error } = await this.supabaseClient
       .from('ingredient_family')
-      .insert({ name: typeName.trim() })
+      .insert({ name: typeName.trim(), emoji: typeEmoji.trim() })
       .select()
       .single();
     if (error !== null) {
@@ -103,10 +103,10 @@ export class IngredientsApi {
     }
   }
 
-  async renameIngredientType(typeId: string, typeName: string): Promise<void> {
+  async updateIngredientType(typeId: string, typeName: string, typeEmoji: string): Promise<void> {
     const { error } = await this.supabaseClient
       .from('ingredient_family')
-      .update({ name: typeName.trim() })
+      .update({ name: typeName.trim(), emoji: typeEmoji.trim() })
       .eq('id', typeId);
     if (error !== null) {
       throw error;
@@ -148,7 +148,8 @@ export class IngredientsApi {
 }
 
 function toIngredientType(typeRow: IngredientFamilyRow): IngredientType {
-  return { id: typeRow.id, name: typeRow.name };
+  // `?? ''` : avant le script 009, la colonne n'existe pas.
+  return { id: typeRow.id, name: typeRow.name, emoji: typeRow.emoji ?? '' };
 }
 
 function toIngredient(ingredientRow: IngredientRow): Ingredient {

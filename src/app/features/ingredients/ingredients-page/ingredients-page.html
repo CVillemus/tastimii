@@ -30,7 +30,9 @@
               <select id="new-ingredient-type" [formField]="newIngredientForm.typeId">
                 <option value="">Choisir un type</option>
                 @for (ingredientType of sortedIngredientTypes(); track ingredientType.id) {
-                  <option [value]="ingredientType.id">{{ ingredientType.name }}</option>
+                  <option [value]="ingredientType.id">
+                    {{ formatIngredientTypeLabel(ingredientType) }}
+                  </option>
                 }
               </select>
               @if (newIngredientForm.typeId().touched()) {
@@ -59,14 +61,27 @@
         <details class="add-panel card">
           <summary>Ajouter un type</summary>
           <form class="add-form" novalidate (submit)="submitNewIngredientTypeForm($event)">
-            <div>
-              <label for="new-type-name">Nom</label>
-              <input
-                id="new-type-name"
-                type="text"
-                placeholder="Boissons"
-                [formField]="newIngredientTypeForm.typeName"
-              />
+            <div class="type-fields">
+              <div>
+                <label for="new-type-emoji">Emoji</label>
+                <input
+                  id="new-type-emoji"
+                  class="type-fields__emoji"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="🥤"
+                  [formField]="newIngredientTypeForm.typeEmoji"
+                />
+              </div>
+              <div>
+                <label for="new-type-name">Nom</label>
+                <input
+                  id="new-type-name"
+                  type="text"
+                  placeholder="Boissons"
+                  [formField]="newIngredientTypeForm.typeName"
+                />
+              </div>
             </div>
             <button class="button button--primary" type="submit">Ajouter le type</button>
           </form>
@@ -86,8 +101,19 @@
                 novalidate
                 (submit)="submitTypeRenameForm(ingredientType, $event)"
               >
+                <label class="visually-hidden" [for]="'type-emoji-' + ingredientType.id">
+                  Emoji du type
+                </label>
+                <input
+                  [id]="'type-emoji-' + ingredientType.id"
+                  class="type-fields__emoji"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="🥤"
+                  [formField]="typeRenameForm.typeEmoji"
+                />
                 <label class="visually-hidden" [for]="'type-name-' + ingredientType.id">
-                  Nouveau nom du type
+                  Nom du type
                 </label>
                 <input
                   [id]="'type-name-' + ingredientType.id"
@@ -106,6 +132,11 @@
             } @else {
               <div class="ingredient-type__header">
                 <h2 class="ingredient-type__name">
+                  @if (ingredientType.emoji.length > 0) {
+                    <span class="ingredient-type__emoji" aria-hidden="true">{{
+                      ingredientType.emoji
+                    }}</span>
+                  }
                   {{ ingredientType.name }}
                   <span class="ingredient-type__count">{{
                     ingredientTypeGroup.ingredients.length
@@ -167,7 +198,7 @@
                                 [value]="typeOption.id"
                                 [selected]="typeOption.id === ingredientEditForm.typeId().value()"
                               >
-                                {{ typeOption.name }}
+                                {{ formatIngredientTypeLabel(typeOption) }}
                               </option>
                             }
                           </select>

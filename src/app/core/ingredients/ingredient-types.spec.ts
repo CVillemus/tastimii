@@ -1,10 +1,14 @@
 ﻿import { describe, expect, it } from 'vitest';
-import { groupIngredientsByType, sortIngredientTypesByName } from './ingredient-types';
+import {
+  formatIngredientTypeLabel,
+  groupIngredientsByType,
+  sortIngredientTypesByName,
+} from './ingredient-types';
 import { Ingredient, IngredientType, IngredientTypeGroup } from './ingredient.model';
 
-const meatType: IngredientType = { id: 'viande', name: 'Viande' };
-const dairyType: IngredientType = { id: 'cremerie', name: 'Crèmerie' };
-const spicesType: IngredientType = { id: 'epices', name: 'Épices' };
+const meatType: IngredientType = { id: 'viande', name: 'Viande', emoji: '🥩' };
+const dairyType: IngredientType = { id: 'cremerie', name: 'Crèmerie', emoji: '' };
+const spicesType: IngredientType = { id: 'epices', name: 'Épices', emoji: '🧂' };
 
 const chickenThighs: Ingredient = {
   id: 'cuisses',
@@ -45,6 +49,11 @@ describe("types d'ingrédients", () => {
       ['Épices', []],
       ['Viande', ['Cuisses de poulet', 'Jambon']],
     ]);
+  });
+
+  it("écrit le libellé avec l'emoji devant le nom, s'il y en a un", () => {
+    expect(formatIngredientTypeLabel(meatType)).toBe('🥩 Viande');
+    expect(formatIngredientTypeLabel(dairyType)).toBe('Crèmerie');
   });
 
   it('trie les types en tenant compte des accents', () => {

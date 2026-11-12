@@ -286,7 +286,9 @@
                   >
                     <option value="">Choisir un type</option>
                     @for (ingredientType of sortedIngredientTypes(); track ingredientType.id) {
-                      <option [value]="ingredientType.id">{{ ingredientType.name }}</option>
+                      <option [value]="ingredientType.id">
+                        {{ formatIngredientTypeLabel(ingredientType) }}
+                      </option>
                     }
                   </select>
                   @if (ingredientLineField.newIngredientTypeId().touched()) {

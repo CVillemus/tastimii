@@ -155,6 +155,7 @@ export function buildShoppingListAisles(
     const aisle: ShoppingListAisle = aislesById.get(ingredientTypeId) ?? {
       ingredientTypeId,
       aisleName: ingredientType?.name ?? UNKNOWN_AISLE_NAME,
+      aisleEmoji: ingredientType?.emoji ?? '',
       lines: [],
     };
     aisle.lines.push(shoppingListLine);

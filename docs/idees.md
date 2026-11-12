@@ -18,8 +18,6 @@ Dernière mise à jour : 12/11/2026.
 - [ ] **Colonne de gauche trop large** (« Ajouter un ingrédient », « Ajouter un type »). Piste :
       ajouter un ingrédient directement depuis la carte de son type (« + Ajouter » en bas de chaque
       carte, le type est alors déjà choisi), et garder « Ajouter un type » en bouton discret.
-- [ ] **Emoji sur les types** pour les repérer d'un coup d'œil (🥩 Viande, 🧀 Crèmerie, 🥕 Fruits et
-      légumes…), aussi dans les rayons de la liste de courses. Demande une colonne `emoji` en base.
 - [ ] **Éviter les doublons quand il y aura beaucoup d'ingrédients** : barre de recherche sur la page,
       et/ou avertissement à la création quand un nom proche existe déjà (« Lentille verte » vs
       « Lentilles vertes » : comparer sans accents, sans pluriel, avec une distance de mots).
@@ -116,6 +114,9 @@ Dernière mise à jour : 12/11/2026.
 - [x] **Origine de la recette** : champ libre dans le formulaire (lien, livre, personne), affiché
       « Origine : … » à côté de la durée et des parts ; une adresse web devient un lien au nom du
       site (« instagram.com ») (migration 008).
+- [x] **Emoji sur les types** (🥩 Viandes, 🧀 Œufs et produits laitiers…) dans une case à part,
+      devant le nom, sur la page Ingrédients et sur les rayons de la liste de courses ; le tri se
+      fait sur le nom (migration 009, qui a sorti des noms les emojis déjà tapés).
 
 ### 11/11/2026
 

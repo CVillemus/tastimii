@@ -9,8 +9,9 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { FieldTree, form, FormField, required, submit } from '@angular/forms/signals';
+import { FieldTree, form, FormField, maxLength, required, submit } from '@angular/forms/signals';
 import {
+  formatIngredientTypeLabel,
   groupIngredientsByType,
   sortIngredientTypesByName,
 } from '../../../core/ingredients/ingredient-types';
@@ -26,6 +27,7 @@ import { IngredientsApi } from '../../../core/ingredients/ingredients-api';
 
 type NewIngredientTypeFormModel = {
   typeName: string;
+  typeEmoji: string;
 };
 
 type NewIngredientFormModel = {
@@ -37,7 +39,11 @@ type NewIngredientFormModel = {
 
 type IngredientTypeRenameFormModel = {
   typeName: string;
+  typeEmoji: string;
 };
+
+/** Un emoji peut compter plusieurs caractères (🌶️ = 2) : on laisse de la marge. */
+const TYPE_EMOJI_MAX_LENGTH: number = 8;
 
 /** Message affiché sous un ingrédient dont la suppression a été refusée. */
 type IngredientDeletionRefusal = {
@@ -77,6 +83,8 @@ export class IngredientsPage {
   );
 
   protected readonly suggestedUnits: readonly string[] = SUGGESTED_UNITS;
+  protected readonly formatIngredientTypeLabel: (ingredientType: IngredientType) => string =
+    formatIngredientTypeLabel;
 
   private readonly actionErrorMessageState: WritableSignal<string | null> = signal(null);
   protected readonly actionErrorMessage: Signal<string | null> =
@@ -91,11 +99,15 @@ export class IngredientsPage {
 
   private readonly newIngredientTypeFormModel: WritableSignal<NewIngredientTypeFormModel> = signal({
     typeName: '',
+    typeEmoji: '',
   });
   protected readonly newIngredientTypeForm: FieldTree<NewIngredientTypeFormModel> = form(
     this.newIngredientTypeFormModel,
     (newIngredientTypePath) => {
       required(newIngredientTypePath.typeName, { message: 'Donnez un nom au type.' });
+      maxLength(newIngredientTypePath.typeEmoji, TYPE_EMOJI_MAX_LENGTH, {
+        message: 'Un seul emoji suffit.',
+      });
     },
   );
 
@@ -140,23 +152,27 @@ export class IngredientsPage {
 
   private readonly typeRenameFormModel: WritableSignal<IngredientTypeRenameFormModel> = signal({
     typeName: '',
+    typeEmoji: '',
   });
   protected readonly typeRenameForm: FieldTree<IngredientTypeRenameFormModel> = form(
     this.typeRenameFormModel,
     (typeRenamePath) => {
       required(typeRenamePath.typeName, { message: 'Donnez un nom au type.' });
+      maxLength(typeRenamePath.typeEmoji, TYPE_EMOJI_MAX_LENGTH, {
+        message: 'Un seul emoji suffit.',
+      });
     },
   );
 
   protected async submitNewIngredientTypeForm(submitEvent: Event): Promise<void> {
     submitEvent.preventDefault();
     await submit(this.newIngredientTypeForm, async () => {
-      const { typeName }: NewIngredientTypeFormModel = this.newIngredientTypeFormModel();
+      const { typeName, typeEmoji }: NewIngredientTypeFormModel = this.newIngredientTypeFormModel();
       await this.runCatalogAction(
-        () => this.ingredientsApi.createIngredientType(typeName),
+        () => this.ingredientsApi.createIngredientType(typeName, typeEmoji),
         'Ce type existe peut-être déjà.',
       );
-      this.newIngredientTypeForm().reset({ typeName: '' });
+      this.newIngredientTypeForm().reset({ typeName: '', typeEmoji: '' });
       return undefined;
     });
   }
@@ -237,7 +253,10 @@ export class IngredientsPage {
 
   protected startRenamingType(ingredientType: IngredientType): void {
     this.editedIngredientIdState.set(null);
-    this.typeRenameForm().reset({ typeName: ingredientType.name });
+    this.typeRenameForm().reset({
+      typeName: ingredientType.name,
+      typeEmoji: ingredientType.emoji,
+    });
     this.renamedTypeIdState.set(ingredientType.id);
   }
 
@@ -251,9 +270,9 @@ export class IngredientsPage {
   ): Promise<void> {
     submitEvent.preventDefault();
     await submit(this.typeRenameForm, async () => {
-      const { typeName }: IngredientTypeRenameFormModel = this.typeRenameFormModel();
+      const { typeName, typeEmoji }: IngredientTypeRenameFormModel = this.typeRenameFormModel();
       const isSaved: boolean = await this.runCatalogAction(
-        () => this.ingredientsApi.renameIngredientType(ingredientType.id, typeName),
+        () => this.ingredientsApi.updateIngredientType(ingredientType.id, typeName, typeEmoji),
         `Impossible de renommer « ${ingredientType.name} » : ce nom existe peut-être déjà.`,
       );
       if (isSaved) {

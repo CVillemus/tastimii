@@ -85,6 +85,23 @@
   gap: 0.375rem;
 }
 
+.ingredient-type__emoji {
+  font-size: 1.125em;
+}
+
+/* Champ emoji : petit, centré, à côté du nom. */
+.type-fields {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.type-fields__emoji {
+  width: 4.5rem;
+  flex-shrink: 0;
+  text-align: center;
+}
+
 .ingredient-row {
   padding: 0.375rem 0;
   border-top: 1px solid var(--color-border);

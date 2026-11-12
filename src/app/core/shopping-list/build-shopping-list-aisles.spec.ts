@@ -10,8 +10,8 @@ import { AtHomeCheckItem, ShoppingListAisle, ShoppingListMenuRecipe } from './sh
 
 const ingredientCatalog: IngredientCatalog = {
   types: [
-    { id: 'viande', name: 'Viande' },
-    { id: 'legumes', name: 'Fruits et légumes' },
+    { id: 'viande', name: 'Viande', emoji: '🥩' },
+    { id: 'legumes', name: 'Fruits et légumes', emoji: '🥕' },
   ],
   ingredients: [
     {
@@ -83,9 +83,9 @@ describe('liste de courses', () => {
       ingredientCatalog,
       new Set([buildShoppingListLineKey('ail', 'Gousse ')]),
     );
-    expect(aisles.map((aisle: ShoppingListAisle) => aisle.aisleName)).toEqual([
-      'Fruits et légumes',
-      'Viande',
+    expect(aisles.map((aisle: ShoppingListAisle) => [aisle.aisleEmoji, aisle.aisleName])).toEqual([
+      ['🥕', 'Fruits et légumes'],
+      ['🥩', 'Viande'],
     ]);
     expect(aisles[0].lines.map((line) => [line.ingredientName, line.isChecked])).toEqual([
       ['Citron', false],
@@ -97,7 +97,7 @@ describe('liste de courses', () => {
     const aisles: ShoppingListAisle[] = buildShoppingListAisles(
       [roastChicken],
       {
-        types: [{ id: 'legumes', name: 'Fruits et légumes' }],
+        types: [{ id: 'legumes', name: 'Fruits et légumes', emoji: '🥕' }],
         ingredients: ingredientCatalog.ingredients,
       },
       new Set(),
@@ -111,7 +111,7 @@ describe('liste de courses', () => {
 
 describe('ingrédients souvent à la maison', () => {
   const catalogWithButter: IngredientCatalog = {
-    types: [...ingredientCatalog.types, { id: 'cremerie', name: 'Crèmerie' }],
+    types: [...ingredientCatalog.types, { id: 'cremerie', name: 'Crèmerie', emoji: '' }],
     ingredients: [
       ...ingredientCatalog.ingredients,
       { id: 'beurre', name: 'Beurre', typeId: 'cremerie', defaultUnit: 'g', isUsuallyAtHome: true },

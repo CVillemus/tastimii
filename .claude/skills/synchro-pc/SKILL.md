@@ -76,6 +76,12 @@ Rien d'autre : pas de migration Supabase, pas de nouvelle variable, pas d'outil 
       fois sur la base Supabase partagée (le relancer échouerait sur la colonne `origin`, qui existe
       déjà).
 
+### Depuis le même PC, le 12/11/2026 : emoji des types d'ingrédients
+
+- [ ] `git pull`. Pas de nouvelle dépendance : pas besoin de `npm ci`.
+- [ ] **Ne pas relancer** `supabase/migrations/009_emoji_des_types.sql` : il est lancé une seule fois
+      sur la base Supabase partagée (le relancer échouerait sur la colonne `emoji`, qui existe déjà).
+
 ### À faire un jour (sur n'importe quel PC, pas urgent)
 
 - [ ] Dans `.github/workflows/deploy-github-pages.yml`, mettre à jour `actions/upload-pages-artifact`

@@ -2,6 +2,8 @@
 export type IngredientType = {
   id: string;
   name: string;
+  /** Emoji affiché devant le nom (🥩, 🧀…), vide s'il n'y en a pas. Le tri se fait sur le nom. */
+  emoji: string;
 };
 
 /** Ingrédient rangé directement dans son type : « Cuisses de poulet » → « Viande ». */

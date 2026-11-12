@@ -107,7 +107,12 @@
           <div class="aisles">
             @for (aisle of shoppingList.aisles; track aisle.ingredientTypeId) {
               <section class="aisle card">
-                <h3 class="aisle__name">{{ aisle.aisleName }}</h3>
+                <h3 class="aisle__name">
+                  @if (aisle.aisleEmoji.length > 0) {
+                    <span class="aisle__emoji" aria-hidden="true">{{ aisle.aisleEmoji }}</span>
+                  }
+                  {{ aisle.aisleName }}
+                </h3>
                 <ul class="aisle__lines">
                   @for (shoppingListLine of aisle.lines; track shoppingListLine.lineKey) {
                     <li>
