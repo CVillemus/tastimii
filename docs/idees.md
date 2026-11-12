@@ -35,6 +35,9 @@ Dernière mise à jour : 12/11/2026.
 
 ### Recettes
 
+- [x] **Quatre étapes proposées pour chaque nouvelle recette** (Le calme avant la tempête, Le coup
+      de feu, Lâcher prise, Le bouquet final), avec une légende, et glisser-déposer des étapes
+      (fait le 12/11/2026).
 - [ ] **Photos** : la qualité dépend de la photo prise. Côté poids, pas d'inquiétude à court terme
       (voir « Réponses » plus bas). Piste : passer en WebP pour diviser le poids par ~2.
 - [ ] **Origine de la recette** : lien web ou nom d'un livre (« Saveurs », Instagram…). Donne une idée

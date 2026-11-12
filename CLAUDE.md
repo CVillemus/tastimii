@@ -4,7 +4,7 @@
 
 Tastimii : le carnet de recettes de Corentin et Marine, utilisé sur leurs téléphones.
 
-- **Recettes** : titre, nombre de parts de base, durée, photo (bucket Storage public `recipe-photos`, réduite à 1600 px avant l'envoi), description libre en texte riche (en tête de recette, éditeur Tiptap, stockée en HTML), ingrédients (quantité + unité), étapes avec un titre facultatif et un texte riche (`recipe.preparation_steps`, jsonb).
+- **Recettes** : titre, nombre de parts de base, durée, photo (bucket Storage public `recipe-photos`, réduite à 1600 px avant l'envoi), description libre en texte riche (en tête de recette, éditeur Tiptap, stockée en HTML), ingrédients (quantité + unité), étapes avec un titre facultatif et un texte riche (`recipe.preparation_steps`, jsonb). Une nouvelle recette démarre avec 4 étapes proposées (`STARTER_RECIPE_STEPS` : Le calme avant la tempête, Le coup de feu, Lâcher prise, Le bouquet final), avec une légende dans le formulaire tant que le nom est gardé ; modifiables, supprimables, réordonnables par glisser-déposer.
 - **Tags** : une recette a zéro, un ou plusieurs tags (`tag`, `recipe_tag`), créés depuis le formulaire. La liste filtre par tags : une recette doit avoir tous les tags choisis.
 - **Ingrédients** : chacun a directement un **type** (Cuisses de poulet → Viande), sans sous-types. Le type est le **rayon** de la liste de courses. En base, un type est une ligne de `ingredient_family` (l'ingrédient pointe dessus par `family_id`) ; dans le code, on parle de `IngredientType` / `typeId`.
 - **Unités** : poids et volumes stockés dans la plus petite unité (g, mL), affichés dans la plus lisible (`toReadableQuantity` : 1500 g → 1,5 kg, 250 mL → 25 cL, 1000 mL → 1 L). Cuillères abrégées : cs, cc. Les anciennes écritures (ml, c. à soupe…) sont affichées sous leur forme abrégée (`formatUnit`). Dans le formulaire, « nb » = unité vide avec quantité (4 diots), « Aucune unité » = unité vide sans quantité (au goût).
@@ -24,7 +24,7 @@ Depuis le 11/11/2026, Corentin et Marine saisissent leurs vraies recettes. Tout 
 ## Stack
 
 - Angular 22, zoneless, composants standalone, signals, Signal Forms, `resource()`, nouveau control flow.
-- `@angular/cdk` pour le glisser-déposer (ordre des ingrédients dans le formulaire, au doigt comme à la souris).
+- `@angular/cdk` pour le glisser-déposer (ordre des ingrédients et des étapes dans le formulaire, au doigt comme à la souris).
 - Supabase (offre gratuite) : Postgres + API générée. Schéma et règles RLS dans `supabase/migrations/`.
   Les types de la base sont écrits à la main dans `core/supabase/database.types.ts` (des `type`, pas des `interface`).
 - GitHub Pages, déployé par `.github/workflows/deploy-github-pages.yml` à chaque push sur `main`.

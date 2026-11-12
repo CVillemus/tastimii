@@ -2,12 +2,31 @@ import { describe, expect, it } from 'vitest';
 import {
   buildUnitChoices,
   COUNT_UNIT_CHOICE,
+  createEmptyRecipeFormModel,
+  findStarterStepLegend,
   moveArrayItem,
   NO_UNIT_CHOICE,
   toStoredQuantityAndUnit,
   toUnitChoice,
   UnitChoice,
 } from './recipe-form.model';
+
+describe('étapes proposées au départ', () => {
+  it('une nouvelle recette commence avec les quatre étapes, sans texte', () => {
+    expect(createEmptyRecipeFormModel().steps).toEqual([
+      { title: 'Le calme avant la tempête', contentHtml: '' },
+      { title: 'Le coup de feu', contentHtml: '' },
+      { title: 'Lâcher prise', contentHtml: '' },
+      { title: 'Le bouquet final', contentHtml: '' },
+    ]);
+  });
+
+  it('donne la légende tant que le nom proposé est gardé', () => {
+    expect(findStarterStepLegend('Le coup de feu')).toContain('sur le feu');
+    expect(findStarterStepLegend('  lâcher prise ')).toContain('mijoter');
+    expect(findStarterStepLegend('Faire la sauce')).toBeNull();
+  });
+});
 
 describe("unités d'une ligne d'ingrédient", () => {
   it('propose « Nombre » et « Aucune unité » avant les unités habituelles', () => {

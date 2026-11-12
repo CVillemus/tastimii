@@ -53,6 +53,7 @@ import {
   createEmptyIngredientLine,
   createEmptyRecipeFormModel,
   createEmptyStep,
+  findStarterStepLegend,
   isFilledStep,
   moveArrayItem,
   NO_UNIT_CHOICE,
@@ -143,6 +144,8 @@ export class RecipeFormPage {
   );
 
   protected readonly unitChoices: readonly UnitChoice[] = buildUnitChoices(SUGGESTED_UNITS);
+  protected readonly findStarterStepLegend: (stepTitle: string) => string | null =
+    findStarterStepLegend;
   protected readonly formatReadableQuantityHint: (
     quantity: number | null,
     unit: string,
@@ -376,6 +379,24 @@ export class RecipeFormPage {
     this.recipeFormModel.update((formModel: RecipeFormModel) => ({
       ...formModel,
       steps: [...formModel.steps, createEmptyStep()],
+    }));
+  }
+
+  /** Glisser-déposer d'une étape : l'ordre du formulaire devient l'ordre de la recette. */
+  protected moveStep(dropEvent: CdkDragDrop<unknown>): void {
+    this.reorderSteps(dropEvent.previousIndex, dropEvent.currentIndex);
+  }
+
+  /** Au clavier : flèche haut / bas sur la poignée. */
+  protected moveStepByKeyboard(stepIndex: number, direction: -1 | 1, keyboardEvent: Event): void {
+    keyboardEvent.preventDefault();
+    this.reorderSteps(stepIndex, stepIndex + direction);
+  }
+
+  private reorderSteps(previousIndex: number, currentIndex: number): void {
+    this.recipeFormModel.update((formModel: RecipeFormModel) => ({
+      ...formModel,
+      steps: moveArrayItem(formModel.steps, previousIndex, currentIndex),
     }));
   }
 

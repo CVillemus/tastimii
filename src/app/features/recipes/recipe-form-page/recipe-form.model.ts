@@ -90,13 +90,56 @@ export function createEmptyStep(): RecipeFormStep {
   return { title: '', contentHtml: '' };
 }
 
+/** Étape proposée au départ d'une nouvelle recette, avec la légende qui explique quoi y mettre. */
+export type StarterRecipeStep = {
+  title: string;
+  legend: string;
+};
+
+/**
+ * Les quatre étapes proposées pour chaque nouvelle recette : la courbe d'énergie d'une recette,
+ * du calme de la préparation au plaisir de servir. Modifiables, supprimables, déplaçables.
+ */
+export const STARTER_RECIPE_STEPS: readonly StarterRecipeStep[] = [
+  {
+    title: 'Le calme avant la tempête',
+    legend: 'On prépare, tranquille et concentré : laver, éplucher, couper, peser.',
+  },
+  {
+    title: 'Le coup de feu',
+    legend: 'Tout s’accélère, on est sur le feu : saisir, faire revenir, mélanger.',
+  },
+  {
+    title: 'Lâcher prise',
+    legend: 'La cuisson travaille sans nous : mijoter, four, repos, frigo.',
+  },
+  {
+    title: 'Le bouquet final',
+    legend: 'La fierté de servir : assaisonner, dresser, servir.',
+  },
+];
+
+/** Légende d'une étape tant qu'elle garde le nom proposé au départ ; `null` sinon. */
+export function findStarterStepLegend(stepTitle: string): string | null {
+  const normalizedTitle: string = stepTitle.trim().toLocaleLowerCase('fr');
+  return (
+    STARTER_RECIPE_STEPS.find(
+      (starterStep: StarterRecipeStep) =>
+        starterStep.title.toLocaleLowerCase('fr') === normalizedTitle,
+    )?.legend ?? null
+  );
+}
+
 export function createEmptyRecipeFormModel(): RecipeFormModel {
   return {
     title: '',
     baseServings: DEFAULT_BASE_SERVINGS,
     preparationMinutes: null,
     ingredientLines: [createEmptyIngredientLine()],
-    steps: [createEmptyStep()],
+    steps: STARTER_RECIPE_STEPS.map((starterStep: StarterRecipeStep): RecipeFormStep => ({
+      title: starterStep.title,
+      contentHtml: '',
+    })),
     descriptionHtml: '',
     tagIds: [],
   };

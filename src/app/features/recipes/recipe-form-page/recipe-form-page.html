@@ -194,7 +194,7 @@
           @for (ingredientLineField of recipeForm.ingredientLines; track ingredientLineField) {
             <li class="ingredient-line card" cdkDrag>
               <button
-                class="ingredient-line__drag-handle"
+                class="drag-handle ingredient-line__drag-handle"
                 type="button"
                 cdkDragHandle
                 [attr.aria-label]="'Déplacer l’ingrédient ' + ($index + 1)"
@@ -298,10 +298,26 @@
 
       <section>
         <h2 class="section-title">Préparation</h2>
-        <ol class="step-lines">
+        <!-- On réordonne les étapes en les faisant glisser par la poignée ⠿. -->
+        <ol
+          class="step-lines"
+          cdkDropList
+          cdkDropListLockAxis="y"
+          (cdkDropListDropped)="moveStep($event)"
+        >
           @for (stepField of recipeForm.steps; track stepField) {
-            <li class="step-line">
+            <li class="step-line" cdkDrag>
               <div class="step-line__header">
+                <button
+                  class="drag-handle"
+                  type="button"
+                  cdkDragHandle
+                  [attr.aria-label]="'Déplacer l’étape ' + ($index + 1)"
+                  (keydown.arrowup)="moveStepByKeyboard($index, -1, $event)"
+                  (keydown.arrowdown)="moveStepByKeyboard($index, 1, $event)"
+                >
+                  ⠿
+                </button>
                 <label class="step-line__label" [for]="'step-title-' + $index">
                   Étape {{ $index + 1 }}
                 </label>
@@ -320,7 +336,18 @@
                 type="text"
                 placeholder="Titre de l’étape (facultatif) : Faire la préparation"
                 [formField]="stepField.title"
+                [attr.aria-describedby]="
+                  findStarterStepLegend(stepField.title().value()) !== null
+                    ? 'step-legend-' + $index
+                    : null
+                "
               />
+              @let starterStepLegend = findStarterStepLegend(stepField.title().value());
+              @if (starterStepLegend !== null) {
+                <p class="step-line__legend" [id]="'step-legend-' + $index">
+                  {{ starterStepLegend }}
+                </p>
+              }
               <app-rich-text-editor
                 [editorLabel]="'Texte de l’étape ' + ($index + 1)"
                 placeholder="Mélanger la farine et les œufs…"
