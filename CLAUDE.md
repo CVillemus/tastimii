@@ -67,7 +67,7 @@ src/app/
 
 ## Git
 
-Les idées pour la suite de l'app sont dans `docs/idees.md` : à mettre à jour quand une idée est faite, abandonnée ou nouvelle.
+Les idées pour la suite de l'app sont dans `docs/idees.md` : une idée nouvelle va dans « À faire », une idée faite passe dans « Déjà fait » avec sa date.
 
 Le projet est modifié depuis deux PC, parfois en même temps : au début de chaque session, suivre la skill `synchro-pc` (`.claude/skills/synchro-pc/SKILL.md`) : fetch/pull, puis les actions laissées par l'autre PC. Refaire un fetch/pull avant chaque commit et chaque push.
 
