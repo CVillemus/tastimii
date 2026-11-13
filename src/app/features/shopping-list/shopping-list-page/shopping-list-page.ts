@@ -160,10 +160,6 @@ export class ShoppingListPage {
     this.shoppingListResource.reload();
   }
 
-  protected refreshShoppingList(): void {
-    this.shoppingListResource.reload();
-  }
-
   private setLineCheckedOnScreen(lineKey: string, isChecked: boolean): void {
     this.shoppingListResource.update((shoppingList: ShoppingList | undefined) =>
       shoppingList === undefined

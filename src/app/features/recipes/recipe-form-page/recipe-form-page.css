@@ -221,7 +221,7 @@
     grid-column: 2;
     grid-row: 1 / span 10;
     position: sticky;
-    top: 6rem;
+    top: var(--sticky-top);
     margin-bottom: 0;
     padding: 1rem 1.25rem 1.25rem;
     background: var(--color-surface);

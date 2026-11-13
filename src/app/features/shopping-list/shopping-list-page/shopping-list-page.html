@@ -1,14 +1,6 @@
 <div class="page">
   <div class="page-header">
     <h1>Courses</h1>
-    <button
-      class="button button--quiet button--small"
-      type="button"
-      [disabled]="shoppingListResource.isLoading()"
-      (click)="refreshShoppingList()"
-    >
-      Actualiser
-    </button>
   </div>
 
   @if (shoppingListResource.hasValue()) {
@@ -164,12 +156,24 @@
         </section>
       </div>
     } @else {
+      <!-- Aligné sur le titre de la page (et non centré), avec une pastille panier. -->
       <div class="empty-state card">
-        <h2>Rien à acheter</h2>
-        <p class="muted">
-          Ouvrez une recette, choisissez le nombre de parts et ajoutez-la aux courses.
-        </p>
-        <a class="button button--primary" routerLink="/recettes">Choisir des recettes</a>
+        <span class="empty-state__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 5h2l2 11h10l2-8H7" />
+            <circle cx="9" cy="20" r="1.2" />
+            <circle cx="17" cy="20" r="1.2" />
+          </svg>
+        </span>
+        <div class="empty-state__text">
+          <h2 class="empty-state__title">Rien à acheter</h2>
+          <p class="muted empty-state__hint">
+            Ouvrez une recette, choisissez le nombre de parts et ajoutez-la aux courses.
+          </p>
+          <a class="button button--primary button--small" routerLink="/recettes">
+            Choisir des recettes
+          </a>
+        </div>
       </div>
     }
   } @else if (shoppingListResource.error()) {

@@ -49,8 +49,12 @@
   --page-narrow-max-width: 44rem;
   /* Colonne latérale des pages en deux colonnes sur desktop. */
   --sidebar-width: 20rem;
+  /* Distance au haut de l'écran des colonnes collantes (ingrédients, filtres) sur desktop. */
+  --sticky-top: 1.5rem;
   --block-gap: 1rem;
   --bottom-navigation-height: 3.5rem;
+  /* Place totale occupée en bas de l'écran par la barre d'onglets (mobile). */
+  --bottom-navigation-space: calc(var(--bottom-navigation-height) + env(safe-area-inset-bottom));
 
   color-scheme: light;
 }
@@ -384,7 +388,7 @@ input[type='checkbox']:checked {
   /* Reste visible sous l'en-tête collant pendant qu'on fait défiler la colonne principale. */
   .page-columns__sidebar {
     position: sticky;
-    top: 6rem;
+    top: var(--sticky-top);
   }
 }
 

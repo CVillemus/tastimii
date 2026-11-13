@@ -37,11 +37,21 @@ Rien pour l'instant.
 - **Recettes** : le bouton s'appelle « Ajouter une recette ».
 - **Ingrédients** : plus de nombre d'ingrédients dans l'en-tête des types ; la maison « souvent à la
   maison » est devant le nom ; les icônes de l'en-tête et des lignes sont alignées.
+- **Navigation desktop « éditoriale »** : le logo au centre, plus grand, et les rubriques dessous en
+  petites capitales, comme la une d'un magazine. L'en-tête défile avec la page.
+- **Barre d'onglets mobile** : collée en bas, coins du haut arrondis et ombre légère ;
+  icônes fines (livre, panier, carotte), libellés en petites capitales, l'onglet actif en
+  terracotta.
+- **Courses vide** : le message est aligné sous le titre, avec une pastille panier.
+- **Courses** : plus de bouton « Actualiser », la liste se recharge à chaque ouverture.
+- **Fiche recette** : un peu d'air à gauche de « Éditer » au survol du crayon.
 
 ### Corrections
 
 - **Mobile** : l'éditeur de texte (Astuces et variantes, étapes) ne passe plus par-dessus la barre
   d'onglets en bas de l'écran.
+- **Mobile** : le « + » du bouton « Ajouter une recette » est bien centré dans le rond.
+- **Titres de page** : même espace sous la navigation sur Recettes, Courses et Ingrédients.
 
 ## 12/11/2026
 
