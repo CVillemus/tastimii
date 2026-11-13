@@ -87,6 +87,9 @@ type RecipePhotoChoice =
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipeFormPage {
+  /** Champs gris affichés pendant le chargement de la recette à modifier. */
+  protected readonly skeletonFields: readonly number[] = [1, 2, 3, 4];
+
   private readonly recipesApi: RecipesApi = inject(RecipesApi);
   private readonly ingredientsApi: IngredientsApi = inject(IngredientsApi);
   private readonly recipePhotosApi: RecipePhotosApi = inject(RecipePhotosApi);

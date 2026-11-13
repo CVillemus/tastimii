@@ -21,10 +21,18 @@
   --color-accent-hover: #9a4426;
   --color-on-accent: #ffffff;
   --color-accent-soft: #f6e3d8;
+  --color-accent-soft-hover: #f1d6c7;
   --color-danger: #a33a2d;
   --color-checked: #8d8278;
+  --color-checkbox-border: #b8aa99;
   --color-shadow: rgb(43 36 32 / 25%);
   --color-shadow-soft: rgb(43 36 32 / 7%);
+  /* Voile, halo et ombre des boutons posés sur une photo (lisibles sur toutes les couleurs). */
+  --color-photo-scrim: rgb(0 0 0 / 35%);
+  --color-photo-halo: rgb(255 255 255 / 50%);
+  --color-photo-shadow: rgb(0 0 0 / 40%);
+  --color-skeleton: #ece4d8;
+  --color-skeleton-shine: rgb(255 253 249 / 70%);
 
   --font-title: 'Fraunces', Georgia, serif;
   --font-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
@@ -134,6 +142,21 @@ textarea {
   min-height: 6rem;
 }
 
+/*
+ * Listes déroulantes : la flèche du navigateur colle au bord. On dessine la nôtre, à 0,875 rem
+ * du bord, et on réserve la place à droite pour que le texte ne passe pas dessous.
+ * Flèche de la couleur --color-ink-muted.
+ */
+select {
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6058' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 0.875rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  cursor: pointer;
+}
+
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
@@ -143,12 +166,64 @@ a:focus-visible {
   outline-offset: 2px;
 }
 
+/*
+ * Cases à cocher dessinées par l'app (même rendu sur tous les téléphones) :
+ * la case se remplit de la couleur d'accent, la coche arrive avec un petit rebond,
+ * et la case s'enfonce légèrement quand on appuie.
+ * La coche est une image SVG blanche (même blanc que --color-on-accent).
+ */
 input[type='checkbox'] {
-  width: 1.5rem;
-  min-height: 1.5rem;
-  height: 1.5rem;
-  accent-color: var(--color-accent);
+  appearance: none;
   flex-shrink: 0;
+  width: 1.375rem;
+  height: 1.375rem;
+  min-height: 1.375rem;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--color-checkbox-border);
+  border-radius: 0.375rem;
+  background-color: var(--color-surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5l3 3 6-7'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 0;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    background-size 0.25s cubic-bezier(0.3, 1.6, 0.6, 1),
+    transform 0.1s ease;
+}
+
+input[type='checkbox']:hover {
+  border-color: var(--color-accent);
+}
+
+input[type='checkbox']:active {
+  transform: scale(0.88);
+}
+
+input[type='checkbox']:checked {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent);
+  background-size: 0.875rem;
+  animation: checkbox-pop 0.25s ease-out;
+}
+
+@keyframes checkbox-pop {
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  input[type='checkbox'] {
+    transition: none;
+  }
+
+  input[type='checkbox']:checked {
+    animation: none;
+  }
 }
 
 .field-error {
@@ -428,4 +503,108 @@ input[type='checkbox'] {
   border-radius: 999px;
   background: var(--color-accent-soft);
   color: var(--color-accent-hover);
+}
+
+/* ---- Squelettes de chargement ----
+ * Pendant un chargement, des formes grises prennent la place exacte du contenu à venir :
+ * la page ne saute pas quand les données arrivent. Un reflet passe dessus, sauf si
+ * l'utilisateur a demandé moins d'animations.
+ */
+
+.skeleton {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-skeleton);
+  border-radius: 0.375rem;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--color-skeleton-shine), transparent);
+  animation: skeleton-shine 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shine {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Une ligne de texte, à la hauteur de la police du parent. */
+.skeleton--text {
+  height: 0.875em;
+  margin: 0.35em 0;
+}
+
+.skeleton--title {
+  height: 1.1em;
+  width: 70%;
+  margin: 0.15em 0;
+}
+
+.skeleton--short {
+  width: 35%;
+}
+
+.skeleton--medium {
+  width: 60%;
+}
+
+.skeleton--pill {
+  display: inline-block;
+  height: 2rem;
+  width: 5.5rem;
+  border-radius: 999px;
+}
+
+/* Le contenu chargé apparaît en fondu à la place du squelette. */
+.loaded-content {
+  animation: loaded-content-appear 0.25s ease-out;
+}
+
+@keyframes loaded-content-appear {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    display: none;
+  }
+
+  .loaded-content {
+    animation: none;
+  }
+}
+
+/* ---- Transition entre les pages ----
+ * Le routeur utilise les View Transitions : la page qui part s'efface pendant que la nouvelle
+ * apparaît. L'en-tête et la barre d'onglets ne bougent pas.
+ */
+
+.app-header {
+  view-transition-name: app-header;
+}
+
+.main-navigation {
+  view-transition-name: main-navigation;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
 }

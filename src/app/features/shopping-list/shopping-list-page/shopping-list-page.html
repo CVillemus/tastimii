@@ -16,7 +16,7 @@
 
     @if (shoppingList.menuRecipes.length > 0) {
       <!-- Desktop : le menu dans une colonne à gauche, la liste par rayon à droite. -->
-      <div class="page-columns">
+      <div class="page-columns loaded-content">
         <section class="menu page-columns__sidebar" aria-labelledby="menu-title">
           <h2 id="menu-title" class="section-title">Au menu</h2>
           <ul class="menu-recipes">
@@ -67,36 +67,59 @@
         <section class="shopping-items" aria-labelledby="shopping-items-title">
           @if (shoppingList.itemsToCheckAtHome.length > 0) {
             <section class="at-home-check card" aria-labelledby="at-home-check-title">
-              <h2 id="at-home-check-title" class="at-home-check__title">
-                À vérifier avant de partir
+              <h2 id="at-home-check-title" class="at-home-check__heading">
+                <!-- Tout l'en-tête replie ou déplie le bloc. -->
+                <button
+                  class="at-home-check__header"
+                  type="button"
+                  aria-controls="at-home-check-content"
+                  [attr.aria-expanded]="!isAtHomeCheckCollapsed()"
+                  (click)="toggleAtHomeCheck()"
+                >
+                  <span class="at-home-check__title">
+                    À vérifier avant de partir
+                    <span class="at-home-check__count">
+                      ({{ shoppingList.itemsToCheckAtHome.length }})
+                    </span>
+                  </span>
+                  <svg class="at-home-check__chevron" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
               </h2>
-              <p class="at-home-check__hint muted">
-                Souvent à la maison. S'il en manque, cochez « à acheter » : l'ingrédient rejoint la
-                liste.
-              </p>
-              <ul class="at-home-check__items">
-                @for (
-                  atHomeCheckItem of shoppingList.itemsToCheckAtHome;
-                  track atHomeCheckItem.ingredientId
-                ) {
-                  <li class="at-home-check__item">
-                    <div class="at-home-check__text">
-                      <strong>{{ atHomeCheckItem.ingredientName }}</strong>
-                      <span class="at-home-check__needs">{{
-                        formatAtHomeNeeds(atHomeCheckItem)
-                      }}</span>
-                    </div>
-                    <label class="at-home-check__to-buy">
-                      <input
-                        type="checkbox"
-                        [checked]="atHomeCheckItem.isToBuy"
-                        (change)="toggleAtHomeItemToBuy(atHomeCheckItem)"
-                      />
-                      à acheter
-                    </label>
-                  </li>
-                }
-              </ul>
+              <div
+                id="at-home-check-content"
+                class="at-home-check__content"
+                [hidden]="isAtHomeCheckCollapsed()"
+              >
+                <p class="at-home-check__hint">
+                  Souvent à la maison. S'il en manque, cochez « à acheter » : l'ingrédient rejoint
+                  la liste.
+                </p>
+                <ul class="at-home-check__items">
+                  @for (
+                    atHomeCheckItem of shoppingList.itemsToCheckAtHome;
+                    track atHomeCheckItem.ingredientId
+                  ) {
+                    <li class="at-home-check__item">
+                      <div class="at-home-check__text">
+                        <strong>{{ atHomeCheckItem.ingredientName }}</strong>
+                        <span class="at-home-check__needs">{{
+                          formatAtHomeNeeds(atHomeCheckItem)
+                        }}</span>
+                      </div>
+                      <label class="at-home-check__to-buy">
+                        <input
+                          type="checkbox"
+                          [checked]="atHomeCheckItem.isToBuy"
+                          (change)="toggleAtHomeItemToBuy(atHomeCheckItem)"
+                        />
+                        à acheter
+                      </label>
+                    </li>
+                  }
+                </ul>
+              </div>
             </section>
           }
 
@@ -154,6 +177,33 @@
       Impossible de charger la liste. Vérifiez la connexion.
     </p>
   } @else {
-    <p class="status-message">Chargement de la liste…</p>
+    <p class="visually-hidden" role="status">Chargement de la liste…</p>
+    <!-- Squelette : le menu à gauche, deux rayons à droite. -->
+    <div class="page-columns" aria-hidden="true">
+      <div class="menu page-columns__sidebar">
+        <span class="skeleton skeleton--title skeleton--short shopping-skeleton__title"></span>
+        <div class="menu-recipes">
+          <div class="menu-recipe card">
+            <span class="skeleton skeleton--text skeleton--medium"></span>
+            <span class="skeleton skeleton--text skeleton--short"></span>
+          </div>
+          <div class="menu-recipe card">
+            <span class="skeleton skeleton--text skeleton--medium"></span>
+            <span class="skeleton skeleton--text skeleton--short"></span>
+          </div>
+        </div>
+      </div>
+      <div class="shopping-items">
+        <span class="skeleton skeleton--title skeleton--medium shopping-skeleton__title"></span>
+        @for (skeletonAisle of skeletonAisles; track skeletonAisle) {
+          <div class="aisle card">
+            <span class="skeleton skeleton--text skeleton--short"></span>
+            <span class="skeleton skeleton--text"></span>
+            <span class="skeleton skeleton--text skeleton--medium"></span>
+            <span class="skeleton skeleton--text"></span>
+          </div>
+        }
+      </div>
+    </div>
   }
 </div>

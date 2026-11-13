@@ -56,13 +56,6 @@
   color: var(--color-accent);
 }
 
-.ingredient-type__count {
-  font-family: var(--font-body);
-  font-size: var(--font-size-small);
-  font-weight: 400;
-  color: var(--color-ink-muted);
-}
-
 .ingredient-type__ingredients {
   list-style: none;
   margin: 0.25rem 0 0;
@@ -74,9 +67,18 @@
   font-size: var(--font-size-small);
 }
 
+/*
+ * Les icônes de l'en-tête (crayon, croix) et celles des lignes ont la même taille et le même
+ * écart : elles tombent dans les mêmes colonnes, à droite de la carte.
+ */
+.ingredient-type {
+  --ingredient-actions-gap: 0.125rem;
+}
+
 .ingredient-type__actions {
   display: flex;
   flex-shrink: 0;
+  gap: var(--ingredient-actions-gap);
 }
 
 .type-rename-form {
@@ -107,11 +109,16 @@
   border-top: 1px solid var(--color-border);
 }
 
+/* Maison à gauche du nom, puis crayon et croix alignés avec ceux de l'en-tête. */
 .ingredient-row__view {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 0.125rem;
+  column-gap: var(--ingredient-actions-gap);
+}
+
+.ingredient-row__at-home {
+  margin-left: -0.5rem;
 }
 
 /* Icônes des lignes (maison, crayon) : traits fins, couleur du texte. */
@@ -207,7 +214,7 @@
     margin-bottom: 1.25rem;
   }
 
-  .ingredient-row__view {
-    gap: 0.5rem;
+  .ingredient-type {
+    --ingredient-actions-gap: 0.5rem;
   }
 }

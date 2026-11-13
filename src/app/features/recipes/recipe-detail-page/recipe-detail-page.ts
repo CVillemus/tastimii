@@ -13,6 +13,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { keepScreenAwake } from '../../../core/device/keep-screen-awake';
 import {
   formatPreparationTime,
   formatQuantityWithUnit,
@@ -52,6 +53,11 @@ export class RecipeDetailPage {
   private readonly recipePhotosApi: RecipePhotosApi = inject(RecipePhotosApi);
   private readonly router: Router = inject(Router);
 
+  constructor() {
+    // On suit souvent la recette en cuisinant : l'écran ne se met pas en veille sur la fiche.
+    keepScreenAwake();
+  }
+
   /** Vient de l'URL `/recettes/:recipeId`. */
   readonly recipeId: InputSignal<string> = input.required<string>();
 
@@ -59,6 +65,10 @@ export class RecipeDetailPage {
     params: (): { recipeId: string } => ({ recipeId: this.recipeId() }),
     loader: ({ params }): Promise<Recipe> => this.recipesApi.fetchRecipe(params.recipeId),
   });
+
+  /** Lignes grises affichées pendant le chargement. */
+  protected readonly skeletonIngredientLines: readonly number[] = [1, 2, 3, 4, 5];
+  protected readonly skeletonSteps: readonly number[] = [1, 2, 3];
 
   /** Parts choisies : celles de la recette au départ, modifiables avec − et +. */
   protected readonly wantedServings: WritableSignal<number> = linkedSignal(() =>

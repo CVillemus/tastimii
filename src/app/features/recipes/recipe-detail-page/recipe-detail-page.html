@@ -4,7 +4,7 @@
   @if (recipeResource.hasValue()) {
     @let recipe = recipeResource.value();
 
-    <header class="recipe-hero">
+    <header class="recipe-hero loaded-content">
       <app-recipe-photo
         class="recipe-hero__photo"
         [photoUrl]="recipe.photoUrl"
@@ -52,10 +52,11 @@
       <!-- Tout se modifie depuis le formulaire : un crayon en haut à droite de l'en-tête. -->
       <a
         class="recipe-hero__edit"
-        title="Modifier la recette"
         aria-label="Modifier la recette"
         [routerLink]="['/recettes', recipe.id, 'modifier']"
       >
+        <!-- Au survol, le bouton s'étend vers la gauche pour afficher ce texte. -->
+        <span class="recipe-hero__edit-label" aria-hidden="true">Éditer</span>
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M4 20h4L19 9l-4-4L4 16z" />
           <path d="M13.5 6.5l4 4" />
@@ -63,7 +64,7 @@
       </a>
     </header>
 
-    <div class="recipe-body">
+    <div class="recipe-body loaded-content">
       <aside class="recipe-ingredients">
         <div class="recipe-ingredients__header">
           <h2>Ingrédients</h2>
@@ -160,6 +161,43 @@
   } @else if (recipeResource.error()) {
     <p class="status-message error-message">Impossible de charger cette recette.</p>
   } @else {
-    <p class="status-message">Chargement de la recette…</p>
+    <p class="visually-hidden" role="status">Chargement de la recette…</p>
+    <!-- Squelette : mêmes blocs que la fiche, pour que la page ne saute pas à l'arrivée. -->
+    <div aria-hidden="true">
+      <div class="recipe-hero">
+        <span class="skeleton recipe-hero__photo recipe-skeleton__photo"></span>
+        <div class="recipe-hero__text recipe-skeleton__hero-text">
+          <span class="skeleton skeleton--title recipe-skeleton__title"></span>
+          <span class="skeleton skeleton--text skeleton--medium"></span>
+          <div class="recipe-tags">
+            <span class="skeleton skeleton--pill"></span>
+            <span class="skeleton skeleton--pill"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-body">
+        <div class="recipe-ingredients">
+          <span
+            class="skeleton skeleton--title skeleton--medium recipe-skeleton__section-title"
+          ></span>
+          @for (skeletonLine of skeletonIngredientLines; track skeletonLine) {
+            <span class="skeleton skeleton--text"></span>
+          }
+        </div>
+        <div class="recipe-steps">
+          <span
+            class="skeleton skeleton--title skeleton--short recipe-skeleton__section-title"
+          ></span>
+          @for (skeletonStep of skeletonSteps; track skeletonStep) {
+            <div class="recipe-skeleton__step">
+              <span class="skeleton skeleton--text skeleton--medium"></span>
+              <span class="skeleton skeleton--text"></span>
+              <span class="skeleton skeleton--text"></span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
   }
 </div>

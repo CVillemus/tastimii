@@ -8,9 +8,18 @@
   }
 
   @if (isExistingRecipeLoading()) {
-    <p class="status-message">Chargement de la recette…</p>
+    <p class="visually-hidden" role="status">Chargement de la recette…</p>
+    <!-- Squelette : quelques champs du formulaire. -->
+    <div class="recipe-form" aria-hidden="true">
+      @for (skeletonField of skeletonFields; track skeletonField) {
+        <div>
+          <span class="skeleton skeleton--text skeleton--short"></span>
+          <span class="skeleton recipe-form-skeleton__field"></span>
+        </div>
+      }
+    </div>
   } @else {
-    <form class="recipe-form" novalidate (submit)="submitRecipeForm($event)">
+    <form class="recipe-form loaded-content" novalidate (submit)="submitRecipeForm($event)">
       <div>
         <label for="recipe-title">Titre</label>
         <input
@@ -151,7 +160,12 @@
           } @else if (tagsResource.error()) {
             <p class="error-message">Impossible de charger les tags.</p>
           } @else {
-            <p class="muted">Chargement des tags…</p>
+            <p class="visually-hidden" role="status">Chargement des tags…</p>
+            <div class="tag-choices" aria-hidden="true">
+              <span class="skeleton skeleton--pill"></span>
+              <span class="skeleton skeleton--pill"></span>
+              <span class="skeleton skeleton--pill"></span>
+            </div>
           }
         </section>
 

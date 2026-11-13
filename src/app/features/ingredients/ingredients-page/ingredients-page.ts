@@ -60,6 +60,9 @@ type IngredientDeletionRefusal = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientsPage {
+  /** Types gris affichés pendant le chargement. */
+  protected readonly skeletonIngredientTypes: readonly number[] = [1, 2, 3];
+
   private readonly ingredientsApi: IngredientsApi = inject(IngredientsApi);
 
   protected readonly ingredientCatalogResource: ResourceRef<IngredientCatalog | undefined> =

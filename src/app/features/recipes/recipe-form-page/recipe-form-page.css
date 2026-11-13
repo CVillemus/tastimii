@@ -282,3 +282,10 @@
     padding: 1rem 1.25rem;
   }
 }
+
+/* ---- Squelette pendant le chargement de la recette à modifier ---- */
+
+.recipe-form-skeleton__field {
+  height: 2.625rem;
+  border-radius: var(--radius-control);
+}

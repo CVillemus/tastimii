@@ -9,6 +9,8 @@ import { ChangeDetectionStrategy, Component, input, InputSignal } from '@angular
   templateUrl: './recipe-photo.html',
   styleUrl: './recipe-photo.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // Permet au parent de styler différemment une vraie photo et l'emplacement vide.
+  host: { '[class.recipe-photo--with-photo]': 'photoUrl() !== null' },
 })
 export class RecipePhoto {
   readonly photoUrl: InputSignal<string | null> = input.required<string | null>();

@@ -308,6 +308,44 @@
     transform: none;
   }
 
+  /*
+   * Bouton panier posé sur la photo : un léger voile sombre en haut de la photo et un bouton
+   * blanc à ombre marquée, pour qu'il se voie quelle que soit la couleur de la photo.
+   */
+  .recipe-card__photo.recipe-photo--with-photo {
+    position: relative;
+  }
+
+  .recipe-card__photo.recipe-photo--with-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 45%;
+    background: linear-gradient(var(--color-photo-scrim), transparent);
+    pointer-events: none;
+  }
+
+  .menu-control__add {
+    border: none;
+    background: var(--color-surface);
+    box-shadow:
+      0 0 0 3px var(--color-photo-halo),
+      0 2px 8px var(--color-photo-shadow);
+  }
+
+  .menu-control__add:hover {
+    box-shadow:
+      0 0 0 3px var(--color-photo-halo),
+      0 2px 8px var(--color-photo-shadow);
+  }
+
+  /* Compteur de parts (recette au menu) : même halo et même ombre que le bouton panier. */
+  .menu-control__stepper {
+    box-shadow:
+      0 0 0 3px var(--color-photo-halo),
+      0 2px 8px var(--color-photo-shadow);
+  }
+
   /* Une recette au menu se repère d'un coup d'œil : liseré de couleur autour de la carte. */
   .recipe-list__item--on-menu .recipe-card {
     box-shadow:
@@ -318,4 +356,11 @@
   .empty-state {
     padding: 3rem 2rem;
   }
+}
+
+/* ---- Squelette pendant le chargement ---- */
+
+.recipe-skeleton__search {
+  height: 2.625rem;
+  border-radius: var(--radius-control);
 }

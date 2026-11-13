@@ -73,6 +73,9 @@ export class RecipeListPage {
     () => this.selectedTagIds().size > 0 || this.recipeSearchText().trim().length > 0,
   );
 
+  /** Nombre de cartes grises affichées pendant le chargement. */
+  protected readonly skeletonCards: readonly number[] = [1, 2, 3, 4, 5, 6];
+
   protected readonly formatPreparationTime: (preparationMinutes: number) => string =
     formatPreparationTime;
 

@@ -5,20 +5,31 @@
     <a
       class="button button--primary new-recipe-button"
       routerLink="/recettes/nouvelle"
-      aria-label="Nouvelle recette"
+      aria-label="Ajouter une recette"
     >
       <span class="new-recipe-button__plus" aria-hidden="true">+</span>
-      <span class="new-recipe-button__label" aria-hidden="true">Nouvelle recette</span>
+      <span class="new-recipe-button__label" aria-hidden="true">Ajouter une recette</span>
     </a>
   </div>
 
   @let hasRecipes =
     recipeSummariesResource.hasValue() && recipeSummariesResource.value().length > 0;
   @let hasRecipeFilters = hasRecipes || filterTags().length > 0;
+  @let isLoadingRecipes = !recipeSummariesResource.hasValue() && !recipeSummariesResource.error();
 
   <!-- Desktop : recherche et tags dans une colonne à gauche, les recettes à droite. -->
-  <div class="recipe-list-layout" [class.page-columns]="hasRecipeFilters">
-    @if (hasRecipeFilters) {
+  <div class="recipe-list-layout" [class.page-columns]="hasRecipeFilters || isLoadingRecipes">
+    @if (isLoadingRecipes) {
+      <!-- Squelette de la colonne des filtres : recherche et quelques tags. -->
+      <aside class="recipe-filters page-columns__sidebar" aria-hidden="true">
+        <span class="skeleton recipe-skeleton__search"></span>
+        <div class="tag-filters">
+          <span class="skeleton skeleton--pill"></span>
+          <span class="skeleton skeleton--pill"></span>
+          <span class="skeleton skeleton--pill"></span>
+        </div>
+      </aside>
+    } @else if (hasRecipeFilters) {
       <aside class="recipe-filters page-columns__sidebar" aria-label="Filtres">
         @if (hasRecipes) {
           <div class="recipe-search">
@@ -68,7 +79,7 @@
     <div class="recipe-list-content">
       @if (recipeSummariesResource.hasValue()) {
         @if (recipeSummariesResource.value().length > 0) {
-          <ul class="recipe-list">
+          <ul class="recipe-list loaded-content">
             @for (recipeSummary of matchingRecipeSummaries(); track recipeSummary.id) {
               @let recipeMenuStatus = recipeMenuStatuses().get(recipeSummary.id);
               <li
@@ -185,7 +196,20 @@
           Impossible de charger les recettes. Vérifiez la connexion.
         </p>
       } @else {
-        <p class="status-message">Chargement des recettes…</p>
+        <p class="visually-hidden" role="status">Chargement des recettes…</p>
+        <ul class="recipe-list" aria-hidden="true">
+          @for (skeletonCard of skeletonCards; track skeletonCard) {
+            <li class="recipe-list__item">
+              <div class="recipe-card">
+                <span class="skeleton recipe-card__photo"></span>
+                <div class="recipe-card__text">
+                  <span class="skeleton skeleton--title recipe-card__title"></span>
+                  <span class="skeleton skeleton--text skeleton--medium recipe-card__meta"></span>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
       }
     </div>
   </div>

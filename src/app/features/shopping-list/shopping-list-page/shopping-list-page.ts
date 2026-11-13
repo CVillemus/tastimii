@@ -6,6 +6,8 @@ import {
   resource,
   ResourceRef,
   Signal,
+  signal,
+  WritableSignal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { formatQuantityWithUnit } from '../../../core/recipes/quantity';
@@ -27,6 +29,26 @@ type ShoppingProgress = {
 
 const MINIMUM_SERVINGS: number = 1;
 
+/** Clé du navigateur qui retient si le bloc « À vérifier avant de partir » est replié. */
+const AT_HOME_CHECK_COLLAPSED_STORAGE_KEY: string = 'tastimii.at-home-check-collapsed';
+
+/** Lecture protégée : le stockage peut être indisponible (navigation privée…). */
+function readAtHomeCheckCollapsed(): boolean {
+  try {
+    return localStorage.getItem(AT_HOME_CHECK_COLLAPSED_STORAGE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function saveAtHomeCheckCollapsed(isCollapsed: boolean): void {
+  try {
+    localStorage.setItem(AT_HOME_CHECK_COLLAPSED_STORAGE_KEY, String(isCollapsed));
+  } catch {
+    // Sans stockage, le bloc se rouvrira simplement au prochain chargement.
+  }
+}
+
 /** Liste de courses : recettes au menu (avec leurs parts) et ingrédients rangés par rayon. */
 @Component({
   selector: 'app-shopping-list-page',
@@ -36,7 +58,17 @@ const MINIMUM_SERVINGS: number = 1;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShoppingListPage {
+  /** Rayons gris affichés pendant le chargement. */
+  protected readonly skeletonAisles: readonly number[] = [1, 2];
+
   private readonly shoppingListApi: ShoppingListApi = inject(ShoppingListApi);
+
+  /** Bloc « À vérifier avant de partir » replié ; retenu sur cet appareil. */
+  private readonly isAtHomeCheckCollapsedState: WritableSignal<boolean> = signal(
+    readAtHomeCheckCollapsed(),
+  );
+  protected readonly isAtHomeCheckCollapsed: Signal<boolean> =
+    this.isAtHomeCheckCollapsedState.asReadonly();
 
   protected readonly shoppingListResource: ResourceRef<ShoppingList | undefined> = resource({
     loader: (): Promise<ShoppingList> => this.shoppingListApi.fetchShoppingList(),
@@ -51,6 +83,12 @@ export class ShoppingListPage {
       totalLineCount: allLines.length,
     };
   });
+
+  protected toggleAtHomeCheck(): void {
+    const isCollapsed: boolean = !this.isAtHomeCheckCollapsedState();
+    this.isAtHomeCheckCollapsedState.set(isCollapsed);
+    saveAtHomeCheckCollapsed(isCollapsed);
+  }
 
   protected readonly formatQuantityWithUnit: (quantity: number | null, unit: string) => string =
     formatQuantityWithUnit;

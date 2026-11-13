@@ -11,7 +11,7 @@
 
   @if (ingredientCatalogResource.hasValue()) {
     <!-- Desktop : les formulaires d'ajout à gauche, les types et leurs ingrédients à droite. -->
-    <div class="page-columns">
+    <div class="page-columns loaded-content">
       <div class="add-panels page-columns__sidebar">
         <details class="add-panel card">
           <summary>Ajouter un ingrédient</summary>
@@ -138,9 +138,6 @@
                     }}</span>
                   }
                   {{ ingredientType.name }}
-                  <span class="ingredient-type__count">{{
-                    ingredientTypeGroup.ingredients.length
-                  }}</span>
                 </h2>
                 <div class="ingredient-type__actions">
                   <button
@@ -257,12 +254,7 @@
                       </form>
                     } @else {
                       <div class="ingredient-row__view">
-                        <span class="ingredient-row__name">
-                          {{ ingredient.name }}
-                          @if (ingredient.defaultUnit.length > 0) {
-                            <span class="muted">({{ ingredient.defaultUnit }})</span>
-                          }
-                        </span>
+                        <!-- La maison est devant le nom : c'est un réglage de l'ingrédient, pas une action. -->
                         <button
                           class="icon-button icon-button--quiet ingredient-row__at-home"
                           type="button"
@@ -282,6 +274,12 @@
                             <path d="M10 20v-5h4v5" />
                           </svg>
                         </button>
+                        <span class="ingredient-row__name">
+                          {{ ingredient.name }}
+                          @if (ingredient.defaultUnit.length > 0) {
+                            <span class="muted">({{ ingredient.defaultUnit }})</span>
+                          }
+                        </span>
                         <button
                           class="icon-button icon-button--quiet"
                           type="button"
@@ -324,6 +322,27 @@
       Impossible de charger les ingrédients. Vérifiez la connexion.
     </p>
   } @else {
-    <p class="status-message">Chargement des ingrédients…</p>
+    <p class="visually-hidden" role="status">Chargement des ingrédients…</p>
+    <!-- Squelette : les panneaux d'ajout à gauche, quelques types à droite. -->
+    <div class="page-columns" aria-hidden="true">
+      <div class="add-panels page-columns__sidebar">
+        <div class="add-panel card">
+          <span class="skeleton skeleton--text skeleton--medium"></span>
+        </div>
+        <div class="add-panel card">
+          <span class="skeleton skeleton--text skeleton--medium"></span>
+        </div>
+      </div>
+      <div class="ingredient-types">
+        @for (skeletonType of skeletonIngredientTypes; track skeletonType) {
+          <div class="ingredient-type card">
+            <span class="skeleton skeleton--title skeleton--medium"></span>
+            <span class="skeleton skeleton--text"></span>
+            <span class="skeleton skeleton--text skeleton--medium"></span>
+            <span class="skeleton skeleton--text"></span>
+          </div>
+        }
+      </div>
+    </div>
   }
 </div>
