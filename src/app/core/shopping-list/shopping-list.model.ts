@@ -39,6 +39,11 @@ export type ShoppingListLine = {
   quantity: number | null;
   unit: string;
   isChecked: boolean;
+  /**
+   * Ingrédient « souvent à la maison » ajouté depuis « À vérifier avant de partir » : la clé qui
+   * permet de l'y renvoyer. `null` pour un ingrédient ordinaire.
+   */
+  addedFromAtHomeKey: string | null;
 };
 
 /** Un rayon du magasin (le type des ingrédients) et ses lignes. */
@@ -59,13 +64,13 @@ export type AtHomeCheckNeed = {
 
 /**
  * Ingrédient « souvent à la maison » à vérifier avant de partir (« Beurre : 250 g pour le gâteau »).
- * Coché « à acheter » (`isToBuy`), il rejoint aussi son rayon dans la liste.
+ * « Ajouter » le déplace dans son rayon de la liste (on enregistre `toBuyKey`) : il quitte alors
+ * ce bloc.
  */
 export type AtHomeCheckItem = {
   ingredientId: string;
   ingredientName: string;
   toBuyKey: string;
-  isToBuy: boolean;
   needs: AtHomeCheckNeed[];
 };
 

@@ -52,6 +52,22 @@ Rien pour l'instant.
 - **Fiche recette** : un peu d'air à gauche de « Éditer » au survol du crayon.
 - **Onglet Cuisine** : toujours visible dans la navigation, grisé et non cliquable tant qu'il n'y a
   rien à cuisiner.
+- **À vérifier avant de partir** : plus de case « à acheter », un bouton **Ajouter** qui déplace
+  l'ingrédient dans la liste à acheter. Dans la liste, un petit **↩** le renvoie dans « À vérifier »
+  en cas d'erreur.
+- **Esprit plus distingué** :
+  - un **sac de courses en toile** remplace le caddie (onglet Courses, bouton sur les recettes,
+    Courses vide) ;
+  - les titres de section passent en **petites capitales** (Ingrédients, Préparation, Au menu…) ;
+  - les **quantités et les parts** s'écrivent avec les chiffres de Fraunces (zéro sans barre) ;
+  - sur la fiche, les **étapes** sont numérotées en grand, en italique terracotta, dans la marge,
+    et un **ornement ✦** sépare l'en-tête de la recette ;
+  - messages plus chaleureux : « Le cabas est vide », « Tout est cuisiné, bon appétit ! » ;
+  - un filet très fin autour des photos et des arrondis harmonisés partout ;
+  - petites animations : le compteur de parts éclot quand on ajoute une recette aux courses, la
+    toque salue chaque recette cuisinée.
+- **Blocs repliables animés** : « À vérifier avant de partir » et les panneaux « Ajouter… » de la
+  page Ingrédients s'ouvrent et se ferment en douceur.
 
 ### Corrections
 

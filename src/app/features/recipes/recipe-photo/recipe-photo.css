@@ -21,3 +21,9 @@ img {
   height: 100%;
   object-fit: cover;
 }
+
+/* Vraie photo : un filet très fin par-dessus, comme une photo de livre. */
+:host(.recipe-photo--with-photo) {
+  outline: 1px solid var(--color-photo-frame);
+  outline-offset: -1px;
+}

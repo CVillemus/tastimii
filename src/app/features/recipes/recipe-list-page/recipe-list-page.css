@@ -161,10 +161,12 @@
   display: inline-flex;
   align-items: center;
   height: 2.375rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--color-accent);
   color: var(--color-on-accent);
   box-shadow: 0 1px 3px var(--color-shadow-soft);
+  /* La recette vient d'être ajoutée aux courses : le compteur éclot à la place du sac. */
+  animation: pop-in 0.3s ease-out;
 }
 
 .menu-control__stepper button {
@@ -172,7 +174,7 @@
   height: 100%;
   padding: 0;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: inherit;
   font: inherit;
@@ -233,12 +235,6 @@
 
   .recipe-filters__title {
     display: block;
-    font-family: var(--font-body);
-    font-size: var(--font-size-small);
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-ink-muted);
     margin-bottom: -0.5rem;
   }
 

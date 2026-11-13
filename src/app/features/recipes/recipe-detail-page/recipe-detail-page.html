@@ -41,7 +41,7 @@
 
         @if (recipe.descriptionHtml.length > 0) {
           <section class="recipe-description" aria-labelledby="recipe-description-title">
-            <h2 id="recipe-description-title" class="recipe-description__title">
+            <h2 id="recipe-description-title" class="surtitle recipe-description__title">
               Astuces et variantes
             </h2>
             <div class="rich-text" [innerHTML]="recipe.descriptionHtml | linkifyRichText"></div>
@@ -64,10 +64,13 @@
       </a>
     </header>
 
+    <!-- Ornement entre l'en-tête et la recette, comme dans un livre de cuisine. -->
+    <div class="ornament" aria-hidden="true">✦</div>
+
     <div class="recipe-body loaded-content">
       <aside class="recipe-ingredients">
         <div class="recipe-ingredients__header">
-          <h2>Ingrédients</h2>
+          <h2 class="surtitle">Ingrédients</h2>
           <div class="servings-picker">
             <button
               class="icon-button"
@@ -77,7 +80,7 @@
             >
               −
             </button>
-            <strong class="servings-picker__value" aria-live="polite"
+            <strong class="servings-picker__value figures" aria-live="polite"
               >{{ wantedServings() }} parts</strong
             >
             <button
@@ -96,7 +99,7 @@
             @for (scaledIngredientLine of scaledIngredientLines(); track $index) {
               <li class="ingredient-list__line">
                 <span>{{ scaledIngredientLine.ingredientName }}</span>
-                <span class="ingredient-list__quantity">{{
+                <span class="ingredient-list__quantity figures">{{
                   scaledIngredientLine.formattedQuantity
                 }}</span>
               </li>
@@ -123,23 +126,29 @@
       </aside>
 
       <section class="recipe-steps">
-        <h2>Préparation</h2>
+        <h2 class="surtitle">Préparation</h2>
         @if (recipe.steps.length > 0) {
           <ol class="step-list">
             @for (step of recipe.steps; track $index) {
+              <!-- Numéro en grand italique dans la marge, titre et texte à côté (livre de cuisine). -->
               <li class="step-list__step">
-                <h3 class="step-list__title">
-                  <span class="step-list__number">Étape {{ $index + 1 }}</span>
-                  @if (step.title.length > 0) {
-                    <span> : {{ step.title }}</span>
+                <span class="step-list__number" aria-hidden="true">{{ $index + 1 }}</span>
+                <div class="step-list__body">
+                  <h3 class="step-list__title">
+                    <span class="visually-hidden">Étape {{ $index + 1 }}</span>
+                    @if (step.title.length > 0) {
+                      <span class="visually-hidden"> : </span>{{ step.title }}
+                    } @else {
+                      <span aria-hidden="true">Étape {{ $index + 1 }}</span>
+                    }
+                  </h3>
+                  @if (step.contentHtml.length > 0) {
+                    <div
+                      class="rich-text step-list__content"
+                      [innerHTML]="step.contentHtml | linkifyRichText"
+                    ></div>
                   }
-                </h3>
-                @if (step.contentHtml.length > 0) {
-                  <div
-                    class="rich-text step-list__content"
-                    [innerHTML]="step.contentHtml | linkifyRichText"
-                  ></div>
-                }
+                </div>
               </li>
             }
           </ol>

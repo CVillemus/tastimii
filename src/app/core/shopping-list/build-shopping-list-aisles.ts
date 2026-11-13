@@ -48,6 +48,7 @@ function isOnShoppingList(
 /**
  * Ingrédients « souvent à la maison » demandés par le menu, à vérifier avant de partir :
  * pour chacun, ce que chaque recette demande (quantité ramenée aux parts voulues). Triés par nom.
+ * Ceux déjà ajoutés à la liste n'y sont plus.
  */
 export function buildItemsToCheckAtHome(
   menuRecipes: readonly ShoppingListMenuRecipe[],
@@ -66,11 +67,13 @@ export function buildItemsToCheckAtHome(
         continue;
       }
       const toBuyKey: string = buildToBuyKey(ingredient.id);
+      if (checkedLineKeys.has(toBuyKey)) {
+        continue;
+      }
       const item: AtHomeCheckItem = itemsByIngredientId.get(ingredient.id) ?? {
         ingredientId: ingredient.id,
         ingredientName: ingredient.name,
         toBuyKey,
-        isToBuy: checkedLineKeys.has(toBuyKey),
         needs: [],
       };
       item.needs.push({
@@ -94,7 +97,7 @@ export function buildItemsToCheckAtHome(
 
 /**
  * Calcule la liste de courses :
- * 1. les ingrédients « souvent à la maison » n'y vont que s'ils sont cochés « à acheter »,
+ * 1. les ingrédients « souvent à la maison » n'y vont que s'ils ont été ajoutés,
  * 2. chaque quantité est ramenée au nombre de parts voulu,
  * 3. les mêmes ingrédients dans la même unité sont additionnés,
  * 4. les lignes sont rangées par rayon (le type de l'ingrédient),
@@ -140,6 +143,10 @@ export function buildShoppingListAisles(
           quantity: scaledQuantity,
           unit: ingredientLine.unit.trim(),
           isChecked: checkedLineKeys.has(lineKey),
+          addedFromAtHomeKey:
+            ingredient !== undefined && ingredient.isUsuallyAtHome
+              ? buildToBuyKey(ingredient.id)
+              : null,
           ingredientType:
             ingredient === undefined ? undefined : ingredientTypesById.get(ingredient.typeId),
         });

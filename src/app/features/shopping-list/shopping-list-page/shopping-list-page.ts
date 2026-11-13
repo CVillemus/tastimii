@@ -120,13 +120,15 @@ export class ShoppingListPage {
     }
   }
 
-  /** Coché « à acheter », un ingrédient souvent à la maison rejoint son rayon : on recharge. */
-  protected async toggleAtHomeItemToBuy(atHomeCheckItem: AtHomeCheckItem): Promise<void> {
-    if (atHomeCheckItem.isToBuy) {
-      await this.shoppingListApi.uncheckShoppingListLine(atHomeCheckItem.toBuyKey);
-    } else {
-      await this.shoppingListApi.checkShoppingListLine(atHomeCheckItem.toBuyKey);
-    }
+  /** « Ajouter » : l'ingrédient souvent à la maison quitte « À vérifier » pour son rayon. */
+  protected async addAtHomeItemToShoppingList(atHomeCheckItem: AtHomeCheckItem): Promise<void> {
+    await this.shoppingListApi.checkShoppingListLine(atHomeCheckItem.toBuyKey);
+    this.shoppingListResource.reload();
+  }
+
+  /** « ↩ » : l'ingrédient ajouté par erreur retourne dans « À vérifier avant de partir ». */
+  protected async returnLineToAtHomeCheck(addedFromAtHomeKey: string): Promise<void> {
+    await this.shoppingListApi.uncheckShoppingListLine(addedFromAtHomeKey);
     this.shoppingListResource.reload();
   }
 

@@ -10,6 +10,24 @@
   background: var(--color-accent-soft);
   color: var(--color-accent-hover);
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: slide-in 0.25s ease-out;
+}
+
+/* La toque salue la recette cuisinée. */
+.kitchen-confirmation svg {
+  flex-shrink: 0;
+  width: 1.375rem;
+  height: 1.375rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform-origin: 50% 90%;
+  animation: toque-wiggle 0.7s ease-in-out 0.15s;
 }
 
 /* Message final, quand la dernière recette a quitté la cuisine. */

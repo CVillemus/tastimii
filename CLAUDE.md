@@ -45,6 +45,13 @@ Depuis le 11/11/2026, Corentin et Marine saisissent leurs vraies recettes. Tout 
 - **Lazy loading** : chaque page passe par `loadComponent`.
 - **Couleurs** uniquement via les variables CSS de `src/styles.css`. Thème clair uniquement, pas de thème sombre.
 - **Design** : inspiré des sites de cuisine (fond blanc cassé, cartes blanches à ombre douce, photos, peu de bordures). Pensé pour desktop, compacté pour mobile : les styles de base sont ceux du mobile, `@media (min-width: 48rem)` pour le desktop. Tailles de texte via `--font-size-*`.
+- **Esprit éditorial** (magazine de cuisine, marché local) :
+  - surtitres de section en petites capitales espacées (`.section-title`, `.surtitle`), titres de page et de carte en Fraunces ;
+  - chiffres des quantités et des parts en Fraunces (`.figures`), numéros d'étapes en grand Fraunces italique ;
+  - ornement `.ornament` (✦ entre deux filets) pour séparer de grandes parties ;
+  - icônes au trait fin ; pas d'imagerie « grande surface » (caddie) : le sac de courses est un cabas en toile ;
+  - arrondis uniquement via `--radius-small`, `--radius-control`, `--radius-card`, `--radius-pill` (50 % pour les ronds) ;
+  - micro-animations partagées (`pop-in`, `slide-in`, `toque-wiggle` dans `styles.css`), toujours coupées si l'utilisateur réduit les animations.
 - **Desktop ≠ mobile agrandi** : sur desktop, les pages utilisent la largeur (`.page-columns` + `.page-columns__sidebar` collante, grilles de cartes) au lieu d'une colonne étroite.
 - **Tailles en rem** (16 px = 1rem, la racine garde la taille du navigateur). Seules les bordures et contours d'1–2 px restent en px.
 - **Typographie** : titres en Fraunces (`--font-title`), texte en Atkinson Hyperlegible (`--font-body`), corps à 0.9375rem sur mobile et 1.0625rem sur desktop, champs à 1rem minimum (sinon iOS zoome).

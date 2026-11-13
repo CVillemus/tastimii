@@ -157,7 +157,6 @@ describe('ingrédients souvent à la maison', () => {
         ingredientId: 'beurre',
         ingredientName: 'Beurre',
         toBuyKey: buildToBuyKey('beurre'),
-        isToBuy: false,
         needs: [
           { recipeTitle: 'Gâteau', quantity: 250, unit: 'g' },
           { recipeTitle: 'Lentilles saucisse', quantity: null, unit: '' },
@@ -166,7 +165,7 @@ describe('ingrédients souvent à la maison', () => {
     ]);
   });
 
-  it('les ajoute à leur rayon une fois cochés « à acheter »', () => {
+  it('les déplace dans leur rayon une fois ajoutés', () => {
     const toBuyKeys: Set<string> = new Set([buildToBuyKey('beurre')]);
     const aisles: ShoppingListAisle[] = buildShoppingListAisles(
       [cake],
@@ -175,8 +174,15 @@ describe('ingrédients souvent à la maison', () => {
     );
     expect(aisles[0]).toMatchObject({
       aisleName: 'Crèmerie',
-      lines: [{ ingredientName: 'Beurre', quantity: 250, unit: 'g' }],
+      lines: [
+        {
+          ingredientName: 'Beurre',
+          quantity: 250,
+          unit: 'g',
+          addedFromAtHomeKey: buildToBuyKey('beurre'),
+        },
+      ],
     });
-    expect(buildItemsToCheckAtHome([cake], catalogWithButter, toBuyKeys)[0].isToBuy).toBe(true);
+    expect(buildItemsToCheckAtHome([cake], catalogWithButter, toBuyKeys)).toEqual([]);
   });
 });

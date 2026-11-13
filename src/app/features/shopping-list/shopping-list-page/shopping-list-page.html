@@ -26,7 +26,9 @@
                   >
                     −
                   </button>
-                  <span class="menu-recipe__servings">{{ menuRecipe.wantedServings }} parts</span>
+                  <span class="menu-recipe__servings figures"
+                    >{{ menuRecipe.wantedServings }} parts</span
+                  >
                   <button
                     class="icon-button"
                     type="button"
@@ -79,38 +81,46 @@
                   </svg>
                 </button>
               </h2>
+              <!-- Repli animé : la grille passe de 1fr à 0fr ; inert rend le contenu replié inaccessible. -->
               <div
                 id="at-home-check-content"
                 class="at-home-check__content"
-                [hidden]="isAtHomeCheckCollapsed()"
+                [class.at-home-check__content--collapsed]="isAtHomeCheckCollapsed()"
+                [attr.inert]="isAtHomeCheckCollapsed() ? '' : null"
               >
-                <p class="at-home-check__hint">
-                  Souvent à la maison. S'il en manque, cochez « à acheter » : l'ingrédient rejoint
-                  la liste.
-                </p>
-                <ul class="at-home-check__items">
-                  @for (
-                    atHomeCheckItem of shoppingList.itemsToCheckAtHome;
-                    track atHomeCheckItem.ingredientId
-                  ) {
-                    <li class="at-home-check__item">
-                      <div class="at-home-check__text">
-                        <strong>{{ atHomeCheckItem.ingredientName }}</strong>
-                        <span class="at-home-check__needs">{{
-                          formatAtHomeNeeds(atHomeCheckItem)
-                        }}</span>
-                      </div>
-                      <label class="at-home-check__to-buy">
-                        <input
-                          type="checkbox"
-                          [checked]="atHomeCheckItem.isToBuy"
-                          (change)="toggleAtHomeItemToBuy(atHomeCheckItem)"
-                        />
-                        à acheter
-                      </label>
-                    </li>
-                  }
-                </ul>
+                <div class="at-home-check__content-inner">
+                  <p class="at-home-check__hint">
+                    Souvent à la maison. S'il en manque, « Ajouter » le met dans la liste à acheter.
+                  </p>
+                  <ul class="at-home-check__items">
+                    @for (
+                      atHomeCheckItem of shoppingList.itemsToCheckAtHome;
+                      track atHomeCheckItem.ingredientId
+                    ) {
+                      <li class="at-home-check__item">
+                        <div class="at-home-check__text">
+                          <strong>{{ atHomeCheckItem.ingredientName }}</strong>
+                          <span class="at-home-check__needs">{{
+                            formatAtHomeNeeds(atHomeCheckItem)
+                          }}</span>
+                        </div>
+                        <button
+                          class="button button--small at-home-check__add"
+                          type="button"
+                          [attr.aria-label]="
+                            'Ajouter ' + atHomeCheckItem.ingredientName + ' à la liste'
+                          "
+                          (click)="addAtHomeItemToShoppingList(atHomeCheckItem)"
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 5v14M5 12h14" />
+                          </svg>
+                          Ajouter
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                </div>
               </div>
             </section>
           }
@@ -143,10 +153,25 @@
                         <span class="shopping-line__name">{{
                           shoppingListLine.ingredientName
                         }}</span>
-                        <span class="shopping-line__quantity">{{
+                        <span class="shopping-line__quantity figures">{{
                           formatQuantityWithUnit(shoppingListLine.quantity, shoppingListLine.unit)
                         }}</span>
                       </label>
+                      @if (shoppingListLine.addedFromAtHomeKey; as addedFromAtHomeKey) {
+                        <button
+                          class="icon-button icon-button--quiet shopping-line__return"
+                          type="button"
+                          title="Remettre dans « À vérifier avant de partir »"
+                          [attr.aria-label]="
+                            'Remettre ' +
+                            shoppingListLine.ingredientName +
+                            ' dans À vérifier avant de partir'
+                          "
+                          (click)="returnLineToAtHomeCheck(addedFromAtHomeKey)"
+                        >
+                          ↩
+                        </button>
+                      }
                     </li>
                   }
                 </ul>
@@ -181,13 +206,12 @@
       <div class="empty-state card">
         <span class="empty-state__icon" aria-hidden="true">
           <svg viewBox="0 0 24 24">
-            <path d="M4 5h2l2 11h10l2-8H7" />
-            <circle cx="9" cy="20" r="1.2" />
-            <circle cx="17" cy="20" r="1.2" />
+            <path d="M5 9h14v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" />
+            <path d="M8.5 12V7.5a3.5 3.5 0 0 1 7 0V12" />
           </svg>
         </span>
         <div class="empty-state__text">
-          <h2 class="empty-state__title">Rien à acheter</h2>
+          <h2 class="empty-state__title">Le cabas est vide</h2>
           <p class="muted empty-state__hint">
             Ouvrez une recette, choisissez le nombre de parts et ajoutez-la aux courses.
           </p>

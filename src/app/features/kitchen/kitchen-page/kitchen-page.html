@@ -7,10 +7,19 @@
     servi à autre chose, retirez-la.
   </p>
 
-  @if (lastCookedRecipeTitle() !== null) {
-    <p class="kitchen-confirmation" role="status">
-      Bon appétit ! « {{ lastCookedRecipeTitle() }} » est comptée comme cuisinée.
-    </p>
+  <!-- Recréé à chaque nouvelle recette cuisinée, pour rejouer l'animation de la toque. -->
+  @for (cookedRecipeTitle of [lastCookedRecipeTitle()]; track cookedRecipeTitle) {
+    @if (cookedRecipeTitle !== null) {
+      <p class="kitchen-confirmation" role="status">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 3c1.918 0 3.52 1.35 3.91 3.151a4 4 0 0 1 2.09 7.723V21H6v-7.126a4 4 0 1 1 2.092-7.723A4 4 0 0 1 12 3z"
+          />
+          <path d="M6.161 17.009l11.839-.009" />
+        </svg>
+        Bon appétit ! « {{ cookedRecipeTitle }} » est comptée comme cuisinée.
+      </p>
+    }
   }
   @if (actionErrorMessage() !== null) {
     <p class="error-message" role="alert">{{ actionErrorMessage() }}</p>
@@ -19,7 +28,7 @@
   @if (kitchenRecipesResource.hasValue() && kitchenRecipesResource.value().length === 0) {
     <!-- La dernière recette vient d'être cuisinée ou retirée. -->
     <div class="kitchen-done card">
-      <p class="kitchen-done__title">La cuisine est vide.</p>
+      <p class="kitchen-done__title">Tout est cuisiné, bon appétit !</p>
       <a class="button button--primary button--small" routerLink="/recettes">
         Retour aux recettes
       </a>

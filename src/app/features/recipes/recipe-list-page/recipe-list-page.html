@@ -48,7 +48,7 @@
         }
 
         @if (filterTags().length > 0) {
-          <h2 class="recipe-filters__title">Tags</h2>
+          <h2 class="surtitle recipe-filters__title">Tags</h2>
           <ul class="tag-filters" aria-label="Filtrer par tag">
             <li>
               <button
@@ -130,10 +130,8 @@
                       (click)="addRecipeToShoppingList(recipeSummary)"
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M4 5h2l2 11h10l2-8H7" />
-                        <circle cx="9" cy="20" r="1.2" />
-                        <circle cx="17" cy="20" r="1.2" />
-                        <path d="M14 2.5v5M11.5 5h5" />
+                        <path d="M5 9h14v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" />
+                        <path d="M8.5 12V7.5a3.5 3.5 0 0 1 7 0V12" />
                       </svg>
                     </button>
                   } @else {
@@ -153,7 +151,7 @@
                       >
                         −
                       </button>
-                      <span class="menu-control__servings" aria-live="polite">
+                      <span class="menu-control__servings figures" aria-live="polite">
                         <span class="menu-control__on-menu" aria-hidden="true">✓</span>
                         {{ recipeMenuStatus.totalServings }}&nbsp;parts
                       </span>
