@@ -50,6 +50,8 @@ Rien pour l'instant.
 - **Courses vide** : le message est aligné sous le titre, avec une pastille panier.
 - **Courses** : plus de bouton « Actualiser », la liste se recharge à chaque ouverture.
 - **Fiche recette** : un peu d'air à gauche de « Éditer » au survol du crayon.
+- **Onglet Cuisine** : toujours visible dans la navigation, grisé et non cliquable tant qu'il n'y a
+  rien à cuisiner.
 
 ### Corrections
 

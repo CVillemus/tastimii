@@ -86,6 +86,13 @@
   color: var(--color-accent);
 }
 
+/* Onglet Cuisine quand la cuisine est vide : grisé, pas cliquable. */
+.main-navigation__tab--disabled {
+  color: var(--color-ink);
+  opacity: 0.35;
+  cursor: default;
+}
+
 /*
  * Desktop : en-tête « éditorial », comme la une d'un magazine de cuisine. Le logo au centre,
  * les rubriques dessous en petites capitales, séparées du logo par un filet. L'en-tête défile
@@ -137,7 +144,7 @@
     transition: color 0.15s ease;
   }
 
-  .main-navigation__tab:hover {
+  .main-navigation__tab:hover:not(.main-navigation__tab--disabled) {
     color: var(--color-accent);
   }
 
