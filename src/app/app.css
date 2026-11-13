@@ -3,7 +3,15 @@
   min-height: 100dvh;
 }
 
+/*
+ * L'en-tête forme son propre calque (view-transition-name, dans styles.css) : le z-index de la
+ * barre d'onglets ne compte qu'à l'intérieur. On place donc l'en-tête lui-même au-dessus du
+ * contenu, sinon les éléments positionnés de la page (éditeur de texte…) passent par-dessus
+ * la barre d'onglets fixée en bas sur mobile.
+ */
 .app-header {
+  position: relative;
+  z-index: 10;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
 }

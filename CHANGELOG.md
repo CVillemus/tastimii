@@ -38,6 +38,11 @@ Rien pour l'instant.
 - **Ingrédients** : plus de nombre d'ingrédients dans l'en-tête des types ; la maison « souvent à la
   maison » est devant le nom ; les icônes de l'en-tête et des lignes sont alignées.
 
+### Corrections
+
+- **Mobile** : l'éditeur de texte (Astuces et variantes, étapes) ne passe plus par-dessus la barre
+  d'onglets en bas de l'écran.
+
 ## 12/11/2026
 
 ### Ajouts
