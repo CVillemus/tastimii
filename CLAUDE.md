@@ -18,6 +18,7 @@ Tastimii : le carnet de recettes de Corentin et Marine, utilisé sur leurs tél�
 Depuis le 11/11/2026, Corentin et Marine saisissent leurs vraies recettes. Tout changement de schéma passe par un nouveau script `supabase/migrations/00N_*.sql` qui **reprend les données existantes**. De préférence, ajouter sans supprimer (la version en ligne continue de marcher), et nettoyer les anciennes colonnes dans un script suivant. Pendant les tests, ne créer et ne supprimer que des recettes préfixées `TEST`.
 
 À supprimer dans un prochain script de nettoyage :
+
 - l'ancienne colonne `recipe.steps` (text[]), plus utilisée depuis le script 003 ;
 - la colonne `ingredient_family.parent_family_id` (toujours `null` depuis le script 005) et sa contrainte `ingredient_family_sans_parent`.
 
@@ -66,6 +67,8 @@ src/app/
 ```
 
 ## Git
+
+**Journal des changements** : `CHANGELOG.md` est tenu à jour à chaque changement visible (ajout, changement, correction, script Supabase). Les lignes vont dans « À venir » pendant le travail ; à la mise en ligne sur `main`, « À venir » devient une section datée (JJ/MM/AAAA), dans le même commit. Écrire pour Corentin et Marine (ce qu'on voit dans l'app), pas pour le code.
 
 Les idées pour la suite de l'app sont dans `docs/idees.md` : une idée nouvelle va dans « À faire », une idée faite passe dans « Déjà fait » avec sa date.
 
