@@ -1,0 +1,87 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Cuisine</h1>
+  </div>
+  <p class="muted kitchen-intro">
+    Les recettes dont les courses sont faites. Une fois cuisinée, validez-la ; si les aliments ont
+    servi à autre chose, retirez-la.
+  </p>
+
+  @if (lastCookedRecipeTitle() !== null) {
+    <p class="kitchen-confirmation" role="status">
+      Bon appétit ! « {{ lastCookedRecipeTitle() }} » est comptée comme cuisinée.
+    </p>
+  }
+  @if (actionErrorMessage() !== null) {
+    <p class="error-message" role="alert">{{ actionErrorMessage() }}</p>
+  }
+
+  @if (kitchenRecipesResource.hasValue() && kitchenRecipesResource.value().length === 0) {
+    <!-- La dernière recette vient d'être cuisinée ou retirée. -->
+    <div class="kitchen-done card">
+      <p class="kitchen-done__title">La cuisine est vide.</p>
+      <a class="button button--primary button--small" routerLink="/recettes">
+        Retour aux recettes
+      </a>
+    </div>
+  } @else if (kitchenRecipesResource.hasValue()) {
+    <ul class="kitchen-recipes loaded-content">
+      @for (kitchenRecipe of kitchenRecipesResource.value(); track kitchenRecipe.kitchenEntryId) {
+        @let recipe = kitchenRecipe.recipe;
+        @let isBusy = busyKitchenEntryIds().has(kitchenRecipe.kitchenEntryId);
+        <li class="kitchen-recipe card">
+          <a class="kitchen-recipe__link" [routerLink]="['/recettes', recipe.id]">
+            <app-recipe-photo class="kitchen-recipe__photo" [photoUrl]="recipe.photoUrl" />
+            <div class="kitchen-recipe__text">
+              <h2 class="kitchen-recipe__title">{{ recipe.title }}</h2>
+              <p class="kitchen-recipe__meta">
+                {{ kitchenRecipe.servings }} parts
+                @if (recipe.preparationMinutes !== null) {
+                  · {{ formatPreparationTime(recipe.preparationMinutes) }}
+                }
+                · courses du {{ formatShoppingDate(kitchenRecipe.addedAt) }}
+              </p>
+            </div>
+          </a>
+          <div class="kitchen-recipe__actions">
+            <button
+              class="button button--primary button--small"
+              type="button"
+              [disabled]="isBusy"
+              (click)="markRecipeCooked(kitchenRecipe)"
+            >
+              Cuisinée
+            </button>
+            <button
+              class="button button--quiet button--small"
+              type="button"
+              [disabled]="isBusy"
+              (click)="removeRecipeFromKitchen(kitchenRecipe)"
+            >
+              Retirer
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else if (kitchenRecipesResource.error()) {
+    <p class="status-message error-message">
+      Impossible de charger la cuisine. Vérifiez la connexion.
+    </p>
+  } @else {
+    <p class="visually-hidden" role="status">Chargement de la cuisine…</p>
+    <ul class="kitchen-recipes" aria-hidden="true">
+      @for (skeletonRecipe of skeletonRecipes; track skeletonRecipe) {
+        <li class="kitchen-recipe card">
+          <div class="kitchen-recipe__link">
+            <span class="skeleton kitchen-recipe__photo"></span>
+            <div class="kitchen-recipe__text">
+              <span class="skeleton skeleton--title kitchen-recipe__title"></span>
+              <span class="skeleton skeleton--text skeleton--medium"></span>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>

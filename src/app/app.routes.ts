@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { kitchenNotEmptyGuard } from './core/kitchen/kitchen-not-empty-guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'recettes' },
@@ -41,6 +42,13 @@ export const routes: Routes = [
       import('./features/shopping-list/shopping-list-page/shopping-list-page').then(
         (module) => module.ShoppingListPage,
       ),
+  },
+  {
+    path: 'cuisine',
+    title: 'Cuisine · Tastimii',
+    canActivate: [kitchenNotEmptyGuard],
+    loadComponent: () =>
+      import('./features/kitchen/kitchen-page/kitchen-page').then((module) => module.KitchenPage),
   },
   {
     path: 'ingredients',

@@ -153,6 +153,27 @@
               </section>
             }
           </div>
+
+          <!-- Une fois en magasin et les courses faites : le menu passe en cuisine. -->
+          <div class="finish-shopping card">
+            <div>
+              <p class="finish-shopping__title">Courses faites ?</p>
+              <p class="muted finish-shopping__hint">
+                Les recettes du menu passent en cuisine et la liste est vidée.
+              </p>
+            </div>
+            <button
+              class="button button--primary"
+              type="button"
+              [disabled]="isFinishingShopping()"
+              (click)="finishShopping(shoppingList.menuRecipes.length)"
+            >
+              Courses faites
+            </button>
+          </div>
+          @if (finishShoppingErrorMessage() !== null) {
+            <p class="error-message" role="alert">{{ finishShoppingErrorMessage() }}</p>
+          }
         </section>
       </div>
     } @else {

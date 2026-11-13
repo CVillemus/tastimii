@@ -32,6 +32,23 @@
         </svg>
         Courses
       </a>
+      @if (kitchenStore.hasKitchenRecipes()) {
+        <a
+          class="main-navigation__tab"
+          routerLink="/cuisine"
+          routerLinkActive="main-navigation__tab--active"
+          ariaCurrentWhenActive="page"
+        >
+          <!-- Toque (icône Tabler « chef-hat », licence MIT). -->
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 3c1.918 0 3.52 1.35 3.91 3.151a4 4 0 0 1 2.09 7.723V21H6v-7.126a4 4 0 1 1 2.092-7.723A4 4 0 0 1 12 3z"
+            />
+            <path d="M6.161 17.009l11.839-.009" />
+          </svg>
+          Cuisine
+        </a>
+      }
       <a
         class="main-navigation__tab"
         routerLink="/ingredients"

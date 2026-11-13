@@ -230,6 +230,29 @@ li:last-child .shopping-line {
   font-weight: 400;
 }
 
+/* Validation des courses : sous les rayons, bien visible. */
+.finish-shopping {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: var(--block-gap);
+  border-color: var(--color-accent);
+}
+
+.finish-shopping__title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.finish-shopping__hint {
+  margin: 0.125rem 0 0;
+  font-size: var(--font-size-small);
+}
+
 .clear-button {
   display: flex;
   margin: 0.75rem auto 0;

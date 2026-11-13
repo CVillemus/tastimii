@@ -9,7 +9,9 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { KitchenApi } from '../../../core/kitchen/kitchen-api';
+import { KitchenStore } from '../../../core/kitchen/kitchen-store';
 import { formatQuantityWithUnit } from '../../../core/recipes/quantity';
 import {
   AtHomeCheckItem,
@@ -62,6 +64,16 @@ export class ShoppingListPage {
   protected readonly skeletonAisles: readonly number[] = [1, 2];
 
   private readonly shoppingListApi: ShoppingListApi = inject(ShoppingListApi);
+  private readonly kitchenApi: KitchenApi = inject(KitchenApi);
+  private readonly kitchenStore: KitchenStore = inject(KitchenStore);
+  private readonly router: Router = inject(Router);
+
+  private readonly isFinishingShoppingState: WritableSignal<boolean> = signal(false);
+  protected readonly isFinishingShopping: Signal<boolean> =
+    this.isFinishingShoppingState.asReadonly();
+  private readonly finishShoppingErrorMessageState: WritableSignal<string | null> = signal(null);
+  protected readonly finishShoppingErrorMessage: Signal<string | null> =
+    this.finishShoppingErrorMessageState.asReadonly();
 
   /** Bloc « À vérifier avant de partir » replié ; retenu sur cet appareil. */
   private readonly isAtHomeCheckCollapsedState: WritableSignal<boolean> = signal(
@@ -150,6 +162,31 @@ export class ShoppingListPage {
   protected async removeRecipeFromShoppingList(menuRecipe: ShoppingListMenuRecipe): Promise<void> {
     await this.shoppingListApi.removeRecipeFromShoppingList(menuRecipe.menuEntryId);
     this.shoppingListResource.reload();
+  }
+
+  /** « Courses faites » : les recettes du menu passent en cuisine, puis on ouvre la page Cuisine. */
+  protected async finishShopping(menuRecipeCount: number): Promise<void> {
+    const recipeWord: string = menuRecipeCount > 1 ? 'recettes passent' : 'recette passe';
+    if (
+      !confirm(
+        `Courses faites ? ${menuRecipeCount} ${recipeWord} en cuisine et la liste est vidée.`,
+      )
+    ) {
+      return;
+    }
+    this.isFinishingShoppingState.set(true);
+    this.finishShoppingErrorMessageState.set(null);
+    try {
+      await this.kitchenApi.finishShopping();
+      await this.kitchenStore.refreshKitchenRecipeCount();
+      await this.router.navigate(['/cuisine']);
+    } catch {
+      this.finishShoppingErrorMessageState.set(
+        "Les recettes n'ont pas pu passer en cuisine. Vérifiez la connexion et réessayez.",
+      );
+    } finally {
+      this.isFinishingShoppingState.set(false);
+    }
   }
 
   protected async clearShoppingList(): Promise<void> {

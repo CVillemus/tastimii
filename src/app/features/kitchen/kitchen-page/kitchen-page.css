@@ -1,0 +1,124 @@
+.kitchen-intro {
+  margin: 0 0 var(--block-gap);
+  max-width: var(--page-narrow-max-width);
+}
+
+.kitchen-confirmation {
+  margin: 0 0 var(--block-gap);
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-control);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+  font-weight: 700;
+}
+
+/* Message final, quand la dernière recette a quitté la cuisine. */
+.kitchen-done {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.kitchen-done__title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* Mobile : une recette par ligne, vignette à gauche, boutons dessous. */
+.kitchen-recipes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.kitchen-recipe {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.kitchen-recipe__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.kitchen-recipe__photo {
+  flex-shrink: 0;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-control);
+}
+
+.kitchen-recipe__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.kitchen-recipe__title {
+  font-size: 1.125rem;
+  line-height: 1.25;
+}
+
+.kitchen-recipe__meta {
+  margin: 0.125rem 0 0;
+  font-size: var(--font-size-small);
+  color: var(--color-ink-muted);
+}
+
+.kitchen-recipe__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.kitchen-recipe__actions .button--primary {
+  flex: 1;
+}
+
+/* Desktop : une grille de cartes, comme la liste des recettes. */
+@media (min-width: 48rem) {
+  .kitchen-recipes {
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: 1.5rem;
+  }
+
+  .kitchen-recipe {
+    align-content: space-between;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .kitchen-recipe__link {
+    display: block;
+  }
+
+  .kitchen-recipe__photo {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: 0;
+  }
+
+  .kitchen-recipe__text {
+    padding: 0.875rem 1rem 0;
+  }
+
+  .kitchen-recipe__title {
+    font-size: 1.3125rem;
+  }
+
+  .kitchen-recipe__link:hover .kitchen-recipe__title {
+    color: var(--color-accent);
+  }
+
+  .kitchen-recipe__actions {
+    padding: 0 1rem 1rem;
+  }
+}

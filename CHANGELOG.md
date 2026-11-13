@@ -25,6 +25,11 @@ Rien pour l'instant.
 - **Bloc « À vérifier avant de partir » repliable**, avec le nombre d'ingrédients ; le téléphone
   retient s'il est replié.
 - **Crayon « Éditer »** : au survol, le crayon de la fiche recette s'étend et affiche « Éditer ».
+- **Page Cuisine** : sur Courses, « Courses faites » fait passer les recettes du menu en cuisine et
+  vide la liste. En cuisine, « Cuisinée » valide la recette (elle est comptée), « Retirer » la
+  retire sans la compter. L'onglet Cuisine n'apparaît que s'il y a des recettes à cuisiner.
+- **Compteur de recettes cuisinées** : chaque recette cuisinée est enregistrée (date et parts),
+  pour une fonctionnalité à venir.
 
 ### Changements
 
@@ -52,6 +57,11 @@ Rien pour l'instant.
   d'onglets en bas de l'écran.
 - **Mobile** : le « + » du bouton « Ajouter une recette » est bien centré dans le rond.
 - **Titres de page** : même espace sous la navigation sur Recettes, Courses et Ingrédients.
+
+### Base de données
+
+- `010_cuisine_et_recettes_cuisinees.sql` : tables de la cuisine et de l'historique, et deux
+  fonctions (courses faites, recette cuisinée).
 
 ## 12/11/2026
 

@@ -82,6 +82,15 @@ Rien d'autre : pas de migration Supabase, pas de nouvelle variable, pas d'outil 
 - [ ] **Ne pas relancer** `supabase/migrations/009_emoji_des_types.sql` : il est lancé une seule fois
       sur la base Supabase partagée (le relancer échouerait sur la colonne `emoji`, qui existe déjà).
 
+### Depuis le PC où le projet est dans `C:\Users\Utilisateur\projets\tastimii`, le 13/11/2026 : page Cuisine
+
+- [ ] `git pull`. Pas de nouvelle dépendance : pas besoin de `npm ci`.
+- [ ] **Ne pas relancer** `supabase/migrations/010_cuisine_et_recettes_cuisinees.sql` : il est lancé une
+      seule fois sur la base Supabase partagée (le relancer échouerait sur la table `kitchen_recipe`,
+      qui existe déjà).
+- [ ] Lire `CHANGELOG.md` : le journal des changements est tenu à jour à chaque mise en ligne (règle
+      dans `CLAUDE.md`, section Git).
+
 ### À faire un jour (sur n'importe quel PC, pas urgent)
 
 - [ ] Dans `.github/workflows/deploy-github-pages.yml`, mettre à jour `actions/upload-pages-artifact`

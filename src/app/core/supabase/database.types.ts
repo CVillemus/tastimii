@@ -69,6 +69,22 @@ export type RecipeTagRow = {
   tag_id: string;
 };
 
+/** Recette dont les courses sont faites, en attente d'être cuisinée (script 010). */
+export type KitchenRecipeRow = {
+  id: string;
+  recipe_id: string;
+  servings: number;
+  added_at: string;
+};
+
+/** Historique : une ligne chaque fois qu'une recette est cuisinée (script 010). */
+export type RecipeCookingRow = {
+  id: string;
+  recipe_id: string;
+  servings: number;
+  cooked_at: string;
+};
+
 export type ShoppingListRecipeRow = {
   id: string;
   recipe_id: string;
@@ -128,6 +144,18 @@ export type Database = {
         Update: Partial<ShoppingListRecipeRow>;
         Relationships: [];
       };
+      kitchen_recipe: {
+        Row: KitchenRecipeRow;
+        Insert: Pick<KitchenRecipeRow, 'recipe_id' | 'servings'> & Partial<KitchenRecipeRow>;
+        Update: Partial<KitchenRecipeRow>;
+        Relationships: [];
+      };
+      recipe_cooking: {
+        Row: RecipeCookingRow;
+        Insert: Pick<RecipeCookingRow, 'recipe_id' | 'servings'> & Partial<RecipeCookingRow>;
+        Update: Partial<RecipeCookingRow>;
+        Relationships: [];
+      };
       shopping_list_checked_line: {
         Row: ShoppingListCheckedLineRow;
         Insert: Pick<ShoppingListCheckedLineRow, 'line_key'> & Partial<ShoppingListCheckedLineRow>;
@@ -136,7 +164,18 @@ export type Database = {
       };
     };
     Views: { [_ in never]: never };
-    Functions: { [_ in never]: never };
+    Functions: {
+      /** « Courses faites » : le menu passe en cuisine, la liste est vidée. Renvoie le nombre de recettes. */
+      finish_shopping: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
+      /** « Cuisinée » : ajoute la recette à l'historique et la retire de la cuisine. */
+      mark_kitchen_recipe_cooked: {
+        Args: { kitchen_recipe_id: string };
+        Returns: undefined;
+      };
+    };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };
   };

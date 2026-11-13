@@ -11,6 +11,7 @@ Tastimii : le carnet de recettes de Corentin et Marine, utilisé sur leurs tél�
 - **Liste de courses** : on met des recettes au menu avec un nombre de parts, depuis la fiche recette ou directement depuis la vignette de la liste des recettes (bouton panier, puis compteur « − N parts + » ; calcul dans `core/shopping-list/recipe-menu-status.ts`). Les quantités sont recalculées (`parts voulues ÷ parts de base`), additionnées par ingrédient et par unité, puis rangées par rayon, avec des cases à cocher enregistrées en base.
 - **Souvent à la maison** (`ingredient.is_usually_at_home`) : ces ingrédients (sel, beurre, bouillon…) ne vont pas d'office dans la liste mais dans « À vérifier avant de partir », avec la quantité par recette. Cochés « à acheter » (clé `a-acheter|<ingredient_id>` dans `shopping_list_checked_line`), ils rejoignent leur rayon.
 - **Aucune sécurité voulue** : pas de comptes, tout le monde peut tout faire.
+- **Cuisine** : « Courses faites » (page Courses) fait passer les recettes du menu en cuisine (`kitchen_recipe`) et vide la liste, en une fonction SQL (`finish_shopping`). En cuisine, « Cuisinée » ajoute une ligne à l'historique `recipe_cooking` (nombre de fois cuisinée = nombre de lignes) via `mark_kitchen_recipe_cooked` ; « Retirer » la retire sans la compter. L'onglet et la page Cuisine n'existent que si la cuisine contient des recettes (`KitchenStore`, `kitchenNotEmptyGuard`).
 - **Pas de temps réel** : la liste se recharge à chaque ouverture de la page Courses.
 
 ## Données réelles
