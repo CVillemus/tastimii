@@ -29,6 +29,18 @@ Dernière mise à jour : 12/11/2026.
 
 ### Recettes
 
+- [ ] **Plats faits « au feeling »** (croque-monsieur, gnocchis… qu'on fait sans suivre de recette).
+      **En attente** (15/11/2026) : on teste d'abord les premières courses sans, et on verra si c'est
+      utile. Proposition :
+  - une case « On la fait de tête » en haut du formulaire : plus d'étapes proposées (la section
+    Préparation reste disponible), les ingrédients restent pour les courses, quantités facultatives
+    (« Aucune unité ») ;
+  - un badge « Au feeling » sur la fiche (sans section Préparation vide) et sur la vignette, plus un
+    filtre dans la liste des recettes ;
+  - le reste ne change pas (panier, courses, cuisine, compteur) ;
+  - petite migration : une case `is_freestyle` (nom à choisir) sur `recipe`, décochée par défaut.
+  - Possible dès aujourd'hui sans développement : une recette avec seulement titre et ingrédients,
+    les quatre étapes supprimées, et un tag « Au feeling ».
 - [ ] **Photos** : la qualité dépend de la photo prise. Côté poids, pas d'inquiétude à court terme
       (voir « Réponses déjà apportées »). Piste : passer en WebP pour diviser le poids par ~2.
 - [ ] **Signaler les incohérences ingrédients ↔ étapes** : un ingrédient cité dans les étapes mais
