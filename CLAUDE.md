@@ -18,6 +18,8 @@ Tastimii : le carnet de recettes de Corentin et Marine, utilisé sur leurs tél�
 
 Depuis le 11/11/2026, Corentin et Marine saisissent leurs vraies recettes. Tout changement de schéma passe par un nouveau script `supabase/migrations/00N_*.sql` qui **reprend les données existantes**. De préférence, ajouter sans supprimer (la version en ligne continue de marcher), et nettoyer les anciennes colonnes dans un script suivant. Pendant les tests, ne créer et ne supprimer que des recettes préfixées `TEST`.
 
+**Créer ou compléter une recette** (par exemple depuis une photo de livre) : suivre `docs/saisie-recettes.md` (étapes en puces à l'infinitif, sans point final ni parenthèses, ingrédients existants réutilisés, origine « Livre <titre> p. <page> »…). Enrichir ce guide quand Corentin ou Marine corrigent une recette.
+
 À supprimer dans un prochain script de nettoyage :
 
 - l'ancienne colonne `recipe.steps` (text[]), plus utilisée depuis le script 003 ;
