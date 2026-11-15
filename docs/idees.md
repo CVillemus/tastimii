@@ -4,7 +4,7 @@ Liste vivante : on ajoute les idées au fil de l'eau. Quand une idée est faite,
 « Déjà fait » (en bas), avec sa date. Rien dans « À faire » n'est encore décidé : chaque idée se
 discute avant d'être développée.
 
-Dernière mise à jour : 12/11/2026.
+Dernière mise à jour : 15/11/2026.
 
 ---
 
@@ -50,21 +50,13 @@ Dernière mise à jour : 12/11/2026.
 
 ### Tags
 
-- [ ] **Ranger les tags par catégorie** : aujourd'hui tous les tags sont au même niveau. Trois
-      familles se dessinent :
-  - **Type de plat** : soupe, salade, plat, dessert, apéro…
-  - **Saison** : été, hiver… (« toute l'année » = aucun tag de saison, pour ne pas le cocher partout) ;
-  - **Mood** : express, mijoté, complexe…
-
-  Pistes à discuter :
-  - en base, une colonne `category` sur `tag` (ou une petite table `tag_category`), reprise des
-    tags existants dans une migration (« Rapide » → Mood, etc.) ;
-  - dans le formulaire, les tags groupés par catégorie ; pour le type de plat, un seul choix
-    (une recette est une soupe *ou* une salade) ou plusieurs ?
-  - dans la liste des recettes, un filtre par catégorie (« Saison : hiver » + « Mood : express ») ;
-  - « Express » pourrait être déduit de la durée (moins de 30 min) plutôt que coché à la main ;
-  - la saison pourrait être proposée par défaut selon le mois en cours (« recettes d'hiver » en
-    novembre).
+- [ ] **« Express » et temps de préparation / cuisson séparés** (mis de côté le 15/11/2026) :
+      aujourd'hui une recette n'a qu'une durée. Séparer le temps de préparation et le temps de
+      cuisson (comme dans les livres : « 10 min + 15 min »), puis déduire un badge « Express » de
+      ces temps (par exemple préparation de 15 min ou moins), au lieu d'un tag coché à la main.
+      Le tag « Rapide » existe encore en attendant.
+- [ ] **Saison proposée selon le mois** : mettre en avant les recettes d'hiver en novembre, d'été
+      en juin (filtre présélectionné ou section « De saison »).
 
 ### Partout dans l'app
 
@@ -118,6 +110,13 @@ Dernière mise à jour : 12/11/2026.
 ---
 
 ## Déjà fait
+
+### 15/11/2026
+
+- [x] **Tags rangés par catégorie** : 🍲 Type de plat (plusieurs), 🌦️ Saison (Été ou Hiver, aucune =
+      toute l'année) et ✨ Envie (plusieurs, Végétarien compris) ; tags de départ créés ; filtres
+      groupés par catégorie ; page « Gérer les tags » pour renommer, changer de catégorie, supprimer
+      ou ajouter (migration 011). Les recettes sont taguées à la main par Corentin et Marine.
 
 ### 12/11/2026
 

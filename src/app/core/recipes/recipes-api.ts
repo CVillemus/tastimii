@@ -16,7 +16,8 @@ import {
   RecipeStep,
   RecipeSummary,
 } from './recipe.model';
-import { compareTagsByName, RecipeTag } from '../tags/tag.model';
+import { RecipeTag, sortTagsByCategory } from '../tags/tag.model';
+import { toRecipeTag } from '../tags/tags-api';
 import { RECIPE_PHOTOS_BUCKET } from './recipe-photos-api';
 
 /** Appels Supabase des recettes. */
@@ -183,7 +184,7 @@ export class RecipesApi {
     const tagsById: Map<string, RecipeTag> = new Map(
       tagsResponse.data.map((tagRow: TagRow): [string, RecipeTag] => [
         tagRow.id,
-        { id: tagRow.id, name: tagRow.name },
+        toRecipeTag(tagRow),
       ]),
     );
     const tagsByRecipeId: Map<string, RecipeTag[]> = new Map();
@@ -196,8 +197,9 @@ export class RecipesApi {
         ]);
       }
     }
-    for (const recipeTags of tagsByRecipeId.values()) {
-      recipeTags.sort(compareTagsByName);
+    // Type de plat, puis saison, puis envie : l'ordre d'affichage sur les vignettes et la fiche.
+    for (const [recipeId, recipeTags] of tagsByRecipeId) {
+      tagsByRecipeId.set(recipeId, sortTagsByCategory(recipeTags));
     }
     return tagsByRecipeId;
   }

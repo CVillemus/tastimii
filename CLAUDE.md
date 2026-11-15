@@ -5,7 +5,7 @@
 Tastimii : le carnet de recettes de Corentin et Marine, utilisé sur leurs téléphones.
 
 - **Recettes** : titre, nombre de parts de base, durée, photo (bucket Storage public `recipe-photos`, réduite à 1600 px avant l'envoi), « Astuces et variantes » en texte riche (colonne `description`, en tête de recette, éditeur Tiptap, stockée en HTML ; se modifie seulement dans le formulaire), origine (`recipe.origin`, texte libre : lien, livre, personne ; une adresse web devient un lien), ingrédients (quantité + unité), étapes avec un titre facultatif et un texte riche (`recipe.preparation_steps`, jsonb). Une nouvelle recette démarre avec 4 étapes proposées (`STARTER_RECIPE_STEPS` : Le calme avant la tempête, Le coup de feu, Lâcher prise, Le bouquet final), avec une légende dans le formulaire tant que le nom est gardé ; modifiables, supprimables, réordonnables par glisser-déposer.
-- **Tags** : une recette a zéro, un ou plusieurs tags (`tag`, `recipe_tag`), créés depuis le formulaire. La liste filtre par tags : une recette doit avoir tous les tags choisis.
+- **Tags** : rangés en trois catégories (`tag.category`, `TAG_CATEGORIES` dans `core/tags/tag.model.ts`) : type de plat (plusieurs par recette), saison (Été, Hiver : au plus une, aucune = toute l'année) et envie (plusieurs). Gérés sur la page `/tags` (renommer, changer de catégorie, supprimer, ajouter) ou créés depuis le formulaire avec leur catégorie. Filtres de la liste (`filterByTagSelection`) : un des types choisis, la saison choisie plus toute l'année, toutes les envies choisies.
 - **Ingrédients** : chacun a directement un **type** (Cuisses de poulet → Viande), sans sous-types. Le type est le **rayon** de la liste de courses. En base, un type est une ligne de `ingredient_family` (l'ingrédient pointe dessus par `family_id`) ; dans le code, on parle de `IngredientType` / `typeId`. Chaque type a un emoji à part (`ingredient_family.emoji`, affiché devant le nom avec `formatIngredientTypeLabel`) ; ne jamais mettre l'emoji dans le nom (le tri se fait sur le nom).
 - **Unités** : poids et volumes stockés dans la plus petite unité (g, mL), affichés dans la plus lisible (`toReadableQuantity` : 1500 g → 1,5 kg, 250 mL → 25 cL, 1000 mL → 1 L). Cuillères abrégées : cs, cc. Les anciennes écritures (ml, c. à soupe…) sont affichées sous leur forme abrégée (`formatUnit`). Dans le formulaire, « nb » = unité vide avec quantité (4 diots), « Aucune unité » = unité vide sans quantité (au goût).
 - **Liste de courses** : on met des recettes au menu avec un nombre de parts, depuis la fiche recette ou directement depuis la vignette de la liste des recettes (bouton panier, puis compteur « − N parts + » ; calcul dans `core/shopping-list/recipe-menu-status.ts`). Les quantités sont recalculées (`parts voulues ÷ parts de base`), additionnées par ingrédient et par unité, puis rangées par rayon, avec des cases à cocher enregistrées en base.
@@ -71,6 +71,7 @@ src/app/
     recipes/        liste, détail, formulaire (création + modification)
     shopping-list/  page des courses
     ingredients/    gestion des types et des ingrédients
+    tags/           gestion des tags et de leurs catégories
   shared/
     rich-text-editor/  éditeur de texte riche (Tiptap), compatible `[formField]`
     rich-text/         liens cliquables à l'affichage (`linkifyRichText`)

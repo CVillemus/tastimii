@@ -47,35 +47,41 @@
           </div>
         }
 
-        @if (filterTags().length > 0) {
-          <h2 class="surtitle recipe-filters__title">Tags</h2>
-          <ul class="tag-filters" aria-label="Filtrer par tag">
-            <li>
-              <button
-                class="tag-chip"
-                type="button"
-                [class.tag-chip--selected]="selectedTagIds().size === 0"
-                [attr.aria-pressed]="selectedTagIds().size === 0"
-                (click)="clearTagFilters()"
-              >
-                Toutes
-              </button>
-            </li>
-            @for (filterTag of filterTags(); track filterTag.id) {
-              <li>
-                <button
-                  class="tag-chip"
-                  type="button"
-                  [class.tag-chip--selected]="selectedTagIds().has(filterTag.id)"
-                  [attr.aria-pressed]="selectedTagIds().has(filterTag.id)"
-                  (click)="toggleTagFilter(filterTag.id)"
-                >
-                  {{ filterTag.name }}
-                </button>
-              </li>
-            }
-          </ul>
+        <!-- Un groupe de filtres par catégorie (seulement les tags portés par une recette). -->
+        @for (filterTagGroup of filterTagGroups(); track filterTagGroup.definition.category) {
+          @let filterCategory = filterTagGroup.definition;
+          <div class="filter-group">
+            <h2 class="surtitle recipe-filters__title" [id]="'filtre-' + filterCategory.category">
+              <span aria-hidden="true">{{ filterCategory.emoji }}</span>
+              {{ filterCategory.label }}
+            </h2>
+            <ul class="tag-filters" [attr.aria-labelledby]="'filtre-' + filterCategory.category">
+              @for (filterTag of filterTagGroup.tags; track filterTag.id) {
+                <li>
+                  <button
+                    class="tag-chip"
+                    type="button"
+                    [class.tag-chip--selected]="selectedTagIds().has(filterTag.id)"
+                    [attr.aria-pressed]="selectedTagIds().has(filterTag.id)"
+                    (click)="toggleTagFilter(filterTag)"
+                  >
+                    {{ filterTag.name }}
+                  </button>
+                </li>
+              }
+            </ul>
+          </div>
         }
+        @if (selectedTagIds().size > 0) {
+          <button
+            class="button button--quiet button--small recipe-filters__clear"
+            type="button"
+            (click)="clearTagFilters()"
+          >
+            Retirer les filtres
+          </button>
+        }
+        <a class="recipe-filters__manage" routerLink="/tags">Gérer les tags</a>
       </aside>
     }
 

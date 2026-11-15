@@ -82,6 +82,14 @@ Rien d'autre : pas de migration Supabase, pas de nouvelle variable, pas d'outil 
 - [ ] **Ne pas relancer** `supabase/migrations/009_emoji_des_types.sql` : il est lancé une seule fois
       sur la base Supabase partagée (le relancer échouerait sur la colonne `emoji`, qui existe déjà).
 
+### Depuis le PC où le projet est dans `C:\Users\marin\Documents\Tastimii`, le 15/11/2026 : catégories de tags
+
+- [ ] `git pull`. Pas de nouvelle dépendance : pas besoin de `npm ci`.
+- [ ] **Ne pas relancer** `supabase/migrations/011_categories_de_tags.sql` : il est lancé une seule
+      fois sur la base Supabase partagée (le relancer échouerait sur la colonne `category`, qui
+      existe déjà).
+- [ ] Pour créer une recette depuis une photo de livre : suivre `docs/saisie-recettes.md`.
+
 ### À faire un jour (sur n'importe quel PC, pas urgent)
 
 - [ ] Dans `.github/workflows/deploy-github-pages.yml`, mettre à jour `actions/upload-pages-artifact`

@@ -1,0 +1,92 @@
+.tags-title {
+  margin: 0 0 0.5rem;
+}
+
+.tags-intro {
+  max-width: var(--page-narrow-max-width);
+}
+
+/* Mobile : une carte par catégorie, les unes sous les autres. */
+.tag-categories {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.tag-category {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+}
+
+.tag-category__title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: var(--color-accent);
+}
+
+.tag-category__rule,
+.tag-category__empty {
+  margin: -0.25rem 0 0;
+  font-size: var(--font-size-small);
+}
+
+.tag-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tag-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.tag-row__count {
+  font-size: var(--font-size-small);
+  margin-right: 0.25rem;
+}
+
+.tag-row .icon-button svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Modification en place : nom et catégorie, puis les boutons. */
+.tag-edit-form {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+}
+
+.tag-edit-form__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.new-tag-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+/* Desktop : les trois catégories côte à côte. */
+@media (min-width: 48rem) {
+  .tag-categories {
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+}

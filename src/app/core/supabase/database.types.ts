@@ -61,6 +61,8 @@ export type RecipeIngredientRow = {
 export type TagRow = {
   id: string;
   name: string;
+  /** 'type_de_plat', 'saison' ou 'envie' (script 011). */
+  category: string;
   created_at: string;
 };
 

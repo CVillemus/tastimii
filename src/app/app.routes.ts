@@ -58,5 +58,11 @@ export const routes: Routes = [
         (module) => module.IngredientsPage,
       ),
   },
+  {
+    path: 'tags',
+    title: 'Tags · Tastimii',
+    loadComponent: () =>
+      import('./features/tags/tags-page/tags-page').then((module) => module.TagsPage),
+  },
   { path: '**', redirectTo: 'recettes' },
 ];

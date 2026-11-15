@@ -47,7 +47,17 @@ import { formatReadableQuantityHint } from '../../../core/recipes/quantity';
 import { RecipePhotosApi } from '../../../core/recipes/recipe-photos-api';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import { resizeRecipePhoto } from '../../../core/recipes/resize-recipe-photo';
-import { compareTagsByName, normalizeTagName, RecipeTag } from '../../../core/tags/tag.model';
+import {
+  compareTagsByName,
+  groupTagsByCategory,
+  normalizeTagName,
+  RecipeTag,
+  TAG_CATEGORIES,
+  TagCategory,
+  TagCategoryDefinition,
+  TagCategoryGroup,
+  toggleRecipeTag,
+} from '../../../core/tags/tag.model';
 import { TagsApi } from '../../../core/tags/tags-api';
 import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
 import {
@@ -213,7 +223,14 @@ export class RecipeFormPage {
   protected readonly photoErrorMessage: Signal<string | null> =
     this.photoErrorMessageState.asReadonly();
 
+  /** Les tags rangés par catégorie (type de plat, saison, envie), catégories vides comprises. */
+  protected readonly tagCategoryGroups: Signal<TagCategoryGroup[]> = computed(() =>
+    groupTagsByCategory(this.tagsResource.hasValue() ? this.tagsResource.value() : [], true),
+  );
+  protected readonly tagCategories: readonly TagCategoryDefinition[] = TAG_CATEGORIES;
+
   protected readonly newTagName: WritableSignal<string> = signal('');
+  protected readonly newTagCategory: WritableSignal<TagCategory> = signal('type_de_plat');
   private readonly isCreatingTagState: WritableSignal<boolean> = signal(false);
   protected readonly isCreatingTag: Signal<boolean> = this.isCreatingTagState.asReadonly();
   private readonly tagErrorMessageState: WritableSignal<string | null> = signal(null);
@@ -264,17 +281,21 @@ export class RecipeFormPage {
     return this.recipeFormModel().tagIds.includes(tagId);
   }
 
-  protected toggleTag(tagId: string): void {
+  /** Coche ou décoche un tag ; pour la saison, cocher Hiver décoche Été. */
+  protected toggleTag(toggledTag: RecipeTag): void {
+    const allTags: RecipeTag[] = this.tagsResource.hasValue() ? this.tagsResource.value() : [];
     this.recipeFormModel.update((formModel: RecipeFormModel) => ({
       ...formModel,
-      tagIds: formModel.tagIds.includes(tagId)
-        ? formModel.tagIds.filter((selectedTagId: string) => selectedTagId !== tagId)
-        : [...formModel.tagIds, tagId],
+      tagIds: toggleRecipeTag(formModel.tagIds, toggledTag, allTags),
     }));
   }
 
   protected updateNewTagName(inputEvent: Event): void {
     this.newTagName.set((inputEvent.target as HTMLInputElement).value);
+  }
+
+  protected updateNewTagCategory(changeEvent: Event): void {
+    this.newTagCategory.set((changeEvent.target as HTMLSelectElement).value as TagCategory);
   }
 
   /** Crée le tag tapé (ou reprend celui qui existe déjà sous ce nom) et le coche. */
@@ -288,7 +309,7 @@ export class RecipeFormPage {
       .find((tag: RecipeTag) => normalizeTagName(tag.name) === normalizeTagName(tagName));
     if (existingTag !== undefined) {
       if (!this.isTagSelected(existingTag.id)) {
-        this.toggleTag(existingTag.id);
+        this.toggleTag(existingTag);
       }
       this.newTagName.set('');
       return;
@@ -296,11 +317,11 @@ export class RecipeFormPage {
     this.isCreatingTagState.set(true);
     this.tagErrorMessageState.set(null);
     try {
-      const createdTag: RecipeTag = await this.tagsApi.createTag(tagName);
-      this.tagsResource.update((tags: RecipeTag[]) =>
-        [...tags, createdTag].sort(compareTagsByName),
+      const createdTag: RecipeTag = await this.tagsApi.createTag(tagName, this.newTagCategory());
+      this.tagsResource.update((tags: RecipeTag[] | undefined) =>
+        [...(tags ?? []), createdTag].sort(compareTagsByName),
       );
-      this.toggleTag(createdTag.id);
+      this.toggleTag(createdTag);
       this.newTagName.set('');
     } catch {
       this.tagErrorMessageState.set("Le tag n'a pas pu être créé.");

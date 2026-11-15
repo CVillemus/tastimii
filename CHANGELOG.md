@@ -13,6 +13,34 @@ même commit.
 
 Rien pour l'instant.
 
+## 15/11/2026
+
+### Ajouts
+
+- **Tags rangés en trois catégories** : 🍲 Type de plat (Quiche & tarte, Soupe, Salade, Pâtes, Riz,
+  Gratin, Mijoté, Poêlée, Dessert, Apéro), 🌦️ Saison (Été, Hiver) et ✨ Envie (Réconfortant, Léger,
+  Pour recevoir, Végétarien, Peu de vaisselle, À l'avance). Les nouveaux tags sont créés, aucune
+  recette n'est taguée d'office.
+- **Page « Gérer les tags »** (liens depuis la liste des recettes et le formulaire) : renommer un
+  tag, changer sa catégorie, le supprimer (l'app dit de combien de recettes il sera retiré), en
+  ajouter dans chaque catégorie.
+
+### Changements
+
+- **Formulaire de recette** : les tags sont groupés par catégorie. La saison n'accepte qu'un choix
+  (cocher Hiver décoche Été) ; sans saison, la recette est de toute l'année. Un nouveau tag se crée
+  avec sa catégorie.
+- **Filtres de la liste des recettes** groupés par catégorie : un type de plat parmi ceux choisis
+  (Pâtes ou Soupe), la saison choisie plus les recettes de toute l'année, et toutes les envies
+  choisies (Végétarien et Pour recevoir). Un bouton « Retirer les filtres » remplace « Toutes ».
+- **Tags sur les vignettes et la fiche** : dans l'ordre type de plat, saison, envie.
+- **« Préparation en avance »** s'appelle maintenant « À l'avance ».
+
+### Base de données
+
+- `011_categories_de_tags.sql` : ajoute la catégorie des tags, crée les tags de départ et renomme
+  « Préparation en avance ».
+
 ## 13/11/2026
 
 ### Ajouts

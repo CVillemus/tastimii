@@ -25,7 +25,14 @@ import {
   RecipeMenuStatus,
 } from '../../../core/shopping-list/shopping-list.model';
 import { ShoppingListApi } from '../../../core/shopping-list/shopping-list-api';
-import { collectUsedTags, filterBySelectedTags, RecipeTag } from '../../../core/tags/tag.model';
+import {
+  collectUsedTags,
+  filterByTagSelection,
+  groupTagsByCategory,
+  RecipeTag,
+  TagCategoryGroup,
+  toggleRecipeTag,
+} from '../../../core/tags/tag.model';
 import { RecipePhoto } from '../recipe-photo/recipe-photo';
 
 /** Accueil : toutes nos recettes, avec une recherche par titre et un filtre par tags. */
@@ -55,7 +62,10 @@ export class RecipeListPage {
       (recipeSummary: RecipeSummary) =>
         normalizeForSearch(recipeSummary.title).includes(normalizedSearchText),
     );
-    return filterBySelectedTags(recipesMatchingSearch, this.selectedTagIds());
+    const selectedTags: RecipeTag[] = this.filterTags().filter((filterTag: RecipeTag) =>
+      this.selectedTagIds().has(filterTag.id),
+    );
+    return filterByTagSelection(recipesMatchingSearch, selectedTags);
   });
 
   /** Tags proposés comme filtres : seulement ceux qui sont sur au moins une recette. */
@@ -63,6 +73,11 @@ export class RecipeListPage {
     this.recipeSummariesResource.hasValue()
       ? collectUsedTags(this.recipeSummariesResource.value())
       : [],
+  );
+
+  /** Les filtres rangés par catégorie : type de plat, saison, envie. */
+  protected readonly filterTagGroups: Signal<TagCategoryGroup[]> = computed(() =>
+    groupTagsByCategory(this.filterTags()),
   );
 
   private readonly selectedTagIdsState: WritableSignal<ReadonlySet<string>> = signal(new Set());
@@ -159,16 +174,12 @@ export class RecipeListPage {
     this.recipeSearchText.set((inputEvent.target as HTMLInputElement).value);
   }
 
-  protected toggleTagFilter(tagId: string): void {
-    this.selectedTagIdsState.update((selectedTagIds: ReadonlySet<string>) => {
-      const nextSelectedTagIds: Set<string> = new Set(selectedTagIds);
-      if (nextSelectedTagIds.has(tagId)) {
-        nextSelectedTagIds.delete(tagId);
-      } else {
-        nextSelectedTagIds.add(tagId);
-      }
-      return nextSelectedTagIds;
-    });
+  /** Coche ou décoche un filtre ; pour la saison, choisir Hiver retire Été. */
+  protected toggleTagFilter(toggledTag: RecipeTag): void {
+    this.selectedTagIdsState.update(
+      (selectedTagIds: ReadonlySet<string>) =>
+        new Set(toggleRecipeTag([...selectedTagIds], toggledTag, this.filterTags())),
+    );
   }
 
   protected clearTagFilters(): void {

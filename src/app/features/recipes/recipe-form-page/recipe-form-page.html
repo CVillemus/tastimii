@@ -115,24 +115,53 @@
         </section>
 
         <section>
-          <h2 class="section-title">Tags</h2>
+          <div class="tags-heading">
+            <h2 class="section-title">Tags</h2>
+            <a class="tags-heading__manage" routerLink="/tags">Gérer les tags</a>
+          </div>
           @if (tagsResource.hasValue()) {
-            @if (tagsResource.value().length > 0) {
-              <ul class="tag-choices" aria-label="Tags de la recette">
-                @for (tag of tagsResource.value(); track tag.id) {
-                  <li>
-                    <button
-                      class="tag-chip"
-                      type="button"
-                      [class.tag-chip--selected]="isTagSelected(tag.id)"
-                      [attr.aria-pressed]="isTagSelected(tag.id)"
-                      (click)="toggleTag(tag.id)"
-                    >
-                      {{ tag.name }}
-                    </button>
-                  </li>
+            <!-- Une ligne par catégorie : type de plat, saison (un seul choix), envie. -->
+            @for (
+              tagCategoryGroup of tagCategoryGroups();
+              track tagCategoryGroup.definition.category
+            ) {
+              @let categoryDefinition = tagCategoryGroup.definition;
+              <div class="tag-category">
+                <h3
+                  class="tag-category__title"
+                  [id]="'tag-category-' + categoryDefinition.category"
+                >
+                  <span aria-hidden="true">{{ categoryDefinition.emoji }}</span>
+                  {{ categoryDefinition.label }}
+                  @if (categoryDefinition.noTagLabel !== null) {
+                    <span class="tag-category__hint">
+                      · un seul choix, aucun = {{ categoryDefinition.noTagLabel.toLowerCase() }}
+                    </span>
+                  }
+                </h3>
+                @if (tagCategoryGroup.tags.length > 0) {
+                  <ul
+                    class="tag-choices"
+                    [attr.aria-labelledby]="'tag-category-' + categoryDefinition.category"
+                  >
+                    @for (tag of tagCategoryGroup.tags; track tag.id) {
+                      <li>
+                        <button
+                          class="tag-chip"
+                          type="button"
+                          [class.tag-chip--selected]="isTagSelected(tag.id)"
+                          [attr.aria-pressed]="isTagSelected(tag.id)"
+                          (click)="toggleTag(tag)"
+                        >
+                          {{ tag.name }}
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="tag-category__empty">Pas encore de tag</p>
                 }
-              </ul>
+              </div>
             }
             <div class="new-tag">
               <label class="visually-hidden" for="new-tag-name">Nouveau tag</label>
@@ -140,11 +169,26 @@
                 id="new-tag-name"
                 type="text"
                 autocomplete="off"
-                placeholder="Nouveau tag : Végétarien"
+                placeholder="Nouveau tag"
                 [value]="newTagName()"
                 (input)="updateNewTagName($event)"
                 (keydown.enter)="$event.preventDefault(); addNewTag()"
               />
+              <label class="visually-hidden" for="new-tag-category">Catégorie du nouveau tag</label>
+              <select
+                id="new-tag-category"
+                class="new-tag__category"
+                (change)="updateNewTagCategory($event)"
+              >
+                @for (tagCategory of tagCategories; track tagCategory.category) {
+                  <option
+                    [value]="tagCategory.category"
+                    [selected]="tagCategory.category === newTagCategory()"
+                  >
+                    {{ tagCategory.emoji }} {{ tagCategory.label }}
+                  </option>
+                }
+              </select>
               <button
                 class="button button--small"
                 type="button"
