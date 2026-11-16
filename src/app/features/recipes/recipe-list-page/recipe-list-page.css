@@ -25,9 +25,15 @@
   display: none;
 }
 
-/* Mobile : recherche puis tags, empilés au-dessus de la liste. */
+/* Mobile : recherche au-dessus de la liste (sur desktop, l'écart vient de .page-columns). */
 .recipe-list-layout {
   gap: 0.75rem;
+}
+
+@media (min-width: 48rem) {
+  .recipe-list-layout {
+    gap: var(--columns-gap);
+  }
 }
 
 .recipe-filters {

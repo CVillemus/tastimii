@@ -59,6 +59,8 @@
   --page-narrow-max-width: 44rem;
   /* Colonne latérale des pages en deux colonnes sur desktop. */
   --sidebar-width: 20rem;
+  /* Écart entre la colonne latérale et la colonne principale (desktop). */
+  --columns-gap: 3rem;
   /* Distance au haut de l'écran des colonnes collantes (ingrédients, filtres) sur desktop. */
   --sticky-top: 1.5rem;
   --block-gap: 1rem;
@@ -473,7 +475,7 @@ input[type='checkbox']:checked {
   .page-columns {
     grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
     align-items: start;
-    gap: 2.5rem;
+    gap: var(--columns-gap);
   }
 
   .page-columns--sidebar-end {
@@ -484,6 +486,22 @@ input[type='checkbox']:checked {
   .page-columns__sidebar {
     position: sticky;
     top: var(--sticky-top);
+  }
+
+  /* Filet vertical au milieu de l'écart, comme entre deux colonnes de magazine. */
+  .page-columns__sidebar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: calc(var(--columns-gap) / -2);
+    width: 1px;
+    background: var(--color-border);
+  }
+
+  .page-columns--sidebar-end .page-columns__sidebar::after {
+    right: auto;
+    left: calc(var(--columns-gap) / -2);
   }
 }
 
