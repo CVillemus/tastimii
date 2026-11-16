@@ -53,11 +53,13 @@ import { RecipePhoto } from '../recipe-photo/recipe-photo';
   selector: 'app-recipe-list-page',
   imports: [CdkMenu, CdkMenuItem, CdkMenuTrigger, RouterLink, RecipePhoto],
   templateUrl: './recipe-list-page.html',
-  styleUrl: './recipe-list-page.css',
+  // Styles de la page et de la vue liste, puis ceux de la vue mosaïque (cartes).
+  styleUrls: ['./recipe-list-page.css', './recipe-list-mosaic.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipeListPage {
   private readonly recipesApi: RecipesApi = inject(RecipesApi);
+  private readonly documentRef: Document = inject(DOCUMENT);
   private readonly shoppingListApi: ShoppingListApi = inject(ShoppingListApi);
 
   protected readonly recipeSummariesResource: ResourceRef<RecipeSummary[] | undefined> = resource({
@@ -87,6 +89,17 @@ export class RecipeListPage {
   /** Tri de la liste (critère et sens), retenu sur cet appareil. */
   private readonly recipeSortState: WritableSignal<RecipeSort> = signal(readRecipeSort());
   protected readonly recipeSort: Signal<RecipeSort> = this.recipeSortState.asReadonly();
+
+  /** Vue de la liste : mosaïque de cartes ou lignes ; retenue sur cet appareil. */
+  private readonly recipeListViewState: WritableSignal<RecipeListView> = signal(
+    readRecipeListView(this.documentRef),
+  );
+  protected readonly recipeListView: Signal<RecipeListView> = this.recipeListViewState.asReadonly();
+
+  protected changeRecipeListView(recipeListView: RecipeListView): void {
+    this.recipeListViewState.set(recipeListView);
+    saveRecipeListView(recipeListView);
+  }
 
   /** Critères proposés, comme les en-têtes d'un tableau. */
   protected readonly recipeSortOptions: readonly { field: RecipeSortField; label: string }[] = [
@@ -124,7 +137,6 @@ export class RecipeListPage {
   /** Nombre de cartes grises affichées pendant le chargement. */
   protected readonly skeletonCards: readonly number[] = [1, 2, 3, 4, 5, 6];
 
-  private readonly documentRef: Document = inject(DOCUMENT);
   private readonly kitchenApi: KitchenApi = inject(KitchenApi);
   private readonly kitchenStore: KitchenStore = inject(KitchenStore);
 
@@ -273,6 +285,34 @@ export class RecipeListPage {
     clearTimeout(this.toastTimeoutId);
     this.toastMessageState.set(message);
     this.toastTimeoutId = setTimeout(() => this.toastMessageState.set(null), 3000);
+  }
+}
+
+/** Mosaïque de cartes (photo d'abord) ou lignes (vignette à gauche). */
+type RecipeListView = 'mosaic' | 'rows';
+
+const RECIPE_LIST_VIEW_STORAGE_KEY: string = 'tastimii.recipe-list-view';
+
+/** Vue retenue, sinon mosaïque sur desktop et liste sur mobile. */
+function readRecipeListView(documentRef: Document): RecipeListView {
+  try {
+    const storedView: string | null = localStorage.getItem(RECIPE_LIST_VIEW_STORAGE_KEY);
+    if (storedView === 'mosaic' || storedView === 'rows') {
+      return storedView;
+    }
+  } catch {
+    // Stockage indisponible : on garde la vue par défaut.
+  }
+  const isDesktop: boolean =
+    documentRef.defaultView?.matchMedia('(min-width: 48rem)').matches ?? false;
+  return isDesktop ? 'mosaic' : 'rows';
+}
+
+function saveRecipeListView(recipeListView: RecipeListView): void {
+  try {
+    localStorage.setItem(RECIPE_LIST_VIEW_STORAGE_KEY, recipeListView);
+  } catch {
+    // Sans stockage, la vue revient à celle par défaut au prochain chargement.
   }
 }
 

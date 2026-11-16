@@ -13,6 +13,8 @@ même commit.
 
 ### Ajouts
 
+- **Vue mosaïque ou liste** sur la page Recettes : deux icônes à côté du tri. Par défaut, mosaïque
+  sur ordinateur et liste sur téléphone ; le choix est retenu sur l'appareil.
 - **Ajouter directement à la cuisine** : sur la fiche, sous « Ajouter aux courses », pour les
   courses faites hors de l'app ou une envie improvisée. La recette arrive en cuisine avec les parts
   choisies. Aussi depuis la liste, dans le menu « ⋯ » de chaque recette.

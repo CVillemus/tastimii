@@ -51,6 +51,12 @@
   color: var(--color-ink-muted);
 }
 
+.recipe-list-toolbar__controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .recipe-sort {
   display: flex;
   align-items: center;
@@ -146,7 +152,7 @@
   gap: 0.25rem;
 }
 
-/* Mobile : une liste compacte, vignette à gauche. La marge du bas laisse la place au bouton flottant. */
+/* Vue liste (par défaut sur mobile) : vignette à gauche. La marge du bas laisse la place au « + ». */
 .recipe-list {
   list-style: none;
   margin: 0 0 4.5rem;
@@ -323,7 +329,7 @@
   border-radius: var(--radius-card);
 }
 
-/* Desktop : filtres dans une colonne à gauche, recettes en grille de cartes, la photo d'abord. */
+/* Desktop : filtres dans une colonne à gauche, recettes à droite. */
 @media (min-width: 48rem) {
   .new-recipe-button {
     position: static;
@@ -365,125 +371,21 @@
 
   .recipe-list {
     margin-bottom: 0;
-    grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
-    gap: 1.5rem;
   }
 
-  .recipe-card {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    height: 100%;
-    padding: 0;
-    border: none;
-    border-radius: var(--radius-card);
-    overflow: hidden;
-    background: var(--color-surface);
-    box-shadow: 0 1px 3px var(--color-shadow-soft);
-    transition:
-      box-shadow 0.2s,
-      transform 0.2s;
+  /* Vue liste sur desktop : des lignes plus aérées, vignette plus grande. */
+  .recipe-list--rows .recipe-card {
+    gap: 1rem;
+    padding: 0.75rem 0;
   }
 
-  .recipe-card:hover {
-    box-shadow: 0 0.5rem 1.5rem var(--color-shadow-soft);
-    transform: translateY(-2px);
+  .recipe-list--rows .recipe-card__photo {
+    width: 5rem;
+    height: 5rem;
   }
 
-  .recipe-card__photo {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
-    border-radius: 0;
-  }
-
-  .recipe-card__text {
-    padding: 0.875rem 1rem 1rem;
-  }
-
-  .recipe-card__title {
-    font-size: 1.375rem;
-  }
-
-  .recipe-card:hover .recipe-card__title {
-    color: var(--color-accent);
-  }
-
-  /* Desktop : le bouton et le compteur se posent en haut à droite de la photo. */
-  .recipe-list__item .recipe-card,
-  .recipe-list__item--on-menu .recipe-card {
-    padding-right: 0;
-  }
-
-  .recipe-list__item {
-    height: 100%;
-  }
-
-  .menu-control {
-    top: 0.625rem;
-    right: 0.625rem;
-  }
-
-  .recipe-list__item .recipe-card {
-    min-height: 0;
-  }
-
-  /* Desktop : en bas à droite de la carte, à côté de la durée et des parts. */
-  /*
-   * Desktop : « ⋯ » posé sur la photo sous le bouton sac de courses (même rond blanc, même halo).
-   */
-  .recipe-actions-toggle {
-    top: 3.75rem;
-    bottom: auto;
-    right: 0.625rem;
-    width: 2.625rem;
-    height: 2.625rem;
-    background: var(--color-surface);
-    color: var(--color-ink);
-  }
-
-  .recipe-actions-toggle:hover {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-  }
-
-  /*
-   * Bouton panier posé sur la photo : un léger voile sombre en haut de la photo et un bouton
-   * blanc à ombre marquée, pour qu'il se voie quelle que soit la couleur de la photo.
-   */
-  .recipe-card__photo.recipe-photo--with-photo {
-    position: relative;
-  }
-
-  .recipe-card__photo.recipe-photo--with-photo::after {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto;
-    height: 45%;
-    background: linear-gradient(var(--color-photo-scrim), transparent);
-    pointer-events: none;
-  }
-
-  .menu-control__add {
-    border: none;
-  }
-
-  /* Boutons posés sur la photo (sac, partage, compteur) : halo blanc et ombre marquée. */
-  .menu-control__add,
-  .menu-control__add:hover,
-  .recipe-actions-toggle,
-  .menu-control__stepper {
-    box-shadow:
-      0 0 0 3px var(--color-photo-halo),
-      0 2px 8px var(--color-photo-shadow);
-  }
-
-  /* Une recette au menu se repère d'un coup d'œil : liseré de couleur autour de la carte. */
-  .recipe-list__item--on-menu .recipe-card {
-    box-shadow:
-      0 0 0 2px var(--color-accent),
-      0 1px 3px var(--color-shadow-soft);
+  .recipe-list--rows .recipe-card__title {
+    font-size: 1.25rem;
   }
 
   .empty-state {
@@ -491,54 +393,47 @@
   }
 }
 
+/* Choix de la vue : deux petites icônes, à côté du tri. */
+.recipe-view-toggle {
+  display: flex;
+  gap: 0.125rem;
+}
+
+.recipe-view-toggle__option {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+.recipe-view-toggle__option:hover {
+  color: var(--color-ink);
+}
+
+.recipe-view-toggle__option--active {
+  background: var(--color-surface-sunken);
+  color: var(--color-ink);
+}
+
+.recipe-view-toggle__option svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* ---- Squelette pendant le chargement ---- */
 
 .recipe-skeleton__search {
   height: 2.625rem;
   border-radius: var(--radius-control);
-}
-
-/* Menu « ⋯ » : petite carte flottante sous le bouton (rendue par le CDK hors de la carte). */
-.recipe-actions-menu {
-  display: grid;
-  min-width: 12rem;
-  margin-top: 0.25rem;
-  padding: 0.25rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  box-shadow: 0 0.5rem 1.25rem var(--color-shadow);
-  animation: slide-in 0.15s ease-out;
-}
-
-.recipe-actions-menu__item {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.625rem 0.75rem;
-  border: none;
-  border-radius: var(--radius-small);
-  background: none;
-  color: var(--color-ink);
-  font: inherit;
-  font-size: var(--font-size-small);
-  text-align: left;
-  cursor: pointer;
-}
-
-.recipe-actions-menu__item:hover,
-.recipe-actions-menu__item:focus-visible {
-  background: var(--color-accent-soft);
-  outline: none;
-}
-
-.recipe-actions-menu__item svg {
-  flex-shrink: 0;
-  width: 1.125rem;
-  height: 1.125rem;
-  fill: none;
-  stroke: var(--color-accent);
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }

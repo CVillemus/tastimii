@@ -95,39 +95,80 @@
               {{ matchingRecipeSummaries().length > 1 ? 'recettes' : 'recette' }}
             </p>
             <!-- Ordre de la liste : alphabétique ou dernières recettes ajoutées. -->
-            <!-- Comme les en-têtes d'un tableau : un clic choisit le critère, un second inverse le sens. -->
-            <div class="recipe-sort" role="group" aria-label="Trier les recettes">
-              <span class="recipe-sort__label">Trier par</span>
-              @for (sortOption of recipeSortOptions; track sortOption.field) {
-                @let isActiveSort = recipeSort().field === sortOption.field;
-                @let isAscending = recipeSort().direction === 'ascending';
+            <div class="recipe-list-toolbar__controls">
+              <!-- Comme les en-têtes d'un tableau : un clic choisit le critère, un second inverse le sens. -->
+              <div class="recipe-sort" role="group" aria-label="Trier les recettes">
+                <span class="recipe-sort__label">Trier par</span>
+                @for (sortOption of recipeSortOptions; track sortOption.field) {
+                  @let isActiveSort = recipeSort().field === sortOption.field;
+                  @let isAscending = recipeSort().direction === 'ascending';
+                  <button
+                    class="recipe-sort__option"
+                    type="button"
+                    [class.recipe-sort__option--active]="isActiveSort"
+                    [attr.aria-pressed]="isActiveSort"
+                    (click)="chooseSortField(sortOption.field)"
+                  >
+                    {{ sortOption.label }}
+                    @if (isActiveSort) {
+                      <svg
+                        class="recipe-sort__arrow"
+                        [class.recipe-sort__arrow--descending]="!isAscending"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 19V5" />
+                        <path d="M6 11l6-6 6 6" />
+                      </svg>
+                      <span class="visually-hidden">
+                        {{ isAscending ? '(ordre croissant)' : '(ordre décroissant)' }}
+                      </span>
+                    }
+                  </button>
+                }
+              </div>
+              <!-- Vue : mosaïque de cartes ou liste de lignes. -->
+              <div class="recipe-view-toggle" role="group" aria-label="Affichage des recettes">
                 <button
-                  class="recipe-sort__option"
+                  class="recipe-view-toggle__option"
                   type="button"
-                  [class.recipe-sort__option--active]="isActiveSort"
-                  [attr.aria-pressed]="isActiveSort"
-                  (click)="chooseSortField(sortOption.field)"
+                  title="Vue mosaïque"
+                  aria-label="Vue mosaïque"
+                  [class.recipe-view-toggle__option--active]="recipeListView() === 'mosaic'"
+                  [attr.aria-pressed]="recipeListView() === 'mosaic'"
+                  (click)="changeRecipeListView('mosaic')"
                 >
-                  {{ sortOption.label }}
-                  @if (isActiveSort) {
-                    <svg
-                      class="recipe-sort__arrow"
-                      [class.recipe-sort__arrow--descending]="!isAscending"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path d="M12 19V5" />
-                      <path d="M6 11l6-6 6 6" />
-                    </svg>
-                    <span class="visually-hidden">
-                      {{ isAscending ? '(ordre croissant)' : '(ordre décroissant)' }}
-                    </span>
-                  }
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
+                    <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
+                    <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
+                    <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
+                  </svg>
                 </button>
-              }
+                <button
+                  class="recipe-view-toggle__option"
+                  type="button"
+                  title="Vue liste"
+                  aria-label="Vue liste"
+                  [class.recipe-view-toggle__option--active]="recipeListView() === 'rows'"
+                  [attr.aria-pressed]="recipeListView() === 'rows'"
+                  (click)="changeRecipeListView('rows')"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="4" y="5" width="4" height="4" rx="1" />
+                    <path d="M11 7h9" />
+                    <rect x="4" y="15" width="4" height="4" rx="1" />
+                    <path d="M11 17h9" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
-          <ul class="recipe-list loaded-content">
+          <ul
+            class="recipe-list loaded-content"
+            [class.recipe-list--mosaic]="recipeListView() === 'mosaic'"
+            [class.recipe-list--rows]="recipeListView() === 'rows'"
+          >
             @for (recipeSummary of matchingRecipeSummaries(); track recipeSummary.id) {
               @let recipeMenuStatus = recipeMenuStatuses().get(recipeSummary.id);
               <li
@@ -226,9 +267,9 @@
                   </svg>
                 </button>
                 <ng-template #recipeActionsMenu>
-                  <div class="recipe-actions-menu" cdkMenu>
+                  <div class="menu-panel" cdkMenu>
                     <button
-                      class="recipe-actions-menu__item"
+                      class="menu-panel__item"
                       type="button"
                       cdkMenuItem
                       (cdkMenuItemTriggered)="addRecipeToKitchen(recipeSummary)"
@@ -242,7 +283,7 @@
                       Ajouter à la cuisine
                     </button>
                     <button
-                      class="recipe-actions-menu__item"
+                      class="menu-panel__item"
                       type="button"
                       cdkMenuItem
                       (cdkMenuItemTriggered)="shareRecipe(recipeSummary)"
@@ -289,7 +330,12 @@
         </p>
       } @else {
         <p class="visually-hidden" role="status">Chargement des recettes…</p>
-        <ul class="recipe-list" aria-hidden="true">
+        <ul
+          class="recipe-list"
+          aria-hidden="true"
+          [class.recipe-list--mosaic]="recipeListView() === 'mosaic'"
+          [class.recipe-list--rows]="recipeListView() === 'rows'"
+        >
           @for (skeletonCard of skeletonCards; track skeletonCard) {
             <li class="recipe-list__item">
               <div class="recipe-card">

@@ -1,0 +1,138 @@
+/*
+ * ---- Vue mosaïque : des cartes, la photo d'abord ----
+ * 2 colonnes sur mobile, autant que la largeur le permet sur desktop. Les boutons (sac, « ⋯ »,
+ * compteur de parts) se posent sur la photo.
+ */
+.recipe-list--mosaic {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.recipe-list--mosaic .recipe-list__item {
+  height: 100%;
+}
+
+.recipe-list--mosaic .recipe-card,
+.recipe-list--mosaic .recipe-list__item .recipe-card,
+.recipe-list--mosaic .recipe-list__item--on-menu .recipe-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px var(--color-shadow-soft);
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.recipe-list--mosaic .recipe-card:hover {
+  box-shadow: 0 0.5rem 1.5rem var(--color-shadow-soft);
+  transform: translateY(-2px);
+}
+
+.recipe-list--mosaic .recipe-card__photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  border-radius: 0;
+}
+
+.recipe-list--mosaic .recipe-card__text {
+  padding: 0.625rem 0.75rem 0.75rem;
+}
+
+.recipe-list--mosaic .recipe-card__title {
+  font-size: 1.0625rem;
+}
+
+.recipe-list--mosaic .recipe-card:hover .recipe-card__title {
+  color: var(--color-accent);
+}
+
+.recipe-list--mosaic .menu-control {
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+/* « ⋯ » posé sur la photo sous le bouton sac de courses (même rond blanc, même halo). */
+.recipe-list--mosaic .recipe-actions-toggle {
+  top: 3.5rem;
+  bottom: auto;
+  right: 0.5rem;
+  width: 2.625rem;
+  height: 2.625rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.recipe-list--mosaic .recipe-actions-toggle:hover {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+/* Léger voile en haut de la photo, pour que les boutons se voient sur toutes les photos. */
+.recipe-list--mosaic .recipe-card__photo.recipe-photo--with-photo {
+  position: relative;
+}
+
+.recipe-list--mosaic .recipe-card__photo.recipe-photo--with-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 45%;
+  background: linear-gradient(var(--color-photo-scrim), transparent);
+  pointer-events: none;
+}
+
+.recipe-list--mosaic .menu-control__add {
+  border: none;
+}
+
+/* Boutons posés sur la photo (sac, « ⋯ », compteur) : halo blanc et ombre marquée. */
+.recipe-list--mosaic .menu-control__add,
+.recipe-list--mosaic .menu-control__add:hover,
+.recipe-list--mosaic .recipe-actions-toggle,
+.recipe-list--mosaic .menu-control__stepper {
+  box-shadow:
+    0 0 0 3px var(--color-photo-halo),
+    0 2px 8px var(--color-photo-shadow);
+}
+
+/* Une recette au menu se repère d'un coup d'œil : liseré de couleur autour de la carte. */
+.recipe-list--mosaic .recipe-list__item--on-menu .recipe-card {
+  box-shadow:
+    0 0 0 2px var(--color-accent),
+    0 1px 3px var(--color-shadow-soft);
+}
+
+@media (min-width: 48rem) {
+  .recipe-list--mosaic {
+    grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
+    gap: 1.5rem;
+  }
+
+  .recipe-list--mosaic .recipe-card__text {
+    padding: 0.875rem 1rem 1rem;
+  }
+
+  .recipe-list--mosaic .recipe-card__title {
+    font-size: 1.375rem;
+  }
+
+  .recipe-list--mosaic .menu-control {
+    top: 0.625rem;
+    right: 0.625rem;
+  }
+
+  .recipe-list--mosaic .recipe-actions-toggle {
+    top: 3.75rem;
+    right: 0.625rem;
+  }
+}
