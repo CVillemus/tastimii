@@ -1,11 +1,18 @@
 /*
  * ---- Vue mosaïque : des cartes, la photo d'abord ----
- * 2 colonnes sur mobile, autant que la largeur le permet sur desktop. Les boutons (sac, « ⋯ »,
+ * 1 carte par ligne sur téléphone, 2 dès 30rem (grand téléphone à l'horizontale, petite tablette),
+ * autant que la largeur le permet sur desktop. Les boutons (sac, « ⋯ »,
  * compteur de parts) se posent sur la photo.
  */
 .recipe-list--mosaic {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
+}
+
+@media (min-width: 30rem) {
+  .recipe-list--mosaic {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .recipe-list--mosaic .recipe-list__item {
