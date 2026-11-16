@@ -111,6 +111,15 @@
     align-content: space-between;
     padding: 0;
     overflow: hidden;
+    transition:
+      box-shadow 0.2s,
+      transform 0.2s;
+  }
+
+  /* Même réaction au survol que les cartes de la liste des recettes. */
+  .kitchen-recipe:hover {
+    box-shadow: 0 0.5rem 1.5rem var(--color-shadow-soft);
+    transform: translateY(-2px);
   }
 
   .kitchen-recipe__link {

@@ -337,9 +337,9 @@ input[type='checkbox']:checked {
   max-width: var(--page-narrow-max-width);
 }
 
+/* Carte blanche arrondie sans bordure, comme les cartes de recettes : l'ombre suffit. */
 .card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   box-shadow: 0 1px 3px var(--color-shadow-soft);
   padding: 0.75rem;
