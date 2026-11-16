@@ -3,13 +3,14 @@ import {
   Component,
   computed,
   inject,
+  output,
+  OutputEmitterRef,
   resource,
   ResourceRef,
   Signal,
   signal,
   WritableSignal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import {
   groupTagsByCategory,
   normalizeTagName,
@@ -34,16 +35,21 @@ type TagDraft = {
   category: TagCategory;
 };
 
-/** Gestion des tags : les renommer, changer leur catégorie, les supprimer, en ajouter. */
+/**
+ * Gestion des tags : les renommer, changer leur catégorie, les supprimer, en ajouter.
+ * Ouverte dans une fenêtre depuis le formulaire de recette, là où on choisit les tags.
+ */
 @Component({
-  selector: 'app-tags-page',
-  imports: [RouterLink],
-  templateUrl: './tags-page.html',
-  styleUrl: './tags-page.css',
+  selector: 'app-tag-manager',
+  templateUrl: './tag-manager.html',
+  styleUrl: './tag-manager.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TagsPage {
+export class TagManager {
   private readonly tagsApi: TagsApi = inject(TagsApi);
+
+  /** Après chaque modification réussie : le formulaire recharge sa liste de tags. */
+  readonly tagsChanged: OutputEmitterRef<void> = output<void>();
 
   protected readonly tagCatalogResource: ResourceRef<TagCatalog | undefined> = resource({
     loader: async (): Promise<TagCatalog> => {
@@ -195,6 +201,7 @@ export class TagsPage {
     let isSuccessful: boolean = true;
     try {
       await tagAction();
+      this.tagsChanged.emit();
     } catch {
       this.errorMessageState.set(failureMessage);
       isSuccessful = false;

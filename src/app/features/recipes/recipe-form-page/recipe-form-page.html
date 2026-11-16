@@ -133,7 +133,10 @@
         <section>
           <div class="tags-heading">
             <h2 class="section-title">Tags</h2>
-            <a class="tags-heading__manage" routerLink="/tags">Gérer les tags</a>
+            <!-- Dans une fenêtre : on ne quitte pas la recette (rien n'est perdu). -->
+            <button class="tags-heading__manage" type="button" (click)="tagManagerDialog.open()">
+              Gérer les tags
+            </button>
           </div>
           @if (tagsResource.hasValue()) {
             <!-- Une ligne par catégorie : type de plat, saison (un seul choix), envie. -->
@@ -491,4 +494,11 @@
       }
     </form>
   }
+
+  <!-- Hors du <form> de la recette : la gestion des tags a ses propres formulaires. -->
+  <app-modal-dialog #tagManagerDialog dialogTitle="Gérer les tags">
+    @if (tagManagerDialog.isOpen()) {
+      <app-tag-manager (tagsChanged)="refreshTags()" />
+    }
+  </app-modal-dialog>
 </div>

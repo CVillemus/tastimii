@@ -231,9 +231,15 @@
   gap: 0.5rem;
 }
 
+/* Bouton qui a l'air d'un lien : ouvre la fenêtre « Gérer les tags ». */
 .tags-heading__manage {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
   font-size: var(--font-size-small);
-  text-decoration: none;
+  cursor: pointer;
 }
 
 .tags-heading__manage:hover {

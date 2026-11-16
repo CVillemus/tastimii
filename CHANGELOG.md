@@ -39,7 +39,8 @@ même commit.
   modification, avec une fenêtre de confirmation.
 - **Mobile** : le lien « Retour » devient un bouton rond flottant en bas à gauche, pendant du « + ».
 - **« Gérer les tags »** : seulement dans le formulaire de recette, là où on choisit et crée les
-  tags ; plus dans la liste des recettes.
+  tags, et dans une fenêtre par-dessus le formulaire : on ne quitte plus la recette en cours
+  (rien n'est perdu), et les tags du formulaire se mettent à jour tout de suite.
 - **Formulaire de recette** : « + Ajouter un ingrédient » et « + Ajouter une étape » prennent la
   forme d'une ligne vide en pointillés, dans la continuité de la liste.
 

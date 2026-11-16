@@ -1,0 +1,23 @@
+<dialog
+  #dialogElement
+  class="modal-dialog"
+  aria-labelledby="modal-dialog-title"
+  (close)="onDialogClosed()"
+  (click)="closeOnBackdropClick($event)"
+>
+  <div class="modal-dialog__header">
+    <h2 id="modal-dialog-title" class="modal-dialog__title">{{ dialogTitle() }}</h2>
+    <button
+      class="icon-button icon-button--quiet"
+      type="button"
+      aria-label="Fermer"
+      title="Fermer"
+      (click)="close()"
+    >
+      ×
+    </button>
+  </div>
+  <div class="modal-dialog__body">
+    <ng-content />
+  </div>
+</dialog>

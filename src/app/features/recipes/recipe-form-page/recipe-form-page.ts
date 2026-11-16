@@ -11,6 +11,7 @@ import {
   ResourceRef,
   Signal,
   signal,
+  untracked,
   WritableSignal,
 } from '@angular/core';
 import {
@@ -60,6 +61,8 @@ import {
 } from '../../../core/tags/tag.model';
 import { TagsApi } from '../../../core/tags/tags-api';
 import { ConfirmationDialog } from '../../../shared/confirmation-dialog/confirmation-dialog';
+import { ModalDialog } from '../../../shared/modal-dialog/modal-dialog';
+import { TagManager } from '../../tags/tag-manager/tag-manager';
 import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
 import {
   buildUnitChoices,
@@ -98,8 +101,10 @@ type RecipePhotoChoice =
     CdkDropList,
     ConfirmationDialog,
     FormField,
+    ModalDialog,
     RouterLink,
     RichTextEditor,
+    TagManager,
   ],
   templateUrl: './recipe-form-page.html',
   styleUrl: './recipe-form-page.css',
@@ -258,7 +263,29 @@ export class RecipeFormPage {
       }
     });
 
+    // Un tag supprimé dans « Gérer les tags » ne doit plus être coché sur la recette.
+    effect(() => {
+      if (!this.tagsResource.hasValue()) {
+        return;
+      }
+      const existingTagIds: Set<string> = new Set(
+        this.tagsResource.value().map((tag: RecipeTag) => tag.id),
+      );
+      const selectedTagIds: string[] = untracked(() => this.recipeFormModel().tagIds);
+      if (selectedTagIds.some((tagId: string) => !existingTagIds.has(tagId))) {
+        this.recipeFormModel.update((formModel: RecipeFormModel) => ({
+          ...formModel,
+          tagIds: formModel.tagIds.filter((tagId: string) => existingTagIds.has(tagId)),
+        }));
+      }
+    });
+
     inject(DestroyRef).onDestroy(() => this.revokePhotoPreview());
+  }
+
+  /** Après une modification dans « Gérer les tags » : la liste des tags du formulaire suit. */
+  protected refreshTags(): void {
+    this.tagsResource.reload();
   }
 
   /** Réduit la photo choisie (appareil photo ou galerie) et l'affiche en aperçu. */
