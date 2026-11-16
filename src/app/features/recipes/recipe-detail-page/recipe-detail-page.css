@@ -1,12 +1,14 @@
 /* ---- En-tête : photo, titre, infos ---- */
 
+/* Mobile : l'en-tête remonte de la marge du haut de la page, la photo touche la barre du haut. */
 .recipe-hero {
   position: relative;
   display: grid;
   gap: 0.75rem;
+  margin-top: -1rem;
 }
 
-/* Mobile : la photo prend toute la largeur de l'écran, en bandeau peu haut. */
+/* Mobile : la photo prend toute la largeur de l'écran, en bandeau peu haut */
 .recipe-hero__photo {
   height: 9rem;
   margin: 0 calc(-1 * var(--page-gutter));
@@ -319,6 +321,10 @@
    * Photo plus discrète (les photos prises au téléphone ne sont pas toujours belles en grand) :
    * moins haute et moins large. Elle suit la hauteur de la carte si les astuces sont longues.
    */
+  .recipe-hero {
+    margin-top: 0;
+  }
+
   .recipe-hero__photo {
     height: auto;
     min-height: 15rem;

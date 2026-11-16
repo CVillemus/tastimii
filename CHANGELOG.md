@@ -11,7 +11,7 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Fiche recette sur téléphone** : la photo touche la barre du haut, sans marge.
 
 ## 16/11/2026
 
