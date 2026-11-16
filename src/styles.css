@@ -28,10 +28,12 @@
   --color-shadow: rgb(43 36 32 / 25%);
   --color-shadow-soft: rgb(43 36 32 / 7%);
   --color-dialog-backdrop: rgb(43 36 32 / 45%);
-  /* Voile, halo et ombre des boutons posés sur une photo (lisibles sur toutes les couleurs). */
-  --color-photo-scrim: rgb(0 0 0 / 35%);
-  --color-photo-halo: rgb(255 255 255 / 50%);
-  --color-photo-shadow: rgb(0 0 0 / 40%);
+  /*
+   * Boutons ronds posés sur une photo : verre dépoli (blanc translucide + flou de la photo
+   * derrière) et ombre douce. Lisibles sur toutes les photos sans voile ni halo.
+   */
+  --color-photo-glass: rgb(255 253 249 / 82%);
+  --shadow-photo-button: 0 2px 8px rgb(43 36 32 / 18%);
   --color-skeleton: #ece4d8;
   --color-skeleton-shine: rgb(255 253 249 / 70%);
 

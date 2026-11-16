@@ -233,6 +233,23 @@
   color: var(--color-accent);
 }
 
+/* Desktop (souris) : « ⋯ » n'apparaît qu'au survol de la carte, au clavier ou menu ouvert. */
+@media (min-width: 48rem) and (hover: hover) {
+  .recipe-actions-toggle {
+    opacity: 0;
+    transition:
+      opacity 0.2s ease,
+      color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .recipe-list__item:hover .recipe-actions-toggle,
+  .recipe-actions-toggle:focus-visible,
+  .recipe-actions-toggle[aria-expanded='true'] {
+    opacity: 1;
+  }
+}
+
 .recipe-actions-toggle svg {
   width: 1rem;
   height: 1rem;

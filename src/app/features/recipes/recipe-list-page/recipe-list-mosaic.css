@@ -57,48 +57,38 @@
     right: 0.5rem;
   }
 
-  /* « ⋯ » posé sur la photo sous le bouton sac de courses (même rond blanc, même halo). */
+  /* Boutons posés sur la photo (sac, « ⋯ ») : petits ronds en verre dépoli. */
+  .recipe-list--mosaic .menu-control__add,
   .recipe-list--mosaic .recipe-actions-toggle {
-    top: 3.5rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    background: var(--color-photo-glass);
+    backdrop-filter: blur(0.5rem);
+    box-shadow: var(--shadow-photo-button);
+  }
+
+  .recipe-list--mosaic .menu-control__add svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  /* « ⋯ » sous le sac de courses. */
+  .recipe-list--mosaic .recipe-actions-toggle {
+    top: 3.25rem;
     bottom: auto;
-    right: 0.5rem;
-    width: 2.625rem;
-    height: 2.625rem;
-    background: var(--color-surface);
+    right: 0.625rem;
     color: var(--color-ink);
   }
 
+  .recipe-list--mosaic .menu-control__add:hover,
   .recipe-list--mosaic .recipe-actions-toggle:hover {
     background: var(--color-accent);
     color: var(--color-on-accent);
   }
 
-  /* Léger voile en haut de la photo, pour que les boutons se voient sur toutes les photos. */
-  .recipe-list--mosaic .recipe-card__photo.recipe-photo--with-photo {
-    position: relative;
-  }
-
-  .recipe-list--mosaic .recipe-card__photo.recipe-photo--with-photo::after {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto;
-    height: 45%;
-    background: linear-gradient(var(--color-photo-scrim), transparent);
-    pointer-events: none;
-  }
-
-  .recipe-list--mosaic .menu-control__add {
-    border: none;
-  }
-
-  /* Boutons posés sur la photo (sac, « ⋯ », compteur) : halo blanc et ombre marquée. */
-  .recipe-list--mosaic .menu-control__add,
-  .recipe-list--mosaic .menu-control__add:hover,
-  .recipe-list--mosaic .recipe-actions-toggle,
   .recipe-list--mosaic .menu-control__stepper {
-    box-shadow:
-      0 0 0 3px var(--color-photo-halo),
-      0 2px 8px var(--color-photo-shadow);
+    box-shadow: var(--shadow-photo-button);
   }
 
   /* Une recette au menu se repère d'un coup d'œil : liseré de couleur autour de la carte. */
@@ -123,11 +113,6 @@
 
   .recipe-list--mosaic .menu-control {
     top: 0.625rem;
-    right: 0.625rem;
-  }
-
-  .recipe-list--mosaic .recipe-actions-toggle {
-    top: 3.75rem;
     right: 0.625rem;
   }
 }
