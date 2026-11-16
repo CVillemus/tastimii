@@ -141,12 +141,12 @@
                   />
                   <div class="recipe-card__text">
                     <h2 class="recipe-card__title">{{ recipeSummary.title }}</h2>
-                    <p class="recipe-card__meta">
-                      @if (recipeSummary.preparationMinutes !== null) {
-                        {{ formatPreparationTime(recipeSummary.preparationMinutes) }} ·
-                      }
-                      {{ recipeSummary.baseServings }} parts
-                    </p>
+                    <!-- Pas de nombre de parts : il se choisit au moment d'ajouter aux courses. -->
+                    @if (recipeSummary.preparationMinutes !== null) {
+                      <p class="recipe-card__meta">
+                        {{ formatPreparationTime(recipeSummary.preparationMinutes) }}
+                      </p>
+                    }
                     @if (recipeSummary.tags.length > 0) {
                       <ul class="recipe-card__tags" aria-label="Tags">
                         @for (recipeTag of recipeSummary.tags; track recipeTag.id) {

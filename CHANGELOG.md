@@ -28,6 +28,8 @@ même commit.
 
 ### Changements
 
+- **Liste des recettes** : plus de nombre de parts sur les vignettes (il se choisit au moment
+  d'ajouter aux courses), seulement la durée.
 - **Supprimer une recette** : le bouton quitte la fiche et passe en bas du formulaire de
   modification, avec une fenêtre de confirmation.
 - **Mobile** : le lien « Retour » devient un bouton rond flottant en bas à gauche, pendant du « + ».
