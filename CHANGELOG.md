@@ -29,6 +29,8 @@ même commit.
 - **Mobile** : le lien « Retour » devient un bouton rond flottant en bas à gauche, pendant du « + ».
 - **Formulaire de recette** : plus de lien « Gérer les tags » (il reste dans la liste des
   recettes).
+- **Formulaire de recette** : « + Ajouter un ingrédient » et « + Ajouter une étape » prennent la
+  forme d'une ligne vide en pointillés, dans la continuité de la liste.
 
 ## 15/11/2026
 

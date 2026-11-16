@@ -375,7 +375,8 @@
             </li>
           }
         </ol>
-        <button class="button" type="button" (click)="addIngredientLine()">
+        <!-- Dans la continuité des lignes : une ligne vide en pointillés, de la même taille. -->
+        <button class="add-line-button" type="button" (click)="addIngredientLine()">
           + Ajouter un ingrédient
         </button>
       </section>
@@ -440,7 +441,9 @@
             </li>
           }
         </ol>
-        <button class="button" type="button" (click)="addStep()">+ Ajouter une étape</button>
+        <button class="add-line-button" type="button" (click)="addStep()">
+          + Ajouter une étape
+        </button>
       </section>
 
       @if (saveErrorMessage() !== null) {
