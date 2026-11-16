@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { sortRecipes } from './recipe-sorting';
+import {
+  chooseRecipeSort,
+  DEFAULT_RECIPE_SORT,
+  parseRecipeSort,
+  RecipeSort,
+  serializeRecipeSort,
+  sortRecipes,
+} from './recipe-sorting';
 
 type TestRecipe = { title: string; createdAt: string };
 
@@ -15,8 +22,8 @@ function titlesOf(sortedRecipes: TestRecipe[]): string[] {
 }
 
 describe('sortRecipes', () => {
-  it('trie de A à Z sans tenir compte des majuscules ni des accents', () => {
-    expect(titlesOf(sortRecipes(recipes, 'alphabetical'))).toEqual([
+  it('trie par nom de A à Z, sans tenir compte des majuscules ni des accents', () => {
+    expect(titlesOf(sortRecipes(recipes, { field: 'title', direction: 'ascending' }))).toEqual([
       'butter chicken',
       'Crumble',
       'Lentilles saucisse',
@@ -24,17 +31,57 @@ describe('sortRecipes', () => {
     ]);
   });
 
-  it("met les recettes ajoutées le plus récemment d'abord, par titre à date égale", () => {
-    expect(titlesOf(sortRecipes(recipes, 'newest'))).toEqual([
-      'Crumble',
+  it('trie par nom de Z à A quand le sens est inversé', () => {
+    expect(titlesOf(sortRecipes(recipes, { field: 'title', direction: 'descending' }))).toEqual([
       'Œuf cocotte',
       'Lentilles saucisse',
+      'Crumble',
       'butter chicken',
+    ]);
+  });
+
+  it("par date : les plus récentes d'abord, ou les plus anciennes ; à date égale, par nom", () => {
+    expect(titlesOf(sortRecipes(recipes, { field: 'createdAt', direction: 'descending' }))).toEqual(
+      ['Crumble', 'Œuf cocotte', 'Lentilles saucisse', 'butter chicken'],
+    );
+    expect(titlesOf(sortRecipes(recipes, { field: 'createdAt', direction: 'ascending' }))).toEqual([
+      'butter chicken',
+      'Lentilles saucisse',
+      'Crumble',
+      'Œuf cocotte',
     ]);
   });
 
   it('ne modifie pas la liste reçue', () => {
-    sortRecipes(recipes, 'newest');
+    sortRecipes(recipes, { field: 'createdAt', direction: 'descending' });
     expect(titlesOf(recipes)[0]).toBe('Lentilles saucisse');
+  });
+});
+
+describe('chooseRecipeSort', () => {
+  it('inverse le sens quand on reclique sur le critère actif', () => {
+    expect(chooseRecipeSort(DEFAULT_RECIPE_SORT, 'title')).toEqual({
+      field: 'title',
+      direction: 'descending',
+    });
+  });
+
+  it('choisit un autre critère dans son sens habituel (date : plus récentes d’abord)', () => {
+    expect(chooseRecipeSort(DEFAULT_RECIPE_SORT, 'createdAt')).toEqual({
+      field: 'createdAt',
+      direction: 'descending',
+    });
+  });
+});
+
+describe('parseRecipeSort', () => {
+  it('relit un tri enregistré', () => {
+    const recipeSort: RecipeSort = { field: 'createdAt', direction: 'ascending' };
+    expect(parseRecipeSort(serializeRecipeSort(recipeSort))).toEqual(recipeSort);
+  });
+
+  it('revient au tri par défaut si la valeur est inconnue ou absente', () => {
+    expect(parseRecipeSort('newest')).toEqual(DEFAULT_RECIPE_SORT);
+    expect(parseRecipeSort(null)).toEqual(DEFAULT_RECIPE_SORT);
   });
 });

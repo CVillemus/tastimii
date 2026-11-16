@@ -18,8 +18,9 @@ même commit.
   Aussi depuis la liste des recettes, avec un bouton sous le sac de courses de chaque recette.
 - **Nombre de fois cuisinée** affiché sur la fiche recette (« Cuisinée 3 fois », « Jamais
   cuisinée »).
-- **Trier les recettes** : au-dessus de la liste, à côté du nombre de recettes, de A à Z ou les
-  plus récentes d'abord. Le choix est retenu sur l'appareil.
+- **Trier les recettes** : au-dessus de la liste, à côté du nombre de recettes, par nom ou par
+  date d'ajout. Comme dans un tableau, une flèche ↑/↓ montre le sens et un second clic l'inverse.
+  Le choix est retenu sur l'appareil.
 - **Fenêtre de confirmation** aux couleurs de l'app avant une suppression définitive.
 
 ### Changements

@@ -95,26 +95,36 @@
               {{ matchingRecipeSummaries().length > 1 ? 'recettes' : 'recette' }}
             </p>
             <!-- Ordre de la liste : alphabétique ou dernières recettes ajoutées. -->
+            <!-- Comme les en-têtes d'un tableau : un clic choisit le critère, un second inverse le sens. -->
             <div class="recipe-sort" role="group" aria-label="Trier les recettes">
-              <span class="recipe-sort__label">Trier</span>
-              <button
-                class="recipe-sort__option"
-                type="button"
-                [class.recipe-sort__option--active]="recipeSortOrder() === 'alphabetical'"
-                [attr.aria-pressed]="recipeSortOrder() === 'alphabetical'"
-                (click)="changeRecipeSortOrder('alphabetical')"
-              >
-                A → Z
-              </button>
-              <button
-                class="recipe-sort__option"
-                type="button"
-                [class.recipe-sort__option--active]="recipeSortOrder() === 'newest'"
-                [attr.aria-pressed]="recipeSortOrder() === 'newest'"
-                (click)="changeRecipeSortOrder('newest')"
-              >
-                Plus récentes
-              </button>
+              <span class="recipe-sort__label">Trier par</span>
+              @for (sortOption of recipeSortOptions; track sortOption.field) {
+                @let isActiveSort = recipeSort().field === sortOption.field;
+                @let isAscending = recipeSort().direction === 'ascending';
+                <button
+                  class="recipe-sort__option"
+                  type="button"
+                  [class.recipe-sort__option--active]="isActiveSort"
+                  [attr.aria-pressed]="isActiveSort"
+                  (click)="chooseSortField(sortOption.field)"
+                >
+                  {{ sortOption.label }}
+                  @if (isActiveSort) {
+                    <svg
+                      class="recipe-sort__arrow"
+                      [class.recipe-sort__arrow--descending]="!isAscending"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 19V5" />
+                      <path d="M6 11l6-6 6 6" />
+                    </svg>
+                    <span class="visually-hidden">
+                      {{ isAscending ? '(ordre croissant)' : '(ordre décroissant)' }}
+                    </span>
+                  }
+                </button>
+              }
             </div>
           </div>
           <ul class="recipe-list loaded-content">

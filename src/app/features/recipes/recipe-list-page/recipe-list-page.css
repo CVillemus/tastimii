@@ -65,6 +65,9 @@
 
 /* Tri discret : de simples mots, l'option choisie foncée et soulignée (pas un bouton d'action). */
 .recipe-sort__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   padding: 0.25rem 0.125rem;
   border: none;
   background: none;
@@ -81,9 +84,22 @@
 .recipe-sort__option--active {
   color: var(--color-ink);
   font-weight: 700;
-  text-decoration: underline;
-  text-decoration-color: var(--color-accent);
-  text-underline-offset: 0.25rem;
+}
+
+/* Flèche du sens : ↑ croissant, ↓ décroissant (même flèche, retournée). */
+.recipe-sort__arrow {
+  width: 0.875rem;
+  height: 0.875rem;
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s ease;
+}
+
+.recipe-sort__arrow--descending {
+  transform: rotate(180deg);
 }
 
 /* Un groupe de filtres par catégorie : petit titre (🍲 Type de plat), puis ses tags. */

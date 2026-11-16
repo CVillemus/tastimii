@@ -14,7 +14,14 @@ import { RouterLink } from '@angular/router';
 import { formatPreparationTime } from '../../../core/recipes/quantity';
 import { RecipeSummary } from '../../../core/recipes/recipe.model';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
-import { RecipeSortOrder, sortRecipes } from '../../../core/recipes/recipe-sorting';
+import {
+  chooseRecipeSort,
+  parseRecipeSort,
+  RecipeSort,
+  RecipeSortField,
+  serializeRecipeSort,
+  sortRecipes,
+} from '../../../core/recipes/recipe-sorting';
 import { buildRecipeShareUrl, shareLink, ShareLinkOutcome } from '../../../core/sharing/share-link';
 import {
   applyMenuServingsChange,
@@ -70,19 +77,25 @@ export class RecipeListPage {
     );
     return sortRecipes(
       filterByTagSelection(recipesMatchingSearch, selectedTags),
-      this.recipeSortOrder(),
+      this.recipeSort(),
     );
   });
 
-  /** Ordre de la liste, retenu sur cet appareil. */
-  private readonly recipeSortOrderState: WritableSignal<RecipeSortOrder> =
-    signal(readRecipeSortOrder());
-  protected readonly recipeSortOrder: Signal<RecipeSortOrder> =
-    this.recipeSortOrderState.asReadonly();
+  /** Tri de la liste (critère et sens), retenu sur cet appareil. */
+  private readonly recipeSortState: WritableSignal<RecipeSort> = signal(readRecipeSort());
+  protected readonly recipeSort: Signal<RecipeSort> = this.recipeSortState.asReadonly();
 
-  protected changeRecipeSortOrder(sortOrder: RecipeSortOrder): void {
-    this.recipeSortOrderState.set(sortOrder);
-    saveRecipeSortOrder(sortOrder);
+  /** Critères proposés, comme les en-têtes d'un tableau. */
+  protected readonly recipeSortOptions: readonly { field: RecipeSortField; label: string }[] = [
+    { field: 'title', label: 'Nom' },
+    { field: 'createdAt', label: "Date d'ajout" },
+  ];
+
+  /** Clic sur un critère : le choisit, ou inverse le sens s'il est déjà actif. */
+  protected chooseSortField(field: RecipeSortField): void {
+    const nextSort: RecipeSort = chooseRecipeSort(this.recipeSort(), field);
+    this.recipeSortState.set(nextSort);
+    saveRecipeSort(nextSort);
   }
 
   /** Tags proposés comme filtres : seulement ceux qui sont sur au moins une recette. */
@@ -242,24 +255,22 @@ export class RecipeListPage {
   }
 }
 
-const RECIPE_SORT_ORDER_STORAGE_KEY: string = 'tastimii.recipe-sort-order';
+const RECIPE_SORT_STORAGE_KEY: string = 'tastimii.recipe-sort';
 
 /** Lecture protégée : le stockage peut être indisponible (navigation privée…). */
-function readRecipeSortOrder(): RecipeSortOrder {
+function readRecipeSort(): RecipeSort {
   try {
-    return localStorage.getItem(RECIPE_SORT_ORDER_STORAGE_KEY) === 'newest'
-      ? 'newest'
-      : 'alphabetical';
+    return parseRecipeSort(localStorage.getItem(RECIPE_SORT_STORAGE_KEY));
   } catch {
-    return 'alphabetical';
+    return parseRecipeSort(null);
   }
 }
 
-function saveRecipeSortOrder(sortOrder: RecipeSortOrder): void {
+function saveRecipeSort(recipeSort: RecipeSort): void {
   try {
-    localStorage.setItem(RECIPE_SORT_ORDER_STORAGE_KEY, sortOrder);
+    localStorage.setItem(RECIPE_SORT_STORAGE_KEY, serializeRecipeSort(recipeSort));
   } catch {
-    // Sans stockage, l'ordre revient simplement à A → Z au prochain chargement.
+    // Sans stockage, le tri revient simplement par nom au prochain chargement.
   }
 }
 
