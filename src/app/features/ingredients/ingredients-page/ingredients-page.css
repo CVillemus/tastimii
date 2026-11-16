@@ -148,6 +148,11 @@
   border-top: 1px solid var(--color-border);
 }
 
+/* Le bandeau du type sépare déjà la première ligne : pas de trait en plus. */
+.ingredient-row:first-child {
+  border-top: none;
+}
+
 /* Maison à gauche du nom, puis crayon et croix alignés avec ceux de l'en-tête. */
 .ingredient-row__view {
   display: grid;
