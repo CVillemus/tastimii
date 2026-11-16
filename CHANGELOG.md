@@ -11,6 +11,10 @@ même commit.
 
 ## À venir
 
+Rien pour l'instant.
+
+## 16/11/2026
+
 ### Ajouts
 
 - **Vue mosaïque ou liste** sur ordinateur : deux icônes à côté du tri, mosaïque par défaut, choix
