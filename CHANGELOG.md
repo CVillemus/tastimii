@@ -11,7 +11,8 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Survol des boutons-icônes** (crayon, croix, maison…) : un léger voile rond et l'icône passe en terracotta.
+- **Types d'ingrédients** : plus de trait en double sous le bandeau du titre.
 
 ## 16/11/2026
 

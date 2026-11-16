@@ -28,6 +28,8 @@
   --color-shadow: rgb(43 36 32 / 25%);
   --color-shadow-soft: rgb(43 36 32 / 7%);
   --color-dialog-backdrop: rgb(43 36 32 / 45%);
+  /* Voile sous un bouton-icône survolé (translucide : s'adapte au fond, blanc ou teinté). */
+  --color-hover-wash: rgb(43 36 32 / 7%);
   /*
    * Boutons ronds posés sur une photo : verre dépoli (blanc translucide + flou de la photo
    * derrière) et ombre douce. Lisibles sur toutes les photos sans voile ni halo.
@@ -322,6 +324,18 @@ input[type='checkbox']:checked {
   border-color: transparent;
   background: transparent;
   color: var(--color-ink-muted);
+}
+
+/* Survol : un voile léger sous l'icône, qui marche sur fond blanc comme sur fond teinté. */
+.icon-button {
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.icon-button:hover:not(:disabled) {
+  background: var(--color-hover-wash);
+  color: var(--color-accent);
 }
 
 /* ---- Mise en page ---- */
