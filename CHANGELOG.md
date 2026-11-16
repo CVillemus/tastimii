@@ -11,7 +11,24 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+### Ajouts
+
+- **Partager une recette** : un bouton sur la fiche, à côté du crayon. Sur téléphone, il ouvre le
+  partage du système (Messages, WhatsApp…) ; sur ordinateur, il copie le lien de la recette.
+  Aussi depuis la liste des recettes, avec un bouton sous le sac de courses de chaque recette.
+- **Nombre de fois cuisinée** affiché sur la fiche recette (« Cuisinée 3 fois », « Jamais
+  cuisinée »).
+- **Trier les recettes** : au-dessus de la liste, à côté du nombre de recettes, de A à Z ou les
+  plus récentes d'abord. Le choix est retenu sur l'appareil.
+- **Fenêtre de confirmation** aux couleurs de l'app avant une suppression définitive.
+
+### Changements
+
+- **Supprimer une recette** : le bouton quitte la fiche et passe en bas du formulaire de
+  modification, avec une fenêtre de confirmation.
+- **Mobile** : le lien « Retour » devient un bouton rond flottant en bas à gauche, pendant du « + ».
+- **Formulaire de recette** : plus de lien « Gérer les tags » (il reste dans la liste des
+  recettes).
 
 ## 15/11/2026
 
