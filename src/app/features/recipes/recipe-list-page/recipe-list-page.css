@@ -118,16 +118,6 @@
   padding-left: 0;
 }
 
-.recipe-filters__manage {
-  justify-self: start;
-  font-size: var(--font-size-small);
-  text-decoration: none;
-}
-
-.recipe-filters__manage:hover {
-  text-decoration: underline;
-}
-
 /* Mobile : les filtres défilent sur une ligne. */
 .tag-filters {
   list-style: none;

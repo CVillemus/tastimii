@@ -224,6 +224,22 @@
   grid-column: 1 / -1;
 }
 
+.tags-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.tags-heading__manage {
+  font-size: var(--font-size-small);
+  text-decoration: none;
+}
+
+.tags-heading__manage:hover {
+  text-decoration: underline;
+}
+
 /* Une catégorie de tags : petit titre, puis ses tags. */
 .tag-category + .tag-category {
   margin-top: 0.75rem;

@@ -38,8 +38,8 @@ même commit.
 - **Supprimer une recette** : le bouton quitte la fiche et passe en bas du formulaire de
   modification, avec une fenêtre de confirmation.
 - **Mobile** : le lien « Retour » devient un bouton rond flottant en bas à gauche, pendant du « + ».
-- **Formulaire de recette** : plus de lien « Gérer les tags » (il reste dans la liste des
-  recettes).
+- **« Gérer les tags »** : seulement dans le formulaire de recette, là où on choisit et crée les
+  tags ; plus dans la liste des recettes.
 - **Formulaire de recette** : « + Ajouter un ingrédient » et « + Ajouter une étape » prennent la
   forme d'une ligne vide en pointillés, dans la continuité de la liste.
 
