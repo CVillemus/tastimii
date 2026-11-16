@@ -11,14 +11,18 @@ même commit.
 
 ## À venir
 
+Rien pour l'instant.
+
+## 16/11/2026
+
+### Raffinements visuels
+
 - **Filtres sur téléphone** : un bouton « Filtres » (avec le nombre de tags choisis) ouvre un panneau qui monte du bas ; la liste des recettes passe en premier.
 - **Cartes plus légères sur téléphone** : un seul tag par recette, puis « +N ».
 - **Boutons sur les photos** en verre dépoli (liste et fiche recette) ; sur ordinateur, « ⋯ » n'apparaît qu'au survol de la carte.
 - **Plus d'air** entre la colonne des filtres et les recettes (et sur les autres pages en deux colonnes), avec un filet vertical.
 - **Rayons d'ingrédients plus visibles** : le titre de chaque type (Légumes, Crèmerie…) est sur un bandeau teinté.
 - **Cartes harmonisées** sur tous les écrans : sans bordure, même ombre et même réaction au survol.
-
-## 16/11/2026
 
 ### Ajouts
 
