@@ -204,6 +204,18 @@ export class RecipesApi {
     return tagsByRecipeId;
   }
 
+  /** Nombre de fois où la recette a été cuisinée (lignes de l'historique `recipe_cooking`). */
+  async countRecipeCookings(recipeId: string): Promise<number> {
+    const { count, error } = await this.supabaseClient
+      .from('recipe_cooking')
+      .select('*', { count: 'exact', head: true })
+      .eq('recipe_id', recipeId);
+    if (error !== null) {
+      throw error;
+    }
+    return count ?? 0;
+  }
+
   private toRecipeSummary(recipeRow: RecipeRow, recipeTags: RecipeTag[]): RecipeSummary {
     return {
       id: recipeRow.id,

@@ -75,6 +75,12 @@ export class RecipeDetailPage {
   protected readonly skeletonIngredientLines: readonly number[] = [1, 2, 3, 4, 5];
   protected readonly skeletonSteps: readonly number[] = [1, 2, 3];
 
+  /** Nombre de fois où la recette a été cuisinée (validée « Cuisinée » en cuisine). */
+  protected readonly cookedCountResource: ResourceRef<number | undefined> = resource({
+    params: (): { recipeId: string } => ({ recipeId: this.recipeId() }),
+    loader: ({ params }): Promise<number> => this.recipesApi.countRecipeCookings(params.recipeId),
+  });
+
   /** Parts choisies : celles de la recette au départ, modifiables avec − et +. */
   protected readonly wantedServings: WritableSignal<number> = linkedSignal(() =>
     this.recipeResource.hasValue() ? this.recipeResource.value().baseServings : MINIMUM_SERVINGS,

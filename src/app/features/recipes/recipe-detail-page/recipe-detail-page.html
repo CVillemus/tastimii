@@ -24,6 +24,18 @@
             <span>{{ formatPreparationTime(recipe.preparationMinutes) }}</span>
           }
           <span>{{ recipe.baseServings }} parts</span>
+          @if (cookedCountResource.hasValue()) {
+            @let cookedCount = cookedCountResource.value();
+            <span class="recipe-meta__cooked">
+              @if (cookedCount === 0) {
+                Jamais cuisinée
+              } @else if (cookedCount === 1) {
+                Cuisinée 1 fois
+              } @else {
+                Cuisinée {{ cookedCount }} fois
+              }
+            </span>
+          }
           @if (recipeOrigin !== null) {
             <span class="recipe-meta__origin">
               Origine :
