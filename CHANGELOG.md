@@ -13,6 +13,9 @@ même commit.
 
 ### Ajouts
 
+- **Ajouter directement à la cuisine** : sur la fiche, sous « Ajouter aux courses », pour les
+  courses faites hors de l'app ou une envie improvisée. La recette arrive en cuisine avec les parts
+  choisies.
 - **Partager une recette** : un bouton sur la fiche, à côté du crayon. Sur téléphone, il ouvre le
   partage du système (Messages, WhatsApp…) ; sur ordinateur, il copie le lien de la recette.
   Aussi depuis la liste des recettes, avec un bouton sous le sac de courses de chaque recette.

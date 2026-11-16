@@ -27,6 +27,8 @@ import {
   RecipeIngredientLine,
   RecipeOrigin,
 } from '../../../core/recipes/recipe.model';
+import { KitchenApi } from '../../../core/kitchen/kitchen-api';
+import { KitchenStore } from '../../../core/kitchen/kitchen-store';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import { ShoppingListApi } from '../../../core/shopping-list/shopping-list-api';
 import { LinkifyRichTextPipe } from '../../../shared/rich-text/linkify-rich-text.pipe';
@@ -51,6 +53,8 @@ const MINIMUM_SERVINGS: number = 1;
 export class RecipeDetailPage {
   private readonly recipesApi: RecipesApi = inject(RecipesApi);
   private readonly shoppingListApi: ShoppingListApi = inject(ShoppingListApi);
+  private readonly kitchenApi: KitchenApi = inject(KitchenApi);
+  private readonly kitchenStore: KitchenStore = inject(KitchenStore);
   private readonly documentRef: Document = inject(DOCUMENT);
 
   /** Message après un partage (« Lien copié »), effacé au bout de quelques secondes. */
@@ -105,6 +109,16 @@ export class RecipeDetailPage {
   private readonly lastAddedServingsState: WritableSignal<number | null> = signal(null);
   protected readonly lastAddedServings: Signal<number | null> =
     this.lastAddedServingsState.asReadonly();
+  /** Parts mises directement en cuisine (affiche « En cuisine pour N parts »). */
+  private readonly lastAddedToKitchenServingsState: WritableSignal<number | null> = signal(null);
+  protected readonly lastAddedToKitchenServings: Signal<number | null> =
+    this.lastAddedToKitchenServingsState.asReadonly();
+  private readonly isAddingToKitchenState: WritableSignal<boolean> = signal(false);
+  protected readonly isAddingToKitchen: Signal<boolean> = this.isAddingToKitchenState.asReadonly();
+  private readonly addToKitchenErrorMessageState: WritableSignal<string | null> = signal(null);
+  protected readonly addToKitchenErrorMessage: Signal<string | null> =
+    this.addToKitchenErrorMessageState.asReadonly();
+
   private readonly isAddingToShoppingListState: WritableSignal<boolean> = signal(false);
   protected readonly isAddingToShoppingList: Signal<boolean> =
     this.isAddingToShoppingListState.asReadonly();
@@ -128,6 +142,23 @@ export class RecipeDetailPage {
       this.lastAddedServingsState.set(this.wantedServings());
     } finally {
       this.isAddingToShoppingListState.set(false);
+    }
+  }
+
+  /** « Ajouter à la cuisine » : directement en cuisine, sans passer par les courses. */
+  protected async addRecipeToKitchen(): Promise<void> {
+    this.isAddingToKitchenState.set(true);
+    this.addToKitchenErrorMessageState.set(null);
+    try {
+      await this.kitchenApi.addRecipeToKitchen(this.recipeId(), this.wantedServings());
+      this.lastAddedToKitchenServingsState.set(this.wantedServings());
+      await this.kitchenStore.refreshKitchenRecipeCount();
+    } catch {
+      this.addToKitchenErrorMessageState.set(
+        "La recette n'a pas pu être mise en cuisine. Réessayez.",
+      );
+    } finally {
+      this.isAddingToKitchenState.set(false);
     }
   }
 

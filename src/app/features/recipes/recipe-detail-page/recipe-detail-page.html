@@ -159,6 +159,25 @@
             <a routerLink="/courses">Voir la liste</a>
           </p>
         }
+
+        <!-- Sans passer par les courses : courses faites ailleurs, ou envie improvisée. -->
+        <button
+          class="button add-to-kitchen"
+          type="button"
+          [disabled]="isAddingToKitchen()"
+          (click)="addRecipeToKitchen()"
+        >
+          Ajouter à la cuisine ({{ wantedServings() }} parts)
+        </button>
+        @if (lastAddedToKitchenServings() !== null) {
+          <p class="added-confirmation" role="status">
+            En cuisine pour {{ lastAddedToKitchenServings() }} parts.
+            <a routerLink="/cuisine">Voir la cuisine</a>
+          </p>
+        }
+        @if (addToKitchenErrorMessage() !== null) {
+          <p class="error-message" role="alert">{{ addToKitchenErrorMessage() }}</p>
+        }
       </aside>
 
       <section class="recipe-steps">

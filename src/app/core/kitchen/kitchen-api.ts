@@ -71,6 +71,19 @@ export class KitchenApi {
     }
   }
 
+  /**
+   * Met une recette directement en cuisine, sans passer par la liste de courses (courses faites
+   * hors de l'app, ou envie improvisée avec ce qu'il y a à la maison).
+   */
+  async addRecipeToKitchen(recipeId: string, servings: number): Promise<void> {
+    const { error } = await this.supabaseClient
+      .from('kitchen_recipe')
+      .insert({ recipe_id: recipeId, servings });
+    if (error !== null) {
+      throw error;
+    }
+  }
+
   /** « Retirer » : la recette quitte la cuisine sans être comptée comme cuisinée. */
   async removeKitchenRecipe(kitchenEntryId: string): Promise<void> {
     const { error } = await this.supabaseClient

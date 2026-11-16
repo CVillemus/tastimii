@@ -246,6 +246,12 @@
   margin-top: 0.75rem;
 }
 
+/* Action secondaire, sous « Ajouter aux courses ». */
+.add-to-kitchen {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
 .added-confirmation {
   margin: 0.5rem 0 0;
   font-size: var(--font-size-small);
