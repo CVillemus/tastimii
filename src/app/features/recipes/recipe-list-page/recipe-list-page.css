@@ -148,22 +148,26 @@
   margin: 0 0 4.5rem;
   padding: 0;
   display: grid;
+  gap: 0.625rem;
 }
 
+/* Chaque recette : une carte blanche arrondie, la photo à gauche, le texte à droite. */
 .recipe-card {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--color-border);
+  gap: 0.875rem;
+  padding: 0.625rem;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px var(--color-shadow-soft);
   color: inherit;
   text-decoration: none;
 }
 
 .recipe-card__photo {
   flex-shrink: 0;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 5rem;
+  height: 5rem;
   border-radius: var(--radius-control);
 }
 
@@ -186,30 +190,26 @@
   position: relative;
 }
 
+/* La colonne de droite de la carte porte le sac de courses en haut, « ⋯ » dessous. */
 .recipe-list__item .recipe-card {
-  padding-right: 3.25rem;
+  padding-right: 3.75rem;
 }
 
 .recipe-list__item--on-menu .recipe-card {
-  padding-right: 8.75rem;
-}
-
-/* Mobile : la colonne de droite porte le sac de courses en haut, le partage dessous. */
-.recipe-list__item .recipe-card {
-  min-height: 5.5rem;
+  padding-right: 9.25rem;
 }
 
 .menu-control {
   position: absolute;
-  top: 0.5rem;
-  right: 0;
+  top: 0.625rem;
+  right: 0.625rem;
 }
 
 /* « ⋯ » : icône fine, sans fond, de la couleur du texte secondaire ; ouvre le menu d’actions. */
 .recipe-actions-toggle {
   position: absolute;
   bottom: 0.375rem;
-  right: 0.3125rem;
+  right: 0.9375rem;
   display: grid;
   place-items: center;
   width: 2rem;
@@ -363,15 +363,18 @@
     margin-bottom: 0;
   }
 
-  /* Vue liste sur desktop : des lignes plus aérées, vignette plus grande. */
+  /* Vue liste sur desktop : mêmes cartes, un peu plus grandes. */
+  .recipe-list--rows {
+    gap: 0.75rem;
+  }
+
   .recipe-list--rows .recipe-card {
-    gap: 1rem;
-    padding: 0.75rem 0;
+    gap: 1.25rem;
   }
 
   .recipe-list--rows .recipe-card__photo {
-    width: 5rem;
-    height: 5rem;
+    width: 6rem;
+    height: 6rem;
   }
 
   .recipe-list--rows .recipe-card__title {
@@ -384,9 +387,16 @@
 }
 
 /* Choix de la vue : deux petites icônes, à côté du tri. */
+/* Sur téléphone, toujours la liste : le choix de vue n'apparaît que sur desktop. */
 .recipe-view-toggle {
-  display: flex;
+  display: none;
   gap: 0.125rem;
+}
+
+@media (min-width: 48rem) {
+  .recipe-view-toggle {
+    display: flex;
+  }
 }
 
 .recipe-view-toggle__option {

@@ -91,9 +91,8 @@ export class RecipeListPage {
   protected readonly recipeSort: Signal<RecipeSort> = this.recipeSortState.asReadonly();
 
   /** Vue de la liste : mosaïque de cartes ou lignes ; retenue sur cet appareil. */
-  private readonly recipeListViewState: WritableSignal<RecipeListView> = signal(
-    readRecipeListView(this.documentRef),
-  );
+  private readonly recipeListViewState: WritableSignal<RecipeListView> =
+    signal(readRecipeListView());
   protected readonly recipeListView: Signal<RecipeListView> = this.recipeListViewState.asReadonly();
 
   protected changeRecipeListView(recipeListView: RecipeListView): void {
@@ -293,8 +292,8 @@ type RecipeListView = 'mosaic' | 'rows';
 
 const RECIPE_LIST_VIEW_STORAGE_KEY: string = 'tastimii.recipe-list-view';
 
-/** Vue retenue, sinon mosaïque sur desktop et liste sur mobile. */
-function readRecipeListView(documentRef: Document): RecipeListView {
+/** Vue retenue, sinon la mosaïque. Sur téléphone, la liste s'affiche toujours en lignes (CSS). */
+function readRecipeListView(): RecipeListView {
   try {
     const storedView: string | null = localStorage.getItem(RECIPE_LIST_VIEW_STORAGE_KEY);
     if (storedView === 'mosaic' || storedView === 'rows') {
@@ -303,9 +302,7 @@ function readRecipeListView(documentRef: Document): RecipeListView {
   } catch {
     // Stockage indisponible : on garde la vue par défaut.
   }
-  const isDesktop: boolean =
-    documentRef.defaultView?.matchMedia('(min-width: 48rem)').matches ?? false;
-  return isDesktop ? 'mosaic' : 'rows';
+  return 'mosaic';
 }
 
 function saveRecipeListView(recipeListView: RecipeListView): void {

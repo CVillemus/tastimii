@@ -13,9 +13,10 @@ même commit.
 
 ### Ajouts
 
-- **Vue mosaïque ou liste** sur la page Recettes : deux icônes à côté du tri. Par défaut, mosaïque
-  sur ordinateur et liste sur téléphone ; le choix est retenu sur l'appareil. En mosaïque sur
-  téléphone, une carte par ligne.
+- **Vue mosaïque ou liste** sur ordinateur : deux icônes à côté du tri, mosaïque par défaut, choix
+  retenu sur l'appareil. Sur téléphone, toujours la liste.
+- **Liste des recettes plus soignée** : chaque recette est une carte blanche aux coins arrondis,
+  avec une photo plus grande à gauche.
 - **Ajouter directement à la cuisine** : sur la fiche, sous « Ajouter aux courses », pour les
   courses faites hors de l'app ou une envie improvisée. La recette arrive en cuisine avec les parts
   choisies. Aussi depuis la liste, dans le menu « ⋯ » de chaque recette.
