@@ -36,11 +36,6 @@
   }
 }
 
-.recipe-filters {
-  display: grid;
-  gap: 0.75rem;
-}
-
 /* Au-dessus de la grille : « 8 recettes » à gauche, le tri à droite. */
 .recipe-list-toolbar {
   display: flex;
@@ -114,31 +109,6 @@
   transform: rotate(180deg);
 }
 
-/* Un groupe de filtres par catégorie : petit titre (🍲 Type de plat), puis ses tags. */
-.recipe-filters__title {
-  margin-bottom: 0.375rem;
-}
-
-.recipe-filters__clear {
-  justify-self: start;
-  padding-left: 0;
-}
-
-/* Mobile : les filtres défilent sur une ligne. */
-.tag-filters {
-  list-style: none;
-  margin: 0 calc(-1 * var(--page-gutter));
-  padding: 0 var(--page-gutter) 0.25rem;
-  display: flex;
-  gap: 0.375rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.tag-filters .tag-chip {
-  white-space: nowrap;
-}
-
 .recipe-card__tags {
   list-style: none;
   margin: 0.25rem 0 0;
@@ -146,6 +116,27 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
+}
+
+/* Mobile : un seul tag, puis « +N » pour les autres (desktop : tous les tags). */
+.recipe-card__extra-tag {
+  display: none;
+}
+
+.recipe-card__more-tags {
+  align-self: center;
+  font-size: var(--font-size-small);
+  color: var(--color-ink-muted);
+}
+
+@media (min-width: 48rem) {
+  .recipe-card__extra-tag {
+    display: revert;
+  }
+
+  .recipe-card__more-tags {
+    display: none;
+  }
 }
 
 /* Vue liste (par défaut sur mobile) : vignette à gauche. La marge du bas laisse la place au « + ». */
@@ -260,23 +251,25 @@
   stroke-linejoin: round;
 }
 
+/* Sac de courses sur la carte blanche : rond teinté, sans bordure (sur photo : voir mosaïque). */
 .menu-control__add {
   display: grid;
   place-items: center;
-  width: 2.625rem;
-  height: 2.625rem;
+  width: 2.5rem;
+  height: 2.5rem;
   padding: 0;
-  border: 1px solid var(--color-border);
+  border: none;
   border-radius: 50%;
-  background: var(--color-surface);
+  background: var(--color-accent-soft);
   color: var(--color-accent);
-  box-shadow: 0 1px 3px var(--color-shadow-soft);
   cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .menu-control__add:hover {
   background: var(--color-accent);
-  border-color: var(--color-accent);
   color: var(--color-on-accent);
 }
 
@@ -365,21 +358,6 @@
 
   .recipe-list-layout.page-columns {
     grid-template-columns: 15rem minmax(0, 1fr);
-  }
-
-  .recipe-filters {
-    gap: 1.25rem;
-  }
-
-  .recipe-filters__title {
-    margin-bottom: 0.5rem;
-  }
-
-  .tag-filters {
-    flex-wrap: wrap;
-    overflow-x: visible;
-    margin: 0;
-    padding: 0;
   }
 
   .recipe-list {

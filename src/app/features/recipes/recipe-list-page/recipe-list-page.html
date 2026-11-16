@@ -26,10 +26,12 @@
       <!-- Squelette de la colonne des filtres : recherche et quelques tags. -->
       <aside class="recipe-filters page-columns__sidebar" aria-hidden="true">
         <span class="skeleton recipe-skeleton__search"></span>
-        <div class="tag-filters">
-          <span class="skeleton skeleton--pill"></span>
-          <span class="skeleton skeleton--pill"></span>
-          <span class="skeleton skeleton--pill"></span>
+        <div class="recipe-filters__groups">
+          <div class="tag-filters">
+            <span class="skeleton skeleton--pill"></span>
+            <span class="skeleton skeleton--pill"></span>
+            <span class="skeleton skeleton--pill"></span>
+          </div>
         </div>
       </aside>
     } @else if (hasRecipeFilters) {
@@ -47,40 +49,22 @@
           </div>
         }
 
-        <!-- Un groupe de filtres par catégorie (seulement les tags portés par une recette). -->
-        @for (filterTagGroup of filterTagGroups(); track filterTagGroup.definition.category) {
-          @let filterCategory = filterTagGroup.definition;
-          <div class="filter-group">
-            <h2 class="surtitle recipe-filters__title" [id]="'filtre-' + filterCategory.category">
-              <span aria-hidden="true">{{ filterCategory.emoji }}</span>
-              {{ filterCategory.label }}
-            </h2>
-            <ul class="tag-filters" [attr.aria-labelledby]="'filtre-' + filterCategory.category">
-              @for (filterTag of filterTagGroup.tags; track filterTag.id) {
-                <li>
-                  <button
-                    class="tag-chip"
-                    type="button"
-                    [class.tag-chip--selected]="selectedTagIds().has(filterTag.id)"
-                    [attr.aria-pressed]="selectedTagIds().has(filterTag.id)"
-                    (click)="toggleTagFilter(filterTag)"
-                  >
-                    {{ filterTag.name }}
-                  </button>
-                </li>
-              }
-            </ul>
-          </div>
-        }
-        @if (selectedTagIds().size > 0) {
-          <button
-            class="button button--quiet button--small recipe-filters__clear"
-            type="button"
-            (click)="clearTagFilters()"
-          >
-            Retirer les filtres
-          </button>
-        }
+        <!-- Desktop : les tags dans la colonne. Mobile : dans le panneau « Filtres ». -->
+        <div class="recipe-filters__groups">
+          <ng-container
+            [ngTemplateOutlet]="tagFilterGroups"
+            [ngTemplateOutletContext]="{ $implicit: 'colonne' }"
+          />
+          @if (selectedTagIds().size > 0) {
+            <button
+              class="button button--quiet button--small recipe-filters__clear"
+              type="button"
+              (click)="clearTagFilters()"
+            >
+              Retirer les filtres
+            </button>
+          }
+        </div>
       </aside>
     }
 
@@ -89,7 +73,27 @@
         @if (recipeSummariesResource.value().length > 0) {
           <!-- Au-dessus de la grille : nombre de recettes affichées, et leur ordre. -->
           <div class="recipe-list-toolbar loaded-content">
-            <p class="recipe-list-toolbar__count">
+            <!-- Mobile : ouvre le panneau des filtres (le nombre de tags choisis en pastille). -->
+            @if (filterTagGroups().length > 0) {
+              <button class="recipe-filters-toggle" type="button" (click)="filtersSheet.open()">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
+                  <circle cx="16" cy="7" r="2" />
+                  <circle cx="10" cy="17" r="2" />
+                </svg>
+                Filtres
+                @if (selectedTagIds().size > 0) {
+                  <span class="recipe-filters-toggle__count">
+                    {{ selectedTagIds().size }}
+                    <span class="visually-hidden">actifs</span>
+                  </span>
+                }
+              </button>
+            }
+            <p
+              class="recipe-list-toolbar__count"
+              [class.recipe-list-toolbar__count--beside-filters]="filterTagGroups().length > 0"
+            >
               {{ matchingRecipeSummaries().length }}
               {{ matchingRecipeSummaries().length > 1 ? 'recettes' : 'recette' }}
             </p>
@@ -189,8 +193,16 @@
                     }
                     @if (recipeSummary.tags.length > 0) {
                       <ul class="recipe-card__tags" aria-label="Tags">
+                        <!-- Mobile : le premier tag et « +N » ; desktop : tous les tags. -->
                         @for (recipeTag of recipeSummary.tags; track recipeTag.id) {
-                          <li class="tag-label">{{ recipeTag.name }}</li>
+                          <li class="tag-label" [class.recipe-card__extra-tag]="!$first">
+                            {{ recipeTag.name }}
+                          </li>
+                        }
+                        @if (recipeSummary.tags.length > 1) {
+                          <li class="recipe-card__more-tags" aria-hidden="true">
+                            +{{ recipeSummary.tags.length - 1 }}
+                          </li>
                         }
                       </ul>
                     }
@@ -350,6 +362,67 @@
       }
     </div>
   </div>
+  <!--
+    Un groupe de filtres par catégorie (seulement les tags portés par une recette). Affiché dans
+    la colonne et dans le panneau : filterPlace distingue les identifiants des deux exemplaires.
+  -->
+  <ng-template #tagFilterGroups let-filterPlace>
+    @for (filterTagGroup of filterTagGroups(); track filterTagGroup.definition.category) {
+      @let filterCategory = filterTagGroup.definition;
+      <div class="filter-group">
+        <h2
+          class="surtitle recipe-filters__title"
+          [id]="'filtre-' + filterPlace + '-' + filterCategory.category"
+        >
+          <span aria-hidden="true">{{ filterCategory.emoji }}</span>
+          {{ filterCategory.label }}
+        </h2>
+        <ul
+          class="tag-filters"
+          [attr.aria-labelledby]="'filtre-' + filterPlace + '-' + filterCategory.category"
+        >
+          @for (filterTag of filterTagGroup.tags; track filterTag.id) {
+            <li>
+              <button
+                class="tag-chip"
+                type="button"
+                [class.tag-chip--selected]="selectedTagIds().has(filterTag.id)"
+                [attr.aria-pressed]="selectedTagIds().has(filterTag.id)"
+                (click)="toggleTagFilter(filterTag)"
+              >
+                {{ filterTag.name }}
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </ng-template>
+
+  <!-- Mobile : les filtres par tags dans un panneau qui monte du bas de l'écran. -->
+  <app-modal-dialog #filtersSheet dialogTitle="Filtres" placement="bottom-sheet">
+    <div class="filters-sheet">
+      <ng-container
+        [ngTemplateOutlet]="tagFilterGroups"
+        [ngTemplateOutletContext]="{ $implicit: 'panneau' }"
+      />
+    </div>
+    <div class="filters-sheet__footer" dialogFooter>
+      @if (selectedTagIds().size > 0) {
+        <button class="button button--quiet" type="button" (click)="clearTagFilters()">
+          Tout effacer
+        </button>
+      }
+      <button
+        class="button button--primary filters-sheet__show"
+        type="button"
+        (click)="filtersSheet.close()"
+      >
+        Voir {{ matchingRecipeSummaries().length }}
+        {{ matchingRecipeSummaries().length > 1 ? 'recettes' : 'recette' }}
+      </button>
+    </div>
+  </app-modal-dialog>
   @if (toastMessage() !== null) {
     <p class="toast" role="status">{{ toastMessage() }}</p>
   }

@@ -11,6 +11,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
+import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { KitchenApi } from '../../../core/kitchen/kitchen-api';
 import { KitchenStore } from '../../../core/kitchen/kitchen-store';
@@ -46,15 +47,24 @@ import {
   TagCategoryGroup,
   toggleRecipeTag,
 } from '../../../core/tags/tag.model';
+import { ModalDialog } from '../../../shared/modal-dialog/modal-dialog';
 import { RecipePhoto } from '../recipe-photo/recipe-photo';
 
 /** Accueil : toutes nos recettes, avec une recherche par titre et un filtre par tags. */
 @Component({
   selector: 'app-recipe-list-page',
-  imports: [CdkMenu, CdkMenuItem, CdkMenuTrigger, RouterLink, RecipePhoto],
+  imports: [
+    CdkMenu,
+    CdkMenuItem,
+    CdkMenuTrigger,
+    ModalDialog,
+    NgTemplateOutlet,
+    RouterLink,
+    RecipePhoto,
+  ],
   templateUrl: './recipe-list-page.html',
-  // Styles de la page et de la vue liste, puis ceux de la vue mosaïque (cartes).
-  styleUrls: ['./recipe-list-page.css', './recipe-list-mosaic.css'],
+  // Styles de la page et de la vue liste, des filtres, puis ceux de la vue mosaïque (cartes).
+  styleUrls: ['./recipe-list-page.css', './recipe-list-filters.css', './recipe-list-mosaic.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipeListPage {

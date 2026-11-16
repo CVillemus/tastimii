@@ -1,0 +1,111 @@
+/*
+ * ---- Filtres : recherche et tags ----
+ * Desktop : dans la colonne de gauche. Mobile : la recherche reste au-dessus de la liste et les
+ * tags passent dans un panneau qui monte du bas (bouton « Filtres » dans la barre d'outils).
+ */
+.recipe-filters {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.recipe-filters__groups {
+  display: none;
+  gap: 1.25rem;
+}
+
+/* Un groupe de filtres par catégorie : petit titre (🍲 Type de plat), puis ses tags. */
+.recipe-filters__title {
+  margin-bottom: 0.5rem;
+}
+
+.recipe-filters__clear {
+  justify-self: start;
+  padding-left: 0;
+}
+
+.tag-filters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.tag-filters .tag-chip {
+  white-space: nowrap;
+}
+
+/* Bouton « Filtres » (mobile) : pilule teintée, avec le nombre de tags choisis. */
+.recipe-filters-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+  font: inherit;
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.recipe-filters-toggle:hover {
+  background: var(--color-accent-soft-hover);
+}
+
+.recipe-filters-toggle svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.recipe-filters-toggle__count {
+  min-width: 1.25rem;
+  padding: 0 0.375rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  text-align: center;
+}
+
+/* À côté du bouton « Filtres », le nombre de recettes est déjà sur le bouton du panneau. */
+.recipe-list-toolbar__count--beside-filters {
+  display: none;
+}
+
+/* Contenu du panneau : les groupes de tags, puis « Tout effacer » et « Voir N recettes ». */
+.filters-sheet {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.filters-sheet__footer {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filters-sheet__show {
+  flex: 1;
+}
+
+@media (min-width: 48rem) {
+  .recipe-filters__groups {
+    display: grid;
+  }
+
+  .recipe-filters-toggle {
+    display: none;
+  }
+
+  .recipe-list-toolbar__count--beside-filters {
+    display: block;
+  }
+}
