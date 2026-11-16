@@ -583,6 +583,30 @@ input[type='checkbox']:checked {
   }
 }
 
+/* Message bref (« Lien copié ») : bulle en bas de l'écran, au-dessus de la barre d'onglets. */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--bottom-navigation-space) + 1rem);
+  z-index: 20;
+  max-width: calc(100% - 2rem);
+  margin: 0;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-control);
+  background: var(--color-ink);
+  color: var(--color-surface);
+  font-size: var(--font-size-small);
+  box-shadow: 0 2px 8px var(--color-shadow);
+  transform: translateX(-50%);
+  animation: slide-in 0.2s ease-out;
+}
+
+@media (min-width: 48rem) {
+  .toast {
+    bottom: 1.5rem;
+  }
+}
+
 /* ---- Tags ---- */
 
 .tag-choices {

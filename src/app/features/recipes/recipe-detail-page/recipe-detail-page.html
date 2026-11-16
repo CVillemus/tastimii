@@ -49,19 +49,37 @@
         }
       </div>
 
-      <!-- Tout se modifie depuis le formulaire : un crayon en haut à droite de l'en-tête. -->
-      <a
-        class="recipe-hero__edit"
-        aria-label="Modifier la recette"
-        [routerLink]="['/recettes', recipe.id, 'modifier']"
-      >
-        <!-- Au survol, le bouton s'étend vers la gauche pour afficher ce texte. -->
-        <span class="recipe-hero__edit-label" aria-hidden="true">Éditer</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 20h4L19 9l-4-4L4 16z" />
-          <path d="M13.5 6.5l4 4" />
-        </svg>
-      </a>
+      <!-- En haut à droite de l'en-tête : partager la recette, et le crayon qui ouvre le formulaire. -->
+      <div class="recipe-hero__actions">
+        <button
+          class="recipe-hero__share"
+          type="button"
+          title="Partager la recette"
+          aria-label="Partager la recette"
+          (click)="shareRecipe(recipe)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v12" />
+            <path d="M8 7l4-4 4 4" />
+            <path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
+          </svg>
+        </button>
+        <a
+          class="recipe-hero__edit"
+          aria-label="Modifier la recette"
+          [routerLink]="['/recettes', recipe.id, 'modifier']"
+        >
+          <!-- Au survol, le bouton s'étend vers la gauche pour afficher ce texte. -->
+          <span class="recipe-hero__edit-label" aria-hidden="true">Éditer</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 20h4L19 9l-4-4L4 16z" />
+            <path d="M13.5 6.5l4 4" />
+          </svg>
+        </a>
+      </div>
+      @if (shareMessage() !== null) {
+        <p class="recipe-hero__share-message" role="status">{{ shareMessage() }}</p>
+      }
     </header>
 
     <!-- Ornement entre l'en-tête et la recette, comme dans un livre de cuisine. -->

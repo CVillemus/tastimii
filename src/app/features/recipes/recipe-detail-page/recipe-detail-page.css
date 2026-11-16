@@ -19,10 +19,64 @@
 }
 
 /* Crayon « Modifier la recette » : en haut à droite de l'en-tête (posé sur la photo). */
-.recipe-hero__edit {
+/* Boutons ronds en haut à droite de l'en-tête (posés sur la photo sur mobile). */
+.recipe-hero__actions {
   position: absolute;
   top: 0.625rem;
   right: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.recipe-hero__share {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: 0 1px 3px var(--color-shadow);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.recipe-hero__share:hover {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.recipe-hero__share svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* « Lien copié » : petite bulle sous les boutons. */
+.recipe-hero__share-message {
+  position: absolute;
+  top: 3.625rem;
+  right: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-control);
+  background: var(--color-ink);
+  color: var(--color-surface);
+  font-size: var(--font-size-small);
+  box-shadow: 0 2px 8px var(--color-shadow);
+  animation: slide-in 0.2s ease-out;
+}
+
+.recipe-hero__edit {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -275,9 +329,18 @@
     padding: 1.75rem 3.75rem 1.75rem 2.25rem;
   }
 
-  .recipe-hero__edit {
+  .recipe-hero__actions {
     top: 1rem;
     right: 1rem;
+  }
+
+  .recipe-hero__share-message {
+    top: 4rem;
+    right: 1rem;
+  }
+
+  .recipe-hero__edit,
+  .recipe-hero__share {
     box-shadow: 0 1px 3px var(--color-shadow-soft);
     border: 1px solid var(--color-border);
   }

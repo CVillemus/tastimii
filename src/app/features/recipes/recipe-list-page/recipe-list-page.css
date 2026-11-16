@@ -131,11 +131,47 @@
   padding-right: 8.75rem;
 }
 
+/* Mobile : la colonne de droite porte le sac de courses en haut, le partage dessous. */
+.recipe-list__item .recipe-card {
+  min-height: 5.5rem;
+}
+
 .menu-control {
   position: absolute;
-  top: 50%;
+  top: 0.5rem;
   right: 0;
-  transform: translateY(-50%);
+}
+
+/* Partage discret : icône fine, sans fond, de la couleur du texte secondaire. */
+.recipe-share {
+  position: absolute;
+  bottom: 0.375rem;
+  right: 0.3125rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.recipe-share:hover {
+  color: var(--color-accent);
+}
+
+.recipe-share svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .menu-control__add {
@@ -320,7 +356,29 @@
   .menu-control {
     top: 0.625rem;
     right: 0.625rem;
-    transform: none;
+  }
+
+  .recipe-list__item .recipe-card {
+    min-height: 0;
+  }
+
+  /* Desktop : en bas à droite de la carte, à côté de la durée et des parts. */
+  /*
+   * Desktop : posé sur la photo sous le bouton sac de courses (même rond blanc, même halo).
+   */
+  .recipe-share {
+    top: 3.75rem;
+    bottom: auto;
+    right: 0.625rem;
+    width: 2.625rem;
+    height: 2.625rem;
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  .recipe-share:hover {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   /*
@@ -342,19 +400,12 @@
 
   .menu-control__add {
     border: none;
-    background: var(--color-surface);
-    box-shadow:
-      0 0 0 3px var(--color-photo-halo),
-      0 2px 8px var(--color-photo-shadow);
   }
 
-  .menu-control__add:hover {
-    box-shadow:
-      0 0 0 3px var(--color-photo-halo),
-      0 2px 8px var(--color-photo-shadow);
-  }
-
-  /* Compteur de parts (recette au menu) : même halo et même ombre que le bouton panier. */
+  /* Boutons posés sur la photo (sac, partage, compteur) : halo blanc et ombre marquée. */
+  .menu-control__add,
+  .menu-control__add:hover,
+  .recipe-share,
   .menu-control__stepper {
     box-shadow:
       0 0 0 3px var(--color-photo-halo),

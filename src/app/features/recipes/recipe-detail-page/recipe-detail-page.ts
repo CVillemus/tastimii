@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DOCUMENT,
   inject,
   input,
   InputSignal,
@@ -14,6 +15,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { keepScreenAwake } from '../../../core/device/keep-screen-awake';
+import { buildRecipeShareUrl, shareLink, ShareLinkOutcome } from '../../../core/sharing/share-link';
 import {
   formatPreparationTime,
   formatQuantityWithUnit,
@@ -52,6 +54,12 @@ export class RecipeDetailPage {
   private readonly shoppingListApi: ShoppingListApi = inject(ShoppingListApi);
   private readonly recipePhotosApi: RecipePhotosApi = inject(RecipePhotosApi);
   private readonly router: Router = inject(Router);
+  private readonly documentRef: Document = inject(DOCUMENT);
+
+  /** Message après un partage (« Lien copié »), effacé au bout de quelques secondes. */
+  private readonly shareMessageState: WritableSignal<string | null> = signal(null);
+  protected readonly shareMessage: Signal<string | null> = this.shareMessageState.asReadonly();
+  private shareMessageTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
   constructor() {
     // On suit souvent la recette en cuisinant : l'écran ne se met pas en veille sur la fiche.
@@ -118,6 +126,29 @@ export class RecipeDetailPage {
     } finally {
       this.isAddingToShoppingListState.set(false);
     }
+  }
+
+  /** « Partager » : feuille de partage sur téléphone, sinon copie du lien de la recette. */
+  protected async shareRecipe(recipe: Recipe): Promise<void> {
+    const browserWindow: Window | null = this.documentRef.defaultView;
+    if (browserWindow === null) {
+      return;
+    }
+    const outcome: ShareLinkOutcome = await shareLink(
+      { title: recipe.title, url: buildRecipeShareUrl(recipe.id, this.documentRef.baseURI) },
+      browserWindow,
+    );
+    if (outcome === 'copied') {
+      this.showShareMessage('Lien copié : collez-le où vous voulez.');
+    } else if (outcome === 'failed') {
+      this.showShareMessage("Le lien n'a pas pu être copié.");
+    }
+  }
+
+  private showShareMessage(message: string): void {
+    clearTimeout(this.shareMessageTimeoutId);
+    this.shareMessageState.set(message);
+    this.shareMessageTimeoutId = setTimeout(() => this.shareMessageState.set(null), 3000);
   }
 
   protected async deleteRecipe(recipe: Recipe): Promise<void> {
