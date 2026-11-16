@@ -15,10 +15,10 @@ même commit.
 
 - **Ajouter directement à la cuisine** : sur la fiche, sous « Ajouter aux courses », pour les
   courses faites hors de l'app ou une envie improvisée. La recette arrive en cuisine avec les parts
-  choisies.
+  choisies. Aussi depuis la liste, dans le menu « ⋯ » de chaque recette.
 - **Partager une recette** : un bouton sur la fiche, à côté du crayon. Sur téléphone, il ouvre le
   partage du système (Messages, WhatsApp…) ; sur ordinateur, il copie le lien de la recette.
-  Aussi depuis la liste des recettes, avec un bouton sous le sac de courses de chaque recette.
+  Aussi depuis la liste des recettes, dans le menu « ⋯ » de chaque recette.
 - **Nombre de fois cuisinée** affiché sur la fiche recette (« Cuisinée 3 fois », « Jamais
   cuisinée »).
 - **Trier les recettes** : au-dessus de la liste, à côté du nombre de recettes, par nom ou par
@@ -28,6 +28,8 @@ même commit.
 
 ### Changements
 
+- **Vignettes plus légères** : le sac de courses reste en direct ; « Ajouter à la cuisine » et
+  « Partager » passent dans un petit menu « ⋯ ».
 - **Liste des recettes** : plus de nombre de parts sur les vignettes (il se choisit au moment
   d'ajouter aux courses), seulement la durée.
 - **Supprimer une recette** : le bouton quitte la fiche et passe en bas du formulaire de

@@ -211,20 +211,51 @@
                   }
                 </div>
 
-                <!-- Partage : sous le bouton sac de courses (sur la photo sur desktop). -->
+                <!-- Autres actions, dans un petit menu sous le sac : cuisine, partage. -->
                 <button
-                  class="recipe-share"
+                  class="recipe-actions-toggle"
                   type="button"
-                  title="Partager la recette"
-                  [attr.aria-label]="'Partager ' + recipeSummary.title"
-                  (click)="shareRecipe(recipeSummary)"
+                  title="Plus d'actions"
+                  [attr.aria-label]="'Plus d’actions pour ' + recipeSummary.title"
+                  [cdkMenuTriggerFor]="recipeActionsMenu"
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 3v12" />
-                    <path d="M8 7l4-4 4 4" />
-                    <path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
+                    <circle cx="5" cy="12" r="1.4" />
+                    <circle cx="12" cy="12" r="1.4" />
+                    <circle cx="19" cy="12" r="1.4" />
                   </svg>
                 </button>
+                <ng-template #recipeActionsMenu>
+                  <div class="recipe-actions-menu" cdkMenu>
+                    <button
+                      class="recipe-actions-menu__item"
+                      type="button"
+                      cdkMenuItem
+                      (cdkMenuItemTriggered)="addRecipeToKitchen(recipeSummary)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M12 3c1.918 0 3.52 1.35 3.91 3.151a4 4 0 0 1 2.09 7.723V21H6v-7.126a4 4 0 1 1 2.092-7.723A4 4 0 0 1 12 3z"
+                        />
+                        <path d="M6.161 17.009l11.839-.009" />
+                      </svg>
+                      Ajouter à la cuisine
+                    </button>
+                    <button
+                      class="recipe-actions-menu__item"
+                      type="button"
+                      cdkMenuItem
+                      (cdkMenuItemTriggered)="shareRecipe(recipeSummary)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 3v12" />
+                        <path d="M8 7l4-4 4 4" />
+                        <path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
+                      </svg>
+                      Partager
+                    </button>
+                  </div>
+                </ng-template>
               </li>
             } @empty {
               <li class="status-message">
@@ -274,7 +305,7 @@
       }
     </div>
   </div>
-  @if (shareMessage() !== null) {
-    <p class="toast" role="status">{{ shareMessage() }}</p>
+  @if (toastMessage() !== null) {
+    <p class="toast" role="status">{{ toastMessage() }}</p>
   }
 </div>

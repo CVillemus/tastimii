@@ -10,7 +10,10 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { RouterLink } from '@angular/router';
+import { KitchenApi } from '../../../core/kitchen/kitchen-api';
+import { KitchenStore } from '../../../core/kitchen/kitchen-store';
 import { formatPreparationTime } from '../../../core/recipes/quantity';
 import { RecipeSummary } from '../../../core/recipes/recipe.model';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
@@ -48,7 +51,7 @@ import { RecipePhoto } from '../recipe-photo/recipe-photo';
 /** Accueil : toutes nos recettes, avec une recherche par titre et un filtre par tags. */
 @Component({
   selector: 'app-recipe-list-page',
-  imports: [RouterLink, RecipePhoto],
+  imports: [CdkMenu, CdkMenuItem, CdkMenuTrigger, RouterLink, RecipePhoto],
   templateUrl: './recipe-list-page.html',
   styleUrl: './recipe-list-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -122,11 +125,13 @@ export class RecipeListPage {
   protected readonly skeletonCards: readonly number[] = [1, 2, 3, 4, 5, 6];
 
   private readonly documentRef: Document = inject(DOCUMENT);
+  private readonly kitchenApi: KitchenApi = inject(KitchenApi);
+  private readonly kitchenStore: KitchenStore = inject(KitchenStore);
 
-  /** Message après un partage (« Lien copié »), effacé au bout de quelques secondes. */
-  private readonly shareMessageState: WritableSignal<string | null> = signal(null);
-  protected readonly shareMessage: Signal<string | null> = this.shareMessageState.asReadonly();
-  private shareMessageTimeoutId: ReturnType<typeof setTimeout> | undefined;
+  /** Message bref après une action du menu (« Lien copié », « En cuisine »), effacé tout seul. */
+  private readonly toastMessageState: WritableSignal<string | null> = signal(null);
+  protected readonly toastMessage: Signal<string | null> = this.toastMessageState.asReadonly();
+  private toastTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
   protected readonly formatPreparationTime: (preparationMinutes: number) => string =
     formatPreparationTime;
@@ -242,16 +247,32 @@ export class RecipeListPage {
       browserWindow,
     );
     if (outcome === 'copied') {
-      this.showShareMessage(`Lien de « ${recipeSummary.title} » copié.`);
+      this.showToast(`Lien de « ${recipeSummary.title} » copié.`);
     } else if (outcome === 'failed') {
-      this.showShareMessage("Le lien n'a pas pu être copié.");
+      this.showToast("Le lien n'a pas pu être copié.");
     }
   }
 
-  private showShareMessage(message: string): void {
-    clearTimeout(this.shareMessageTimeoutId);
-    this.shareMessageState.set(message);
-    this.shareMessageTimeoutId = setTimeout(() => this.shareMessageState.set(null), 3000);
+  /**
+   * Menu « ⋯ » : met la recette directement en cuisine (courses faites hors de l'app, envie
+   * improvisée), pour son nombre de parts de base.
+   */
+  protected async addRecipeToKitchen(recipeSummary: RecipeSummary): Promise<void> {
+    try {
+      await this.kitchenApi.addRecipeToKitchen(recipeSummary.id, recipeSummary.baseServings);
+      await this.kitchenStore.refreshKitchenRecipeCount();
+      this.showToast(
+        `« ${recipeSummary.title} » est en cuisine (${recipeSummary.baseServings} parts).`,
+      );
+    } catch {
+      this.showToast("La recette n'a pas pu être mise en cuisine.");
+    }
+  }
+
+  private showToast(message: string): void {
+    clearTimeout(this.toastTimeoutId);
+    this.toastMessageState.set(message);
+    this.toastTimeoutId = setTimeout(() => this.toastMessageState.set(null), 3000);
   }
 }
 
