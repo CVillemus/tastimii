@@ -11,13 +11,14 @@ même commit.
 
 ## À venir
 
-- **Survol des boutons-icônes** (crayon, croix, maison…) : un léger voile rond et l'icône passe en terracotta.
-- **Types d'ingrédients** : plus de trait en double sous le bandeau du titre.
+Rien pour l'instant.
 
 ## 16/11/2026
 
 ### Raffinements visuels
 
+- **Survol des boutons-icônes** (crayon, croix, maison…) : un léger voile rond et l'icône passe en terracotta.
+- **Types d'ingrédients** : plus de trait en double sous le bandeau du titre.
 - **Fiche recette sur téléphone** : la photo touche la barre du haut, sans marge.
 - **Filtres sur téléphone** : un bouton « Filtres » (avec le nombre de tags choisis) ouvre un panneau qui monte du bas ; la liste des recettes passe en premier.
 - **Cartes plus légères sur téléphone** : un seul tag par recette, puis « +N ».
