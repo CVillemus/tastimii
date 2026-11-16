@@ -335,3 +335,12 @@
   height: 2.625rem;
   border-radius: var(--radius-control);
 }
+
+/* Suppression de la recette : en bas du formulaire, séparée par un filet. */
+.recipe-form__danger-zone {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}

@@ -13,7 +13,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { keepScreenAwake } from '../../../core/device/keep-screen-awake';
 import { buildRecipeShareUrl, shareLink, ShareLinkOutcome } from '../../../core/sharing/share-link';
 import {
@@ -27,7 +27,6 @@ import {
   RecipeIngredientLine,
   RecipeOrigin,
 } from '../../../core/recipes/recipe.model';
-import { RecipePhotosApi } from '../../../core/recipes/recipe-photos-api';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import { ShoppingListApi } from '../../../core/shopping-list/shopping-list-api';
 import { LinkifyRichTextPipe } from '../../../shared/rich-text/linkify-rich-text.pipe';
@@ -52,8 +51,6 @@ const MINIMUM_SERVINGS: number = 1;
 export class RecipeDetailPage {
   private readonly recipesApi: RecipesApi = inject(RecipesApi);
   private readonly shoppingListApi: ShoppingListApi = inject(ShoppingListApi);
-  private readonly recipePhotosApi: RecipePhotosApi = inject(RecipePhotosApi);
-  private readonly router: Router = inject(Router);
   private readonly documentRef: Document = inject(DOCUMENT);
 
   /** Message après un partage (« Lien copié »), effacé au bout de quelques secondes. */
@@ -149,17 +146,5 @@ export class RecipeDetailPage {
     clearTimeout(this.shareMessageTimeoutId);
     this.shareMessageState.set(message);
     this.shareMessageTimeoutId = setTimeout(() => this.shareMessageState.set(null), 3000);
-  }
-
-  protected async deleteRecipe(recipe: Recipe): Promise<void> {
-    if (!confirm(`Supprimer la recette « ${recipe.title} » ? C'est définitif.`)) {
-      return;
-    }
-    await this.recipesApi.deleteRecipe(recipe.id);
-    // La photo n'est pas supprimée avec la recette : on retire aussi le fichier du stockage.
-    if (recipe.photoPath !== null) {
-      await this.recipePhotosApi.deleteRecipePhoto(recipe.photoPath);
-    }
-    await this.router.navigate(['/recettes']);
   }
 }

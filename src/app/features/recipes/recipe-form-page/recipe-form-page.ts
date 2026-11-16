@@ -59,6 +59,7 @@ import {
   toggleRecipeTag,
 } from '../../../core/tags/tag.model';
 import { TagsApi } from '../../../core/tags/tags-api';
+import { ConfirmationDialog } from '../../../shared/confirmation-dialog/confirmation-dialog';
 import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
 import {
   buildUnitChoices,
@@ -91,7 +92,15 @@ type RecipePhotoChoice =
 /** Création (`/recettes/nouvelle`) et modification (`/recettes/:recipeId/modifier`) d'une recette. */
 @Component({
   selector: 'app-recipe-form-page',
-  imports: [CdkDrag, CdkDragHandle, CdkDropList, FormField, RouterLink, RichTextEditor],
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    CdkDropList,
+    ConfirmationDialog,
+    FormField,
+    RouterLink,
+    RichTextEditor,
+  ],
   templateUrl: './recipe-form-page.html',
   styleUrl: './recipe-form-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -436,6 +445,36 @@ export class RecipeFormPage {
         (_step: RecipeFormStep, stepIndex: number) => stepIndex !== removedIndex,
       ),
     }));
+  }
+
+  private readonly isDeletingRecipeState: WritableSignal<boolean> = signal(false);
+  protected readonly isDeletingRecipe: Signal<boolean> = this.isDeletingRecipeState.asReadonly();
+
+  /** Titre de la recette en cours de modification, pour la fenêtre de confirmation. */
+  protected readonly existingRecipeTitle: Signal<string> = computed(() =>
+    this.existingRecipeResource.hasValue() ? this.existingRecipeResource.value().title : '',
+  );
+
+  /** Après confirmation dans la fenêtre : supprime la recette (et sa photo), puis retour à la liste. */
+  protected async deleteExistingRecipe(): Promise<void> {
+    if (!this.existingRecipeResource.hasValue()) {
+      return;
+    }
+    const recipe: Recipe = this.existingRecipeResource.value();
+    this.isDeletingRecipeState.set(true);
+    this.saveErrorMessageState.set(null);
+    try {
+      await this.recipesApi.deleteRecipe(recipe.id);
+      // La photo n'est pas supprimée avec la recette : on retire aussi le fichier du stockage.
+      if (recipe.photoPath !== null) {
+        await this.recipePhotosApi.deleteRecipePhoto(recipe.photoPath);
+      }
+      await this.router.navigate(['/recettes']);
+    } catch {
+      this.saveErrorMessageState.set("La recette n'a pas pu être supprimée. Réessayez.");
+    } finally {
+      this.isDeletingRecipeState.set(false);
+    }
   }
 
   protected async submitRecipeForm(submitEvent: Event): Promise<void> {

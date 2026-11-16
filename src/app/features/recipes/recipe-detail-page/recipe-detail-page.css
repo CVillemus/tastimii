@@ -293,12 +293,6 @@
   padding-top: 0.25rem;
 }
 
-.recipe-actions {
-  margin-top: var(--block-gap);
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--color-border);
-}
-
 /* ---- Desktop : photo à côté du titre, ingrédients à gauche et étapes à droite ---- */
 
 @media (min-width: 48rem) {
@@ -396,11 +390,6 @@
 
   .step-list__title {
     font-size: 1.3125rem;
-  }
-
-  .recipe-actions {
-    border-top: none;
-    padding-top: 0;
   }
 }
 

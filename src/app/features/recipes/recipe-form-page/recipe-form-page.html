@@ -461,6 +461,31 @@
           Enregistrer la recette
         }
       </button>
+
+      <!-- Suppression : seulement en modification, après confirmation dans une fenêtre. -->
+      @if (isEditingExistingRecipe()) {
+        <div class="recipe-form__danger-zone">
+          <button
+            class="button button--quiet button--danger button--small"
+            type="button"
+            [disabled]="isDeletingRecipe()"
+            (click)="deleteRecipeDialog.open()"
+          >
+            Supprimer la recette
+          </button>
+        </div>
+        <app-confirmation-dialog
+          #deleteRecipeDialog
+          dialogTitle="Supprimer la recette ?"
+          [message]="
+            '« ' +
+            existingRecipeTitle() +
+            ' » sera supprimée définitivement, avec sa photo. Cette action est irréversible.'
+          "
+          confirmLabel="Supprimer définitivement"
+          (confirmed)="deleteExistingRecipe()"
+        />
+      }
     </form>
   }
 </div>

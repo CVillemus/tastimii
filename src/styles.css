@@ -27,6 +27,7 @@
   --color-checkbox-border: #b8aa99;
   --color-shadow: rgb(43 36 32 / 25%);
   --color-shadow-soft: rgb(43 36 32 / 7%);
+  --color-dialog-backdrop: rgb(43 36 32 / 45%);
   /* Voile, halo et ombre des boutons posés sur une photo (lisibles sur toutes les couleurs). */
   --color-photo-scrim: rgb(0 0 0 / 35%);
   --color-photo-halo: rgb(255 255 255 / 50%);

@@ -181,16 +181,6 @@
         }
       </section>
     </div>
-
-    <div class="recipe-actions">
-      <button
-        class="button button--quiet button--danger button--small"
-        type="button"
-        (click)="deleteRecipe(recipe)"
-      >
-        Supprimer la recette
-      </button>
-    </div>
   } @else if (recipeResource.error()) {
     <p class="status-message error-message">Impossible de charger cette recette.</p>
   } @else {
