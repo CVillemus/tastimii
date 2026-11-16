@@ -14,6 +14,7 @@ import { RouterLink } from '@angular/router';
 import { formatPreparationTime } from '../../../core/recipes/quantity';
 import { RecipeSummary } from '../../../core/recipes/recipe.model';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
+import { RecipeSortOrder, sortRecipes } from '../../../core/recipes/recipe-sorting';
 import { buildRecipeShareUrl, shareLink, ShareLinkOutcome } from '../../../core/sharing/share-link';
 import {
   applyMenuServingsChange,
@@ -67,8 +68,22 @@ export class RecipeListPage {
     const selectedTags: RecipeTag[] = this.filterTags().filter((filterTag: RecipeTag) =>
       this.selectedTagIds().has(filterTag.id),
     );
-    return filterByTagSelection(recipesMatchingSearch, selectedTags);
+    return sortRecipes(
+      filterByTagSelection(recipesMatchingSearch, selectedTags),
+      this.recipeSortOrder(),
+    );
   });
+
+  /** Ordre de la liste, retenu sur cet appareil. */
+  private readonly recipeSortOrderState: WritableSignal<RecipeSortOrder> =
+    signal(readRecipeSortOrder());
+  protected readonly recipeSortOrder: Signal<RecipeSortOrder> =
+    this.recipeSortOrderState.asReadonly();
+
+  protected changeRecipeSortOrder(sortOrder: RecipeSortOrder): void {
+    this.recipeSortOrderState.set(sortOrder);
+    saveRecipeSortOrder(sortOrder);
+  }
 
   /** Tags proposés comme filtres : seulement ceux qui sont sur au moins une recette. */
   protected readonly filterTags: Signal<RecipeTag[]> = computed(() =>
@@ -224,6 +239,27 @@ export class RecipeListPage {
     clearTimeout(this.shareMessageTimeoutId);
     this.shareMessageState.set(message);
     this.shareMessageTimeoutId = setTimeout(() => this.shareMessageState.set(null), 3000);
+  }
+}
+
+const RECIPE_SORT_ORDER_STORAGE_KEY: string = 'tastimii.recipe-sort-order';
+
+/** Lecture protégée : le stockage peut être indisponible (navigation privée…). */
+function readRecipeSortOrder(): RecipeSortOrder {
+  try {
+    return localStorage.getItem(RECIPE_SORT_ORDER_STORAGE_KEY) === 'newest'
+      ? 'newest'
+      : 'alphabetical';
+  } catch {
+    return 'alphabetical';
+  }
+}
+
+function saveRecipeSortOrder(sortOrder: RecipeSortOrder): void {
+  try {
+    localStorage.setItem(RECIPE_SORT_ORDER_STORAGE_KEY, sortOrder);
+  } catch {
+    // Sans stockage, l'ordre revient simplement à A → Z au prochain chargement.
   }
 }
 

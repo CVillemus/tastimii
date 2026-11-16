@@ -88,6 +88,35 @@
     <div class="recipe-list-content">
       @if (recipeSummariesResource.hasValue()) {
         @if (recipeSummariesResource.value().length > 0) {
+          <!-- Au-dessus de la grille : nombre de recettes affichées, et leur ordre. -->
+          <div class="recipe-list-toolbar loaded-content">
+            <p class="recipe-list-toolbar__count">
+              {{ matchingRecipeSummaries().length }}
+              {{ matchingRecipeSummaries().length > 1 ? 'recettes' : 'recette' }}
+            </p>
+            <!-- Ordre de la liste : alphabétique ou dernières recettes ajoutées. -->
+            <div class="recipe-sort" role="group" aria-label="Trier les recettes">
+              <span class="recipe-sort__label">Trier</span>
+              <button
+                class="recipe-sort__option"
+                type="button"
+                [class.recipe-sort__option--active]="recipeSortOrder() === 'alphabetical'"
+                [attr.aria-pressed]="recipeSortOrder() === 'alphabetical'"
+                (click)="changeRecipeSortOrder('alphabetical')"
+              >
+                A → Z
+              </button>
+              <button
+                class="recipe-sort__option"
+                type="button"
+                [class.recipe-sort__option--active]="recipeSortOrder() === 'newest'"
+                [attr.aria-pressed]="recipeSortOrder() === 'newest'"
+                (click)="changeRecipeSortOrder('newest')"
+              >
+                Plus récentes
+              </button>
+            </div>
+          </div>
           <ul class="recipe-list loaded-content">
             @for (recipeSummary of matchingRecipeSummaries(); track recipeSummary.id) {
               @let recipeMenuStatus = recipeMenuStatuses().get(recipeSummary.id);

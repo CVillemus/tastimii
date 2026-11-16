@@ -10,6 +10,8 @@ export type RecipeSummary = {
   photoUrl: string | null;
   /** Tags de la recette, triés par nom. */
   tags: RecipeTag[];
+  /** Date d'ajout de la recette (ISO), pour trier par « plus récentes ». */
+  createdAt: string;
 };
 
 /** Une étape de préparation : un titre court (facultatif) et un texte riche (HTML). */

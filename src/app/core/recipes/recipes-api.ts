@@ -225,6 +225,7 @@ export class RecipesApi {
       photoUrl:
         recipeRow.photo_path === null ? null : this.buildRecipePhotoUrl(recipeRow.photo_path),
       tags: recipeTags,
+      createdAt: recipeRow.created_at,
     };
   }
 
