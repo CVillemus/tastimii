@@ -66,7 +66,19 @@
 }
 
 .ingredient-type {
-  padding: 0.75rem 1rem;
+  padding: 0 1rem 0.75rem;
+  overflow: hidden;
+}
+
+/*
+ * En-tête du type : un bandeau teinté sur toute la largeur de la carte, pour que chaque rayon
+ * (Légumes, Crèmerie…) se repère d'un coup d'œil dans la liste. Même bandeau pendant le renommage.
+ */
+.ingredient-type__header,
+.ingredient-type > .type-rename-form {
+  margin: 0 -1rem 0.25rem;
+  padding: 0.625rem 1rem;
+  background: var(--color-accent-soft);
 }
 
 .ingredient-type__header {
@@ -80,7 +92,7 @@
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
-  color: var(--color-accent);
+  color: var(--color-accent-hover);
 }
 
 .ingredient-type__ingredients {
