@@ -50,11 +50,9 @@ Dernière mise à jour : 15/11/2026.
 
 ### Tags
 
-- [ ] **« Express » et temps de préparation / cuisson séparés** (mis de côté le 15/11/2026) :
-      aujourd'hui une recette n'a qu'une durée. Séparer le temps de préparation et le temps de
-      cuisson (comme dans les livres : « 10 min + 15 min »), puis déduire un badge « Express » de
-      ces temps (par exemple préparation de 15 min ou moins), au lieu d'un tag coché à la main.
-      Le tag « Rapide » existe encore en attendant.
+- [ ] **Badge « Express »** : les temps de préparation et de cuisson sont séparés depuis le
+      17/11/2026 (migration 012). Reste à en déduire un badge « Express » (par exemple
+      préparation de 15 min ou moins), au lieu du tag « Rapide » coché à la main.
 - [ ] **Saison proposée selon le mois** : mettre en avant les recettes d'hiver en novembre, d'été
       en juin (filtre présélectionné ou section « De saison »).
 

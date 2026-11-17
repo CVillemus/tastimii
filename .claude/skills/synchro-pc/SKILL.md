@@ -90,6 +90,13 @@ Rien d'autre : pas de migration Supabase, pas de nouvelle variable, pas d'outil 
       existe déjà).
 - [ ] Pour créer une recette depuis une photo de livre : suivre `docs/saisie-recettes.md`.
 
+### Depuis le PC où le projet est dans `C:\Users\Utilisateur\projets\tastimii`, le 17/11/2026 : durées de préparation et de cuisson
+
+- [ ] `git pull`. Pas de nouvelle dépendance : pas besoin de `npm ci`.
+- [ ] **Ne pas relancer** `supabase/migrations/012_duree_de_cuisson.sql` : il est lancé une seule
+      fois sur la base Supabase partagée (le relancer échouerait sur la colonne `cooking_minutes`,
+      qui existe déjà).
+
 ### À faire un jour (sur n'importe quel PC, pas urgent)
 
 - [ ] Dans `.github/workflows/deploy-github-pages.yml`, mettre à jour `actions/upload-pages-artifact`

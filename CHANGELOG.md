@@ -11,7 +11,22 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Durées de préparation et de cuisson**, facultatives, à la place d'une seule durée. La fiche
+  affiche « Préparation 15 min · Cuisson 35 min » ; les vignettes et la cuisine, la durée totale.
+  Les recettes existantes gardent leur durée (affichée comme avant ; à répartir au besoin dans le
+  formulaire) (migration 012).
+- **Formulaire de recette** :
+  - sur ordinateur, même largeur que les autres pages, et barre des étapes alignée à gauche ;
+  - « Suivant » ou « Enregistrer » refusé : le curseur va sur le premier champ à corriger ;
+  - photo : sans photo, une grande zone « Ajouter une photo » ; avec photo, « Changer la photo »
+    au survol (icône toujours visible sur téléphone).
+- **Zones « Ajouter… »** (ingrédient, étape, photo) : fond blanc et pointillés plus fins.
+- **Lien « ← Retour »** un peu plus grand sur ordinateur.
+
+### Base de données
+
+- Lancer `supabase/migrations/012_duree_de_cuisson.sql` **avant** de déployer (sans lui,
+  l'enregistrement d'une recette échoue).
 
 ## 17/11/2026
 
