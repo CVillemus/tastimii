@@ -116,7 +116,7 @@ export function totalRecipeMinutes(
 }
 
 /**
- * Durées d'une recette, chacune affichée avec son icône (planche pour la préparation, cocotte pour
+ * Durées d'une recette, chacune affichée avec son icône (couteau pour la préparation, cocotte pour
  * la cuisson). `null` si aucune durée n'est renseignée.
  */
 export type RecipeDurationLabels = {

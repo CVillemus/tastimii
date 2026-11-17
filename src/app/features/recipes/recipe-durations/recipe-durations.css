@@ -4,7 +4,7 @@
   gap: 0.25rem 0.875rem;
 }
 
-/* Durée avec son icône : planche (préparation) ou cocotte qui fume (cuisson). */
+/* Durée avec son icône : couteau (préparation) ou cocotte qui fume (cuisson). */
 .recipe-duration {
   display: inline-flex;
   align-items: center;
@@ -20,4 +20,9 @@
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* Le manche du couteau, plus épais que la lame. */
+.recipe-duration__knife-handle {
+  stroke-width: 2.6;
 }

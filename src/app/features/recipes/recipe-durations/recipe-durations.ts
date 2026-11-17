@@ -9,7 +9,7 @@ import {
 import { describeRecipeDurations, RecipeDurationLabels } from '../../../core/recipes/quantity';
 
 /**
- * Durées d'une recette, chacune avec son icône : planche et couteau pour la préparation, cocotte
+ * Durées d'une recette, chacune avec son icône : couteau pour la préparation, cocotte
  * qui fume pour la cuisson. Utilisé sur la fiche recette et sur les cartes de la liste.
  */
 @Component({
