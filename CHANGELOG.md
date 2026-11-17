@@ -11,7 +11,7 @@ même commit.
 
 ## À venir
 
-- **Titres de section avec plus de caractère** (« Ingrédients », « Préparation », « Photo », « Au menu »…) : plus grands, Fraunces dans son dessin « affiche », soulignés d'un petit trait terracotta.
+- **Titres de section avec plus de caractère** (« Ingrédients », « Préparation », « Photo », « Au menu »…) : un peu plus grands, précédés de l'ornement ✦ terracotta du séparateur de la fiche.
 
 ## 17/11/2026
 
