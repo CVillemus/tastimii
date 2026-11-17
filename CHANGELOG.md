@@ -11,12 +11,13 @@ même commit.
 
 ## À venir
 
-- **Cuisine** : plus de date « courses du … » sur les recettes (elle n'apportait rien).
+Rien pour l'instant.
 
 ## 17/11/2026
 
 ### Raffinements
 
+- **Cuisine** : plus de date « courses du … » sur les recettes (elle n'apportait rien).
 - **Titres des étapes** de la fiche recette en terracotta.
 - **Boutons** en Atkinson normale, légèrement espacée, au lieu du gras (trop épais) : boutons, zones « Ajouter… », bouton « Filtres ».
 - **Titres de section avec plus de caractère** (« Ingrédients », « Préparation », « Photo », « Au menu »…) : un peu plus grands, précédés de l'ornement ✦ terracotta du séparateur de la fiche.
