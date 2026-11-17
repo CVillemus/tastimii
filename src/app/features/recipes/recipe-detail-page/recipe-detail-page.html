@@ -20,8 +20,10 @@
         <h1>{{ recipe.title }}</h1>
         @let recipeOrigin = parseRecipeOrigin(recipe.origin);
         <p class="recipe-meta">
-          @if (recipe.preparationMinutes !== null) {
-            <span>{{ formatPreparationTime(recipe.preparationMinutes) }}</span>
+          @let recipeDurations =
+            describeRecipeDurations(recipe.preparationMinutes, recipe.cookingMinutes);
+          @if (recipeDurations !== null) {
+            <span>{{ recipeDurations }}</span>
           }
           <span>{{ recipe.baseServings }} parts</span>
           @if (cookedCountResource.hasValue()) {

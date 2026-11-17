@@ -45,8 +45,10 @@
               <h2 class="kitchen-recipe__title">{{ recipe.title }}</h2>
               <p class="kitchen-recipe__meta">
                 {{ kitchenRecipe.servings }} parts
-                @if (recipe.preparationMinutes !== null) {
-                  · {{ formatPreparationTime(recipe.preparationMinutes) }}
+                @let totalMinutes =
+                  totalRecipeMinutes(recipe.preparationMinutes, recipe.cookingMinutes);
+                @if (totalMinutes !== null) {
+                  · {{ formatPreparationTime(totalMinutes) }}
                 }
                 · courses du {{ formatShoppingDate(kitchenRecipe.addedAt) }}
               </p>

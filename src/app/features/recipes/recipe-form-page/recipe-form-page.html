@@ -1,4 +1,4 @@
-<div class="page page--narrow">
+<div class="page">
   @if (isEditingExistingRecipe()) {
     <a
       class="back-link"
@@ -97,9 +97,10 @@
                 }
               </div>
 
-              <div class="recipe-form__row">
+              <!-- Parts, puis les deux durées, facultatives. -->
+              <div class="recipe-form__row recipe-form__row--three">
                 <div>
-                  <label for="recipe-base-servings">Nombre de parts</label>
+                  <label for="recipe-base-servings">Parts</label>
                   <input
                     id="recipe-base-servings"
                     type="number"
@@ -114,14 +115,36 @@
                   }
                 </div>
                 <div>
-                  <label for="recipe-preparation-minutes">Durée (minutes)</label>
+                  <label for="recipe-preparation-minutes">Préparation (min)</label>
                   <input
                     id="recipe-preparation-minutes"
                     type="number"
                     inputmode="numeric"
-                    placeholder="45"
+                    placeholder="15"
                     [formField]="recipeForm.preparationMinutes"
                   />
+                  @for (
+                    durationError of recipeForm.preparationMinutes().errors();
+                    track durationError.kind
+                  ) {
+                    <p class="field-error">{{ durationError.message }}</p>
+                  }
+                </div>
+                <div>
+                  <label for="recipe-cooking-minutes">Cuisson (min)</label>
+                  <input
+                    id="recipe-cooking-minutes"
+                    type="number"
+                    inputmode="numeric"
+                    placeholder="30"
+                    [formField]="recipeForm.cookingMinutes"
+                  />
+                  @for (
+                    durationError of recipeForm.cookingMinutes().errors();
+                    track durationError.kind
+                  ) {
+                    <p class="field-error">{{ durationError.message }}</p>
+                  }
                 </div>
               </div>
 
@@ -140,42 +163,72 @@
             <section class="recipe-info-step__photo">
               <h2 class="section-title">Photo</h2>
               <div class="recipe-photo-field">
-                @if (displayedPhotoUrl(); as photoUrl) {
-                  <img
-                    class="recipe-photo-field__preview"
-                    [src]="photoUrl"
-                    alt="Photo de la recette"
-                  />
-                } @else {
-                  <div class="recipe-photo-field__empty">Pas encore de photo</div>
-                }
-                <div class="recipe-photo-field__actions">
-                  <label class="button button--small recipe-photo-field__choose">
-                    @if (isPreparingPhoto()) {
-                      Préparation de la photo…
-                    } @else if (displayedPhotoUrl() !== null) {
-                      Changer la photo
-                    } @else {
-                      Ajouter une photo
-                    }
-                    <input
-                      class="visually-hidden"
-                      type="file"
-                      accept="image/*"
-                      [disabled]="isPreparingPhoto()"
-                      (change)="chooseRecipePhoto($event)"
+                @let photoUrl = displayedPhotoUrl();
+                <!--
+                  Sans photo : une grande zone en pointillés (comme « + Ajouter un ingrédient »).
+                  Avec photo : la photo elle-même ; « Changer la photo » apparaît au survol
+                  (sur téléphone, une icône toujours visible). Le champ fichier est dans le label.
+                -->
+                <label
+                  class="recipe-photo-field__picker"
+                  [class.recipe-photo-field__picker--empty]="photoUrl === null"
+                  [class.dashed-add-zone]="photoUrl === null"
+                  [class.recipe-photo-field__picker--busy]="isPreparingPhoto()"
+                >
+                  @if (photoUrl !== null) {
+                    <img
+                      class="recipe-photo-field__preview"
+                      [src]="photoUrl"
+                      alt="Photo de la recette"
                     />
-                  </label>
-                  @if (displayedPhotoUrl() !== null) {
-                    <button
-                      class="button button--quiet button--danger button--small"
-                      type="button"
-                      (click)="removeRecipePhoto()"
-                    >
-                      Retirer la photo
-                    </button>
+                    <span class="recipe-photo-field__change">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M4 8a2 2 0 0 1 2-2h1.5l1.5-2h6l1.5 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"
+                        />
+                        <circle cx="12" cy="12.5" r="3.5" />
+                      </svg>
+                      <span class="recipe-photo-field__change-label">
+                        @if (isPreparingPhoto()) {
+                          Préparation…
+                        } @else {
+                          Changer la photo
+                        }
+                      </span>
+                    </span>
+                  } @else {
+                    <span class="recipe-photo-field__add">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M4 8a2 2 0 0 1 2-2h1.5l1.5-2h6l1.5 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"
+                        />
+                        <circle cx="12" cy="12.5" r="3.5" />
+                      </svg>
+                      @if (isPreparingPhoto()) {
+                        Préparation de la photo…
+                      } @else {
+                        Ajouter une photo
+                      }
+                    </span>
                   }
-                </div>
+                  <input
+                    class="visually-hidden"
+                    type="file"
+                    accept="image/*"
+                    [attr.aria-label]="photoUrl === null ? 'Ajouter une photo' : 'Changer la photo'"
+                    [disabled]="isPreparingPhoto()"
+                    (change)="chooseRecipePhoto($event)"
+                  />
+                </label>
+                @if (photoUrl !== null) {
+                  <button
+                    class="button button--quiet button--danger button--small recipe-photo-field__remove"
+                    type="button"
+                    (click)="removeRecipePhoto()"
+                  >
+                    Retirer la photo
+                  </button>
+                }
                 @if (photoErrorMessage() !== null) {
                   <p class="field-error" role="alert">{{ photoErrorMessage() }}</p>
                 }

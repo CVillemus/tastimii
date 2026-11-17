@@ -35,7 +35,10 @@ export type RecipeRow = {
   id: string;
   title: string;
   base_servings: number;
+  /** Durée de préparation (avant le script 012 : durée totale). */
   preparation_minutes: number | null;
+  /** Durée de cuisson (script 012). */
+  cooking_minutes: number | null;
   /** Ancienne colonne des étapes (texte simple), remplacée par `preparation_steps`. Ne plus l'utiliser. */
   steps: string[];
   preparation_steps: RecipePreparationStepJson[];

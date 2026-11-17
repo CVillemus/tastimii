@@ -17,6 +17,7 @@ import { RouterLink } from '@angular/router';
 import { keepScreenAwake } from '../../../core/device/keep-screen-awake';
 import { buildRecipeShareUrl, shareLink, ShareLinkOutcome } from '../../../core/sharing/share-link';
 import {
+  describeRecipeDurations,
   formatPreparationTime,
   formatQuantityWithUnit,
   scaleQuantity,
@@ -125,6 +126,10 @@ export class RecipeDetailPage {
 
   protected readonly formatPreparationTime: (preparationMinutes: number) => string =
     formatPreparationTime;
+  protected readonly describeRecipeDurations: (
+    preparationMinutes: number | null,
+    cookingMinutes: number | null,
+  ) => string | null = describeRecipeDurations;
   protected readonly parseRecipeOrigin: (origin: string) => RecipeOrigin | null = parseRecipeOrigin;
 
   protected decreaseWantedServings(): void {

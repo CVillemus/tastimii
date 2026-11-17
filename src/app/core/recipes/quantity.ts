@@ -104,6 +104,37 @@ export function formatReadableQuantityHint(quantity: number | null, unit: string
   return readableQuantity.quantity === quantity ? null : formatQuantityWithUnit(quantity, unit);
 }
 
+/** Durée totale (préparation + cuisson), ou `null` si aucune durée n'est renseignée. */
+export function totalRecipeMinutes(
+  preparationMinutes: number | null,
+  cookingMinutes: number | null,
+): number | null {
+  if (preparationMinutes === null && cookingMinutes === null) {
+    return null;
+  }
+  return (preparationMinutes ?? 0) + (cookingMinutes ?? 0);
+}
+
+/**
+ * Durées de la fiche recette :
+ * - préparation et cuisson : « Préparation 15 min · Cuisson 35 min » ;
+ * - cuisson seule : « Cuisson 35 min » ;
+ * - préparation seule : « 1 h 20 », sans libellé (les recettes d'avant le script 012 n'ont qu'une
+ *   durée, qui était la durée totale).
+ */
+export function describeRecipeDurations(
+  preparationMinutes: number | null,
+  cookingMinutes: number | null,
+): string | null {
+  if (cookingMinutes === null) {
+    return preparationMinutes === null ? null : formatPreparationTime(preparationMinutes);
+  }
+  const cookingLabel: string = `Cuisson ${formatPreparationTime(cookingMinutes)}`;
+  return preparationMinutes === null
+    ? cookingLabel
+    : `Préparation ${formatPreparationTime(preparationMinutes)} · ${cookingLabel}`;
+}
+
 /** Durée lisible : « 45 min », « 1 h 10 ». */
 export function formatPreparationTime(preparationMinutes: number): string {
   const hours: number = Math.floor(preparationMinutes / 60);

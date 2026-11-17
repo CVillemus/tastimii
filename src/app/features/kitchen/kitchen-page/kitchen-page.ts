@@ -12,7 +12,7 @@ import { RouterLink } from '@angular/router';
 import { KitchenApi } from '../../../core/kitchen/kitchen-api';
 import { KitchenRecipe } from '../../../core/kitchen/kitchen.model';
 import { KitchenStore } from '../../../core/kitchen/kitchen-store';
-import { formatPreparationTime } from '../../../core/recipes/quantity';
+import { formatPreparationTime, totalRecipeMinutes } from '../../../core/recipes/quantity';
 import { RecipePhoto } from '../../recipes/recipe-photo/recipe-photo';
 
 const shoppingDateFormat: Intl.DateTimeFormat = new Intl.DateTimeFormat('fr-FR', {
@@ -60,6 +60,10 @@ export class KitchenPage {
 
   protected readonly formatPreparationTime: (preparationMinutes: number) => string =
     formatPreparationTime;
+  protected readonly totalRecipeMinutes: (
+    preparationMinutes: number | null,
+    cookingMinutes: number | null,
+  ) => number | null = totalRecipeMinutes;
 
   protected formatShoppingDate(addedAt: string): string {
     return shoppingDateFormat.format(new Date(addedAt));

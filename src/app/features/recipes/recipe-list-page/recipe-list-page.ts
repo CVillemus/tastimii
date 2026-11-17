@@ -15,7 +15,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { KitchenApi } from '../../../core/kitchen/kitchen-api';
 import { KitchenStore } from '../../../core/kitchen/kitchen-store';
-import { formatPreparationTime } from '../../../core/recipes/quantity';
+import { formatPreparationTime, totalRecipeMinutes } from '../../../core/recipes/quantity';
 import { RecipeSummary } from '../../../core/recipes/recipe.model';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import {
@@ -156,6 +156,10 @@ export class RecipeListPage {
 
   protected readonly formatPreparationTime: (preparationMinutes: number) => string =
     formatPreparationTime;
+  protected readonly totalRecipeMinutes: (
+    preparationMinutes: number | null,
+    cookingMinutes: number | null,
+  ) => number | null = totalRecipeMinutes;
 
   // ---- Menu des courses, depuis les vignettes ----
 

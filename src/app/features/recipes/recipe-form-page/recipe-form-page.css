@@ -1,5 +1,5 @@
 /*
- * Formulaire en trois étapes, dans une colonne de lecture (même largeur sur toutes les étapes).
+ * Formulaire en trois étapes, sur la même largeur que les autres pages.
  * `minmax(0, …)` : un lien long ou une option longue ne doit pas élargir la page sur mobile.
  */
 .recipe-form {
@@ -13,6 +13,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
+}
+
+/* Parts, préparation, cuisson : trois champs courts ; alignés en bas si un libellé passe à la ligne. */
+.recipe-form__row--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
 }
 
 /* ---- Barre des étapes : 1 Infos · 2 Ingrédients · 3 Préparation ---- */
@@ -169,39 +175,114 @@
   gap: 0.5rem;
 }
 
-.recipe-photo-field__preview,
-.recipe-photo-field__empty {
-  width: 100%;
+/* Zone cliquable de la photo, de la taille de la photo (ouvre l'appareil photo ou la galerie). */
+.recipe-photo-field__picker {
+  position: relative;
+  display: block;
   height: 12rem;
+  margin: 0;
+  overflow: hidden;
   border-radius: var(--radius-card);
+  cursor: pointer;
+}
+
+.recipe-photo-field__picker--busy {
+  cursor: progress;
+}
+
+.recipe-photo-field__picker:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .recipe-photo-field__preview {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.recipe-photo-field__empty {
+/* Sans photo : zone « Ajouter… » (pointillés, voir .dashed-add-zone), icône au-dessus du texte. */
+.recipe-photo-field__picker--empty {
   display: grid;
   place-items: center;
-  background: var(--color-photo-placeholder);
-  color: var(--color-ink-muted);
-  font-size: var(--font-size-small);
 }
 
-.recipe-photo-field__actions {
-  display: flex;
-  flex-wrap: wrap;
+.recipe-photo-field__add {
+  display: grid;
+  justify-items: center;
   gap: 0.5rem;
 }
 
-.recipe-photo-field__choose {
-  margin: 0;
-  color: var(--color-ink);
+.recipe-photo-field__add svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
 }
 
-.recipe-photo-field__choose:focus-within {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+/*
+ * Avec photo : « Changer la photo » en pastille de verre dépoli au centre, visible au survol
+ * (ou au clavier). Sur écran tactile (pas de survol), seule l'icône reste visible, dans un coin.
+ */
+.recipe-photo-field__change {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-photo-glass);
+  backdrop-filter: blur(0.5rem);
+  box-shadow: var(--shadow-photo-button);
+  color: var(--color-ink);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s ease;
+}
+
+.recipe-photo-field__picker:hover .recipe-photo-field__change,
+.recipe-photo-field__picker:focus-within .recipe-photo-field__change,
+.recipe-photo-field__picker--busy .recipe-photo-field__change {
+  opacity: 1;
+}
+
+.recipe-photo-field__change svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+@media (hover: none) {
+  .recipe-photo-field__change {
+    top: 0.625rem;
+    right: 0.625rem;
+    left: auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    justify-content: center;
+    padding: 0;
+    opacity: 1;
+    transform: none;
+  }
+
+  .recipe-photo-field__change-label {
+    display: none;
+  }
+}
+
+.recipe-photo-field__remove {
+  justify-self: start;
+  padding-left: 0;
 }
 
 /* Nouveau tag : le nom sur toute la largeur, puis sa catégorie et le bouton. */
@@ -264,24 +345,40 @@
 
 /* Desktop : les infos à gauche, la photo à droite ; les tags dessous, sur toute la largeur. */
 @media (min-width: 48rem) {
+  /* Barre des étapes alignée à gauche, numéro et nom côte à côte, reliés par un trait court. */
+  .form-stepper__item {
+    flex: none;
+  }
+
+  .form-stepper__item + .form-stepper__item {
+    padding-left: 4rem;
+  }
+
+  .form-stepper__item + .form-stepper__item::before {
+    top: 50%;
+    right: auto;
+    left: 1rem;
+    width: 2rem;
+  }
+
+  .form-stepper__button {
+    flex-direction: row;
+    gap: 0.625rem;
+  }
+
   .recipe-form {
     gap: 1.75rem;
     margin-top: 1.5rem;
   }
 
   .recipe-info-step {
-    grid-template-columns: minmax(0, 1fr) 16rem;
-    column-gap: 2rem;
+    grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
+    column-gap: var(--columns-gap);
     align-items: start;
   }
 
   .recipe-info-step__tags {
     grid-column: 1 / -1;
-  }
-
-  .recipe-photo-field__preview,
-  .recipe-photo-field__empty {
-    height: 12rem;
   }
 }
 

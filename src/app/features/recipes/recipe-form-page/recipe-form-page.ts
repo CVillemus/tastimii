@@ -7,6 +7,7 @@ import {
   DOCUMENT,
   effect,
   inject,
+  Injector,
   input,
   InputSignal,
   resource,
@@ -130,6 +131,7 @@ export class RecipeFormPage {
   private readonly router: Router = inject(Router);
   private readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private readonly documentRef: Document = inject(DOCUMENT);
+  private readonly injector: Injector = inject(Injector);
 
   /** Présent seulement en modification (vient de l'URL). */
   readonly recipeId: InputSignal<string | undefined> = input<string | undefined>();
@@ -198,6 +200,7 @@ export class RecipeFormPage {
       required(recipeFormPath.baseServings, { message: 'Indiquez le nombre de parts.' });
       min(recipeFormPath.baseServings, 1, { message: 'Au moins une part.' });
       min(recipeFormPath.preparationMinutes, 1, { message: 'Au moins une minute.' });
+      min(recipeFormPath.cookingMinutes, 1, { message: 'Au moins une minute.' });
       applyEach(recipeFormPath.ingredientLines, (ingredientLinePath) => {
         min(ingredientLinePath.quantity, 0.01, { message: 'La quantité doit être positive.' });
         disabled(
@@ -375,9 +378,61 @@ export class RecipeFormPage {
     const canLeaveStep: boolean = this.isEditingExistingRecipe()
       ? !this.hasInvalidFieldOnStep(currentStep)
       : this.completedSteps().has(currentStep);
-    if (canLeaveStep && currentStep < LAST_RECIPE_FORM_STEP) {
+    if (!canLeaveStep) {
+      this.focusFirstProblem(currentStep);
+    } else if (currentStep < LAST_RECIPE_FORM_STEP) {
       this.goToStep((currentStep + 1) as RecipeFormStepNumber);
     }
+  }
+
+  /**
+   * Après un « Suivant » ou un « Enregistrer » refusé : le curseur va sur le premier champ à
+   * corriger (et l'écran défile jusqu'à lui), une fois les messages d'erreur affichés.
+   * - un champ en erreur (titre, quantité, type d'un nouvel ingrédient…) : ce champ ;
+   * - aucun ingrédient : le nom du premier ingrédient ;
+   * - aucune étape écrite : le texte de la première étape.
+   */
+  private focusFirstProblem(stepNumber: RecipeFormStepNumber): void {
+    afterNextRender(
+      {
+        read: () => {
+          const formElement: HTMLFormElement | null =
+            this.documentRef.querySelector<HTMLFormElement>('.recipe-form');
+          const problemField: HTMLElement | null | undefined =
+            this.findFieldWithError(formElement) ??
+            this.findEmptyRequiredField(formElement, stepNumber);
+          problemField?.focus();
+          problemField?.scrollIntoView({ block: 'center' });
+        },
+      },
+      { injector: this.injector },
+    );
+  }
+
+  /** Premier champ suivi d'un message d'erreur, dans l'ordre de la page. */
+  private findFieldWithError(formElement: HTMLFormElement | null): HTMLElement | null | undefined {
+    const firstFieldError: Element | null | undefined = formElement?.querySelector(
+      '.field-error:not(.form-step-nav__problem)',
+    );
+    return firstFieldError?.parentElement?.querySelector<HTMLElement>(
+      'input:not([disabled]), select, textarea, [contenteditable="true"]',
+    );
+  }
+
+  /** Champ à remplir quand l'étape est vide : pas de message sous un champ précis. */
+  private findEmptyRequiredField(
+    formElement: HTMLFormElement | null,
+    stepNumber: RecipeFormStepNumber,
+  ): HTMLElement | null | undefined {
+    if (stepNumber === 2) {
+      return formElement?.querySelector<HTMLElement>('[id^="ingredient-name-"]');
+    }
+    if (stepNumber === 3) {
+      return formElement?.querySelector<HTMLElement>(
+        'app-recipe-preparation-step [contenteditable="true"]',
+      );
+    }
+    return formElement?.querySelector<HTMLElement>('#recipe-title');
   }
 
   /**
@@ -418,7 +473,8 @@ export class RecipeFormPage {
     return (
       this.recipeForm.title().valid() &&
       this.recipeForm.baseServings().valid() &&
-      this.recipeForm.preparationMinutes().valid()
+      this.recipeForm.preparationMinutes().valid() &&
+      this.recipeForm.cookingMinutes().valid()
     );
   }
 
@@ -447,6 +503,7 @@ export class RecipeFormPage {
       this.recipeForm.title().markAsTouched();
       this.recipeForm.baseServings().markAsTouched();
       this.recipeForm.preparationMinutes().markAsTouched();
+      this.recipeForm.cookingMinutes().markAsTouched();
     } else if (stepNumber === 2) {
       this.recipeForm.ingredientLines().markAsTouched();
     } else {
@@ -457,7 +514,7 @@ export class RecipeFormPage {
   private describeStepProblem(stepNumber: RecipeFormStepNumber): string {
     if (stepNumber === 1) {
       return this.recipeForm.title().valid()
-        ? 'Vérifiez le nombre de parts et la durée.'
+        ? 'Vérifiez le nombre de parts et les durées.'
         : 'Donnez un titre à la recette pour continuer.';
     }
     if (stepNumber === 2) {
@@ -665,6 +722,7 @@ export class RecipeFormPage {
     }
     if (isCreatingRecipe && !this.completedSteps().has(LAST_RECIPE_FORM_STEP)) {
       this.attemptedStepState.set(LAST_RECIPE_FORM_STEP);
+      this.focusFirstProblem(LAST_RECIPE_FORM_STEP);
       return;
     }
     await submit(this.recipeForm, async () => {
@@ -689,6 +747,7 @@ export class RecipeFormPage {
       if (invalidStep !== this.currentStep()) {
         this.goToStep(invalidStep);
       }
+      this.focusFirstProblem(invalidStep);
     }
   }
 
@@ -711,6 +770,7 @@ export class RecipeFormPage {
       title: formModel.title,
       baseServings: formModel.baseServings,
       preparationMinutes: formModel.preparationMinutes,
+      cookingMinutes: formModel.cookingMinutes,
       descriptionHtml: formModel.descriptionHtml,
       origin: formModel.origin,
       tagIds: formModel.tagIds,

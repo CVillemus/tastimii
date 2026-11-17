@@ -5,7 +5,10 @@ export type RecipeSummary = {
   id: string;
   title: string;
   baseServings: number;
+  /** Durée de préparation en minutes (facultative). */
   preparationMinutes: number | null;
+  /** Durée de cuisson en minutes (facultative). */
+  cookingMinutes: number | null;
   /** Adresse publique de la photo, ou `null` si la recette n'en a pas. */
   photoUrl: string | null;
   /** Tags de la recette, triés par nom. */
@@ -45,6 +48,7 @@ export type RecipeDraft = {
   title: string;
   baseServings: number;
   preparationMinutes: number | null;
+  cookingMinutes: number | null;
   steps: RecipeStep[];
   descriptionHtml: string;
   origin: string;

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  describeRecipeDurations,
   formatPreparationTime,
+  totalRecipeMinutes,
   formatQuantity,
   formatQuantityWithUnit,
   formatReadableQuantityHint,
@@ -59,5 +61,24 @@ describe('quantités', () => {
     expect(formatPreparationTime(45)).toBe('45 min');
     expect(formatPreparationTime(70)).toBe('1 h 10');
     expect(formatPreparationTime(120)).toBe('2 h');
+  });
+});
+
+describe('durées de préparation et de cuisson', () => {
+  it('additionne les deux durées pour les vignettes, null si aucune', () => {
+    expect(totalRecipeMinutes(15, 35)).toBe(50);
+    expect(totalRecipeMinutes(null, 35)).toBe(35);
+    expect(totalRecipeMinutes(20, null)).toBe(20);
+    expect(totalRecipeMinutes(null, null)).toBeNull();
+  });
+
+  it('nomme les durées sur la fiche dès qu’il y a une cuisson', () => {
+    expect(describeRecipeDurations(15, 35)).toBe('Préparation 15 min · Cuisson 35 min');
+    expect(describeRecipeDurations(null, 90)).toBe('Cuisson 1 h 30');
+  });
+
+  it('garde une durée seule sans libellé (recettes d’avant, où c’était la durée totale)', () => {
+    expect(describeRecipeDurations(80, null)).toBe('1 h 20');
+    expect(describeRecipeDurations(null, null)).toBeNull();
   });
 });

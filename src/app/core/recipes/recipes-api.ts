@@ -222,6 +222,7 @@ export class RecipesApi {
       title: recipeRow.title,
       baseServings: recipeRow.base_servings,
       preparationMinutes: recipeRow.preparation_minutes,
+      cookingMinutes: recipeRow.cooking_minutes ?? null,
       photoUrl:
         recipeRow.photo_path === null ? null : this.buildRecipePhotoUrl(recipeRow.photo_path),
       tags: recipeTags,
@@ -255,12 +256,19 @@ function toRecipeColumns(
   recipeDraft: RecipeDraft,
 ): Pick<
   RecipeRow,
-  'title' | 'base_servings' | 'preparation_minutes' | 'preparation_steps' | 'description' | 'origin'
+  | 'title'
+  | 'base_servings'
+  | 'preparation_minutes'
+  | 'cooking_minutes'
+  | 'preparation_steps'
+  | 'description'
+  | 'origin'
 > {
   return {
     title: recipeDraft.title.trim(),
     base_servings: recipeDraft.baseServings,
     preparation_minutes: recipeDraft.preparationMinutes,
+    cooking_minutes: recipeDraft.cookingMinutes,
     preparation_steps: recipeDraft.steps.map(
       (recipeStep: RecipeStep): RecipePreparationStepJson => ({
         title: recipeStep.title.trim(),

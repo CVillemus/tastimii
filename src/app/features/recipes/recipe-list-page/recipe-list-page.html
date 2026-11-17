@@ -186,10 +186,14 @@
                   <div class="recipe-card__text">
                     <h2 class="recipe-card__title">{{ recipeSummary.title }}</h2>
                     <!-- Pas de nombre de parts : il se choisit au moment d'ajouter aux courses. -->
-                    @if (recipeSummary.preparationMinutes !== null) {
-                      <p class="recipe-card__meta">
-                        {{ formatPreparationTime(recipeSummary.preparationMinutes) }}
-                      </p>
+                    <!-- Durée totale : préparation + cuisson. -->
+                    @let totalMinutes =
+                      totalRecipeMinutes(
+                        recipeSummary.preparationMinutes,
+                        recipeSummary.cookingMinutes
+                      );
+                    @if (totalMinutes !== null) {
+                      <p class="recipe-card__meta">{{ formatPreparationTime(totalMinutes) }}</p>
                     }
                     @if (recipeSummary.tags.length > 0) {
                       <ul class="recipe-card__tags" aria-label="Tags">

@@ -31,6 +31,12 @@
   /* Voile sous un bouton-icône survolé (translucide : s'adapte au fond, blanc ou teinté). */
   --color-hover-wash: rgb(43 36 32 / 7%);
   /*
+   * Pointillés des zones « Ajouter… » : rx = arrondi des cartes (0,75 rem). Le trait de 3 px est
+   * coupé de moitié par les bords de l'image : il en reste 1,5 px, sans calc() (pas sûr sur Safari).
+   */
+  --dashed-add-border: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' rx='12' fill='none' stroke='%23b8aa99' stroke-width='3' stroke-dasharray='7 6' stroke-linecap='round'/%3E%3C/svg%3E");
+  --dashed-add-border-hover: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' rx='12' fill='none' stroke='%23b5532f' stroke-width='3' stroke-dasharray='7 6' stroke-linecap='round'/%3E%3C/svg%3E");
+  /*
    * Boutons ronds posés sur une photo : verre dépoli (blanc translucide + flou de la photo
    * derrière) et ombre douce. Lisibles sur toutes les photos sans voile ni halo.
    */
@@ -457,12 +463,12 @@ input[type='checkbox']:checked {
     background: none;
     color: var(--color-accent);
     box-shadow: none;
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-body);
   }
 
   .back-link__icon {
-    width: 1rem;
-    height: 1rem;
+    width: 1.125rem;
+    height: 1.125rem;
   }
 
   .back-link__label {
@@ -903,6 +909,31 @@ input[type='checkbox']:checked {
  * « + Ajouter un ingrédient / une étape » : une ligne de plus, vide, dans la continuité de la liste.
  * Même largeur, même arrondi et même hauteur qu'une ligne remplie, bordure en pointillés.
  */
+/*
+ * Zone « Ajouter… » (ingrédient, étape, photo) : fond blanc doux et pointillés dessinés en SVG,
+ * plus fins qu'une bordure `dashed` (tirets longs aux bouts arrondis, qui suivent l'arrondi de la
+ * carte). Au survol, les pointillés et le texte passent en terracotta sur un fond teinté.
+ */
+.dashed-add-zone {
+  border: none;
+  border-radius: var(--radius-card);
+  background-color: var(--color-surface);
+  background-image: var(--dashed-add-border);
+  color: var(--color-ink-muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.dashed-add-zone:hover {
+  background-color: var(--color-accent-soft);
+  background-image: var(--dashed-add-border-hover);
+  color: var(--color-accent);
+}
+
 .add-line-button {
   display: flex;
   align-items: center;
@@ -910,23 +941,6 @@ input[type='checkbox']:checked {
   width: 100%;
   min-height: 4.75rem;
   padding: 0.75rem;
-  border: 1px dashed var(--color-checkbox-border);
-  border-radius: var(--radius-card);
-  background: transparent;
-  color: var(--color-ink-muted);
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease,
-    background-color 0.15s ease;
-}
-
-.add-line-button:hover {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
-  background: var(--color-surface);
 }
 
 /* Poignée ⠿ pour réordonner (ingrédients et étapes). */
