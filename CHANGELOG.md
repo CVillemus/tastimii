@@ -11,12 +11,13 @@ même commit.
 
 ## À venir
 
-- **Bouton « Ajouter une recette »** (ordinateur) : un livre ouvert au lieu du « + » (le bouton rond « + » reste sur téléphone).
+Rien pour l'instant.
 
 ## 17/11/2026
 
 ### Raffinements
 
+- **Bouton « Ajouter une recette »** (ordinateur) : un livre ouvert au lieu du « + » (le bouton rond « + » reste sur téléphone).
 - **Cuisine** : plus de date « courses du … » sur les recettes (elle n'apportait rien).
 - **Titres des étapes** de la fiche recette en terracotta.
 - **Boutons** en Atkinson normale, légèrement espacée, au lieu du gras (trop épais) : boutons, zones « Ajouter… », bouton « Filtres ».
