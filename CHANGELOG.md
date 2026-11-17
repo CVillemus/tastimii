@@ -11,7 +11,7 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Style « journal épuré »** (branche d'essai `design/style-journal`) : Playfair Display, Lora et DM Sans ; papier crème avec un grain léger ; filets fins au lieu des cartes ombrées sur desktop ; rubriques en petites capitales au-dessus des titres de page ; puces et boutons à angles presque droits ; tags en texte reliés par des points médians ; index des filtres et des ingrédients séparé par un filet vertical ; vue liste avec bouton « Cabas » ; toast avec pastille terracotta. Règles dans `docs/design-system.md`.
 
 ## 17/11/2026
 

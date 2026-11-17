@@ -46,7 +46,7 @@ Depuis le 11/11/2026, Corentin et Marine saisissent leurs vraies recettes. Tout 
 - **Template d'une resource** : `hasValue()` → `error()` → sinon chargement.
 - **Lazy loading** : chaque page passe par `loadComponent`.
 - **Couleurs** uniquement via les variables CSS de `src/styles.css`. Thème clair uniquement, pas de thème sombre.
-- **Design** : inspiré des sites de cuisine (fond blanc cassé, cartes blanches à ombre douce, photos, peu de bordures). Pensé pour desktop, compacté pour mobile : les styles de base sont ceux du mobile, `@media (min-width: 48rem)` pour le desktop. Tailles de texte via `--font-size-*`.
+- **Design** : style « journal épuré » (presse culinaire : papier crème, filets fins, Playfair Display / Lora / DM Sans, pas de cartes ombrées sur desktop). Les règles sont dans `docs/design-system.md` : les suivre pour tout nouvel écran. Pensé pour desktop, compacté pour mobile : les styles de base sont ceux du mobile, `@media (min-width: 48rem)` pour le desktop. Tailles de texte via `--font-size-*`.
 - **Esprit éditorial** (magazine de cuisine, marché local) :
   - surtitres de section en petites capitales espacées (`.section-title`, `.surtitle`), titres de page et de carte en Fraunces ;
   - chiffres des quantités et des parts en Fraunces (`.figures`), numéros d'étapes en grand Fraunces italique ;
