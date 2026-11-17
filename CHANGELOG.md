@@ -11,7 +11,7 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Cuisine** : plus de date « courses du … » sur les recettes (elle n'apportait rien).
 
 ## 17/11/2026
 

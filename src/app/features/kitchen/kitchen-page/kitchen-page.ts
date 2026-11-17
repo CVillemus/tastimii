@@ -15,11 +15,6 @@ import { KitchenStore } from '../../../core/kitchen/kitchen-store';
 import { formatPreparationTime, totalRecipeMinutes } from '../../../core/recipes/quantity';
 import { RecipePhoto } from '../../recipes/recipe-photo/recipe-photo';
 
-const shoppingDateFormat: Intl.DateTimeFormat = new Intl.DateTimeFormat('fr-FR', {
-  day: 'numeric',
-  month: 'long',
-});
-
 /**
  * Cuisine : les recettes dont les courses sont faites. Une fois cuisinée, on la valide (elle est
  * comptée dans l'historique) ; si on a fait autre chose des aliments, on la retire.
@@ -64,10 +59,6 @@ export class KitchenPage {
     preparationMinutes: number | null,
     cookingMinutes: number | null,
   ) => number | null = totalRecipeMinutes;
-
-  protected formatShoppingDate(addedAt: string): string {
-    return shoppingDateFormat.format(new Date(addedAt));
-  }
 
   protected async markRecipeCooked(kitchenRecipe: KitchenRecipe): Promise<void> {
     await this.runKitchenAction(kitchenRecipe, () =>
