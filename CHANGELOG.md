@@ -13,6 +13,9 @@ même commit.
 
 - **Durées toujours avec leur icône** : la préparation avec le couteau, la cuisson avec la cocotte, même quand une seule est renseignée. Les recettes créées avant le 17/11 ont leur ancienne durée totale rangée en préparation : à répartir à la main dans le formulaire.
 - **Au moins une durée obligatoire** (préparation ou cuisson) dans le formulaire de recette.
+- **Icône de préparation** : un simple couteau.
+- **Titres de section plus grands** (« Ingrédients », « Préparation », « Au menu »…), pour que la hiérarchie se lise.
+- **États vides** (cabas vide, carnet de recettes vide) : une grande carte centrée, avec une grande icône, comme une page 404 soignée.
 
 ## 17/11/2026
 

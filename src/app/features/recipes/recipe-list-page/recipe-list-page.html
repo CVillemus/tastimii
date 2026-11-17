@@ -356,8 +356,15 @@
           </ul>
         } @else {
           <div class="empty-state">
-            <h2>Le carnet est vide</h2>
-            <p class="muted">
+            <span class="empty-state__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z" />
+                <path d="M5 17a3 3 0 0 1 3-3h11" />
+                <path d="M9 8h6" />
+              </svg>
+            </span>
+            <h2 class="empty-state__title">Le carnet est vide</h2>
+            <p class="empty-state__hint">
               Ajoutez votre première recette : ingrédients, étapes et description.
             </p>
             <a class="button button--primary" routerLink="/recettes/nouvelle"

@@ -1004,3 +1004,73 @@ input[type='checkbox']:checked {
     scrollbar-color: var(--color-scrollbar-thumb) transparent;
   }
 }
+
+/*
+ * ---- État vide (cabas vide, carnet vide…) ----
+ * Comme une page 404 soignée : une grande carte, tout est centré, une grande pastille avec
+ * l'icône, un titre, une phrase d'explication et le bouton pour avancer.
+ */
+.empty-state {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0.75rem;
+  min-height: 22rem;
+  padding: 2.5rem 1.5rem;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px var(--color-shadow-soft);
+  text-align: center;
+}
+
+.empty-state__icon {
+  display: grid;
+  place-items: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  animation: pop-in 0.4s ease-out;
+}
+
+.empty-state__icon svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.empty-state__title {
+  font-size: 1.5rem;
+}
+
+.empty-state__hint {
+  max-width: 26rem;
+  margin: 0 0 0.75rem;
+  color: var(--color-ink-muted);
+}
+
+@media (min-width: 48rem) {
+  .empty-state {
+    min-height: 28rem;
+  }
+
+  .empty-state__icon {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  .empty-state__icon svg {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .empty-state__title {
+    font-size: 2rem;
+  }
+}

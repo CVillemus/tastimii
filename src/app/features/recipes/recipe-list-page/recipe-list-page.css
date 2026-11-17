@@ -344,13 +344,6 @@
   margin-right: 0.125rem;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 2rem 1rem;
-  background: var(--color-surface-sunken);
-  border-radius: var(--radius-card);
-}
-
 /* Desktop : filtres dans une colonne à gauche, recettes à droite. */
 @media (min-width: 48rem) {
   .new-recipe-button {
@@ -396,10 +389,6 @@
 
   .recipe-list--rows .recipe-card__title {
     font-size: 1.25rem;
-  }
-
-  .empty-state {
-    padding: 3rem 2rem;
   }
 }
 

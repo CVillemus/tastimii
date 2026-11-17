@@ -202,23 +202,19 @@
         </section>
       </div>
     } @else {
-      <!-- Aligné sur le titre de la page (et non centré), avec une pastille panier. -->
-      <div class="empty-state card">
+      <!-- Grande carte centrée (styles.css, .empty-state), avec le cabas en grand. -->
+      <div class="empty-state">
         <span class="empty-state__icon" aria-hidden="true">
           <svg viewBox="0 0 24 24">
             <path d="M5 9h14v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" />
             <path d="M8.5 12V7.5a3.5 3.5 0 0 1 7 0V12" />
           </svg>
         </span>
-        <div class="empty-state__text">
-          <h2 class="empty-state__title">Le cabas est vide</h2>
-          <p class="muted empty-state__hint">
-            Ouvrez une recette, choisissez le nombre de parts et ajoutez-la aux courses.
-          </p>
-          <a class="button button--primary button--small" routerLink="/recettes">
-            Choisir des recettes
-          </a>
-        </div>
+        <h2 class="empty-state__title">Le cabas est vide</h2>
+        <p class="empty-state__hint">
+          Ouvrez une recette, choisissez le nombre de parts et ajoutez-la aux courses.
+        </p>
+        <a class="button button--primary" routerLink="/recettes">Choisir des recettes</a>
       </div>
     }
   } @else if (shoppingListResource.error()) {
