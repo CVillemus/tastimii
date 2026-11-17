@@ -95,7 +95,7 @@
   align-items: baseline;
   gap: 0.5rem;
   font-size: 1.25rem;
-  color: var(--color-accent-hover);
+  color: var(--color-accent-strong);
 }
 
 .ingredient-type__ingredients {

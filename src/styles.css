@@ -24,6 +24,8 @@
   --color-border: #e6ddcf;
   --color-accent: #b5532f;
   --color-accent-hover: #9a4426;
+  /* Terracotta foncé pour du texte sur fond teinté : contraste 7,3:1 sur --color-accent-soft (AAA). */
+  --color-accent-strong: #7a321c;
   --color-on-accent: #ffffff;
   --color-accent-soft: #f6e3d8;
   --color-accent-soft-hover: #f1d6c7;
