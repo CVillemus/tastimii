@@ -11,6 +11,12 @@ même commit.
 
 ## À venir
 
+Rien pour l'instant.
+
+## 17/11/2026
+
+### Raffinements
+
 - **Durées toujours avec leur icône** : la préparation avec le couteau, la cuisson avec la cocotte, même quand une seule est renseignée. Les recettes créées avant le 17/11 ont leur ancienne durée totale rangée en préparation : à répartir à la main dans le formulaire.
 - **Au moins une durée obligatoire** (préparation ou cuisson) dans le formulaire de recette.
 - **Icône de préparation** : un simple couteau.
@@ -18,11 +24,6 @@ même commit.
 - **États vides** (cabas vide, carnet de recettes vide, aucune recette trouvée) : une grande carte centrée, avec une grande icône, comme une page 404 soignée.
 - **Fiche recette sur ordinateur** : les étapes se posent directement sur le fond de page, comme dans un livre ; seule la carte des ingrédients reste blanche à côté.
 - **Croix « effacer » de la recherche** aux couleurs du site (au lieu de la croix bleue du navigateur).
-
-## 17/11/2026
-
-### Raffinements
-
 - **Fiche recette** :
   - durées avec une icône : planche et couteau pour la préparation, cocotte qui fume pour la cuisson
     (aussi sur les cartes de la liste des recettes) ;
