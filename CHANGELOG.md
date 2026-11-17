@@ -12,6 +12,7 @@ même commit.
 ## À venir
 
 - **Titres des étapes** de la fiche recette en terracotta.
+- **Boutons** en Atkinson normale, légèrement espacée, au lieu du gras (trop épais) : boutons, zones « Ajouter… », bouton « Filtres ».
 
 ## 17/11/2026
 

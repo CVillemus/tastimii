@@ -298,7 +298,9 @@ input[type='checkbox']:checked {
   gap: 0.375rem;
   font: inherit;
   font-size: var(--font-size-body);
-  font-weight: 700;
+  /* Atkinson en normal, légèrement espacée : le gras de cette police est trop épais sur un bouton. */
+  font-weight: 400;
+  letter-spacing: 0.02em;
   min-height: 2.625rem;
   padding: 0.5rem 1rem;
   border-radius: var(--radius-control);
@@ -955,7 +957,7 @@ input[type='checkbox']:checked {
   background-image: var(--dashed-add-border);
   color: var(--color-ink-muted);
   font: inherit;
-  font-weight: 700;
+  letter-spacing: 0.02em;
   cursor: pointer;
   transition:
     color 0.15s ease,
