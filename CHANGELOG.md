@@ -17,6 +17,7 @@ même commit.
 - **Typographie** : les surtitres (« Ingrédients », « Type de plat »…) et les onglets du menu passent en Fraunces, en minuscules, au lieu des capitales espacées.
 - **Recherche des recettes** : une loupe dans le champ ; les textes d'exemple de tous les champs sont plus contrastés.
 - **Fenêtre « Gérer les tags »** (ordinateur) : une seule barre de défilement au lieu de deux.
+- **Barres de défilement** aux couleurs du site : fines, arrondies, terracotta au survol.
 
 ## 17/11/2026
 

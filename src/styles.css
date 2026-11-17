@@ -18,6 +18,9 @@
   --color-ink-muted: #6b6058;
   /* Texte d'exemple des champs : plus clair que le texte saisi, mais lisible (contraste 4,5:1). */
   --color-placeholder: #7d7067;
+  /* Barres de défilement : curseur beige rosé, terracotta au survol, sur un rail invisible. */
+  --color-scrollbar-thumb: #d9cbbb;
+  --color-scrollbar-thumb-hover: #b5532f;
   --color-border: #e6ddcf;
   --color-accent: #b5532f;
   --color-accent-hover: #9a4426;
@@ -958,5 +961,39 @@ input[type='checkbox']:checked {
 @media (min-width: 48rem) {
   .add-line-button {
     min-height: 5.875rem;
+  }
+}
+
+/* ---- Barres de défilement aux couleurs du site : fines, arrondies, discrètes ---- */
+
+/* Chrome, Edge, Safari : un curseur arrondi qui flotte (bordure transparente autour). */
+::-webkit-scrollbar {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 0.1875rem solid transparent;
+  border-radius: var(--radius-pill);
+  background: var(--color-scrollbar-thumb) padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox (pas de ::-webkit-scrollbar) : barre fine aux mêmes couleurs. */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar-thumb) transparent;
   }
 }
