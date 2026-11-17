@@ -124,9 +124,25 @@
 }
 
 .recipe-card__more-tags {
-  align-self: center;
-  font-size: var(--font-size-small);
+  display: flex;
+}
+
+/* « +N » : une pastille de la taille d'un tag, discrète, qui déplie les autres tags. */
+.recipe-card__more-tags-button {
+  padding: 0.0625rem 0.5rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-sunken);
   color: var(--color-ink-muted);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.recipe-card__more-tags-button:hover {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
 }
 
 @media (min-width: 48rem) {

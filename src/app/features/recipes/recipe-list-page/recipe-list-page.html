@@ -197,15 +197,35 @@
                     }
                     @if (recipeSummary.tags.length > 0) {
                       <ul class="recipe-card__tags" aria-label="Tags">
-                        <!-- Mobile : le premier tag et « +N » ; desktop : tous les tags. -->
+                        <!--
+                          Mobile : le premier tag, puis un bouton « +N » qui affiche les autres.
+                          Desktop : tous les tags.
+                        -->
+                        @let areAllTagsShown = recipeIdsWithAllTagsShown().has(recipeSummary.id);
                         @for (recipeTag of recipeSummary.tags; track recipeTag.id) {
-                          <li class="tag-label" [class.recipe-card__extra-tag]="!$first">
+                          <li
+                            class="tag-label"
+                            [class.recipe-card__extra-tag]="!$first && !areAllTagsShown"
+                          >
                             {{ recipeTag.name }}
                           </li>
                         }
-                        @if (recipeSummary.tags.length > 1) {
-                          <li class="recipe-card__more-tags" aria-hidden="true">
-                            +{{ recipeSummary.tags.length - 1 }}
+                        @if (recipeSummary.tags.length > 1 && !areAllTagsShown) {
+                          <li class="recipe-card__more-tags">
+                            <button
+                              class="recipe-card__more-tags-button"
+                              type="button"
+                              [attr.aria-label]="
+                                recipeSummary.tags.length === 2
+                                  ? 'Afficher l’autre tag'
+                                  : 'Afficher les ' +
+                                    (recipeSummary.tags.length - 1) +
+                                    ' autres tags'
+                              "
+                              (click)="showAllTags(recipeSummary.id, $event)"
+                            >
+                              +{{ recipeSummary.tags.length - 1 }}
+                            </button>
                           </li>
                         }
                       </ul>

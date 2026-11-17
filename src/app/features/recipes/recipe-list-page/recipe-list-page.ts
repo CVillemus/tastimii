@@ -154,6 +154,22 @@ export class RecipeListPage {
   protected readonly toastMessage: Signal<string | null> = this.toastMessageState.asReadonly();
   private toastTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
+  /** Recettes dont on a déplié tous les tags (« +N » sur téléphone). */
+  private readonly recipeIdsWithAllTagsShownState: WritableSignal<ReadonlySet<string>> = signal(
+    new Set<string>(),
+  );
+  protected readonly recipeIdsWithAllTagsShown: Signal<ReadonlySet<string>> =
+    this.recipeIdsWithAllTagsShownState.asReadonly();
+
+  /** « +N » est dans le lien de la carte : on affiche les tags sans ouvrir la recette. */
+  protected showAllTags(recipeId: string, clickEvent: Event): void {
+    clickEvent.preventDefault();
+    clickEvent.stopPropagation();
+    this.recipeIdsWithAllTagsShownState.update(
+      (recipeIds: ReadonlySet<string>) => new Set([...recipeIds, recipeId]),
+    );
+  }
+
   protected readonly formatPreparationTime: (preparationMinutes: number) => string =
     formatPreparationTime;
   protected readonly totalRecipeMinutes: (
