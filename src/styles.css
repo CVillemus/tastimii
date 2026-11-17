@@ -409,15 +409,20 @@ input[type='checkbox']:checked {
   color: var(--color-ink);
 }
 
-.section-title {
-  margin: var(--block-gap) 0 0.625rem;
-}
-
 @media (min-width: 48rem) {
-  .section-title,
   .surtitle {
     font-size: 1.1875rem;
   }
+}
+
+/*
+ * Titres de section (« Ingrédients », « Préparation », « Au menu »…) : nettement plus grands que
+ * les titres des étapes ou des cartes qu'ils contiennent, pour que la hiérarchie se lise.
+ */
+.section-title {
+  margin: var(--block-gap) 0 0.75rem;
+  font-size: var(--font-size-section-title);
+  line-height: 1.15;
 }
 
 /*

@@ -108,7 +108,7 @@
     <div class="recipe-body loaded-content">
       <aside class="recipe-ingredients">
         <div class="recipe-ingredients__header">
-          <h2 class="surtitle">Ingrédients</h2>
+          <h2 class="section-title recipe-body__title">Ingrédients</h2>
           <div class="servings-picker">
             <button
               class="icon-button"
@@ -184,7 +184,7 @@
       </aside>
 
       <section class="recipe-steps">
-        <h2 class="surtitle">Préparation</h2>
+        <h2 class="section-title recipe-body__title">Préparation</h2>
         @if (recipe.steps.length > 0) {
           <ol class="step-list">
             @for (step of recipe.steps; track $index) {

@@ -279,7 +279,12 @@
   animation: slide-in 0.25s ease-out;
 }
 
-.recipe-steps h2 {
+/* « Ingrédients », « Préparation » : titres de section, sans la marge du haut (en tête de carte). */
+.recipe-body__title {
+  margin: 0;
+}
+
+.recipe-steps .recipe-body__title {
   margin-bottom: 0.75rem;
 }
 
@@ -396,7 +401,7 @@
     padding: 1.25rem 2rem 2rem;
   }
 
-  .recipe-steps h2 {
+  .recipe-steps .recipe-body__title {
     margin-bottom: 1.25rem;
   }
 
