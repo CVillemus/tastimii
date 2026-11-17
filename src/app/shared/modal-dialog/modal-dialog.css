@@ -1,6 +1,8 @@
 .modal-dialog {
   width: min(56rem, calc(100% - 1.5rem));
   max-height: min(48rem, calc(100dvh - 2rem));
+  /* Seul le contenu défile (une seule barre de défilement), l'en-tête et le pied restent fixes. */
+  overflow: hidden;
   padding: 0;
   border: none;
   border-radius: var(--radius-card);
@@ -35,6 +37,9 @@
 }
 
 .modal-dialog__body {
+  flex: 1;
+  /* Sans min-height: 0, le contenu ne rétrécit pas et la fenêtre entière défile en plus. */
+  min-height: 0;
   overflow-y: auto;
   padding: 1rem 1.25rem 1.25rem;
 }
