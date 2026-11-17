@@ -16,13 +16,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { keepScreenAwake } from '../../../core/device/keep-screen-awake';
 import { buildRecipeShareUrl, shareLink, ShareLinkOutcome } from '../../../core/sharing/share-link';
-import {
-  describeRecipeDurations,
-  RecipeDurationLabels,
-  formatPreparationTime,
-  formatQuantityWithUnit,
-  scaleQuantity,
-} from '../../../core/recipes/quantity';
+import { formatQuantityWithUnit, scaleQuantity } from '../../../core/recipes/quantity';
 import {
   parseRecipeOrigin,
   Recipe,
@@ -34,6 +28,7 @@ import { KitchenStore } from '../../../core/kitchen/kitchen-store';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import { ShoppingListApi } from '../../../core/shopping-list/shopping-list-api';
 import { LinkifyRichTextPipe } from '../../../shared/rich-text/linkify-rich-text.pipe';
+import { RecipeDurations } from '../recipe-durations/recipe-durations';
 import { RecipePhoto } from '../recipe-photo/recipe-photo';
 
 /** Ingrédient affiché avec sa quantité recalculée pour le nombre de parts choisi. */
@@ -47,7 +42,7 @@ const MINIMUM_SERVINGS: number = 1;
 /** Une recette : astuces en tête, ingrédients (recalculés selon les parts), étapes. */
 @Component({
   selector: 'app-recipe-detail-page',
-  imports: [LinkifyRichTextPipe, RouterLink, RecipePhoto],
+  imports: [LinkifyRichTextPipe, RecipeDurations, RecipePhoto, RouterLink],
   templateUrl: './recipe-detail-page.html',
   styleUrl: './recipe-detail-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -125,12 +120,6 @@ export class RecipeDetailPage {
   protected readonly isAddingToShoppingList: Signal<boolean> =
     this.isAddingToShoppingListState.asReadonly();
 
-  protected readonly formatPreparationTime: (preparationMinutes: number) => string =
-    formatPreparationTime;
-  protected readonly describeRecipeDurations: (
-    preparationMinutes: number | null,
-    cookingMinutes: number | null,
-  ) => RecipeDurationLabels | null = describeRecipeDurations;
   protected readonly parseRecipeOrigin: (origin: string) => RecipeOrigin | null = parseRecipeOrigin;
 
   protected decreaseWantedServings(): void {

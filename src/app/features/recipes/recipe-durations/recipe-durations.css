@@ -1,0 +1,23 @@
+:host {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.875rem;
+}
+
+/* Durée avec son icône : planche (préparation) ou cocotte qui fume (cuisson). */
+.recipe-duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+}
+
+.recipe-duration__icon {
+  flex-shrink: 0;
+  width: 1.125em;
+  height: 1.125em;
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

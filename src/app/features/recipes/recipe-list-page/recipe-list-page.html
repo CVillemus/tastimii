@@ -190,14 +190,16 @@
                   <div class="recipe-card__text">
                     <h2 class="recipe-card__title">{{ recipeSummary.title }}</h2>
                     <!-- Pas de nombre de parts : il se choisit au moment d'ajouter aux courses. -->
-                    <!-- Durée totale : préparation + cuisson. -->
-                    @let totalMinutes =
-                      totalRecipeMinutes(
-                        recipeSummary.preparationMinutes,
-                        recipeSummary.cookingMinutes
-                      );
-                    @if (totalMinutes !== null) {
-                      <p class="recipe-card__meta">{{ formatPreparationTime(totalMinutes) }}</p>
+                    <!-- Préparation (planche) et cuisson (cocotte), avec leurs icônes. -->
+                    @if (
+                      recipeSummary.preparationMinutes !== null ||
+                      recipeSummary.cookingMinutes !== null
+                    ) {
+                      <app-recipe-durations
+                        class="recipe-card__meta"
+                        [preparationMinutes]="recipeSummary.preparationMinutes"
+                        [cookingMinutes]="recipeSummary.cookingMinutes"
+                      />
                     }
                     @if (recipeSummary.tags.length > 0) {
                       <ul class="recipe-card__tags" aria-label="Tags">
