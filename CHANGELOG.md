@@ -15,7 +15,7 @@ même commit.
 - **Au moins une durée obligatoire** (préparation ou cuisson) dans le formulaire de recette.
 - **Icône de préparation** : un simple couteau.
 - **Titres de section plus grands** (« Ingrédients », « Préparation », « Au menu »…), pour que la hiérarchie se lise.
-- **États vides** (cabas vide, carnet de recettes vide) : une grande carte centrée, avec une grande icône, comme une page 404 soignée.
+- **États vides** (cabas vide, carnet de recettes vide, aucune recette trouvée) : une grande carte centrée, avec une grande icône, comme une page 404 soignée.
 - **Fiche recette sur ordinateur** : les étapes se posent directement sur le fond de page, comme dans un livre ; seule la carte des ingrédients reste blanche à côté.
 - **Croix « effacer » de la recherche** aux couleurs du site (au lieu de la croix bleue du navigateur).
 

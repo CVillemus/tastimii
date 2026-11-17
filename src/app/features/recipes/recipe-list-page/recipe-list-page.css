@@ -109,6 +109,11 @@
   transform: rotate(180deg);
 }
 
+/* « Aucune recette trouvée » : la carte prend toute la largeur de la grille, même en mosaïque. */
+.recipe-list__no-match {
+  grid-column: 1 / -1;
+}
+
 .recipe-card__tags {
   list-style: none;
   margin: 0.25rem 0 0;
