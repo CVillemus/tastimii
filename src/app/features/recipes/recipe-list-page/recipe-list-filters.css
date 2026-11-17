@@ -97,6 +97,14 @@
 }
 
 @media (min-width: 48rem) {
+  /* Desktop : les filtres dans une carte blanche, comme les ingrédients sur la fiche recette. */
+  .recipe-filters {
+    padding: 1.25rem 1.5rem 1.5rem;
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    box-shadow: 0 1px 3px var(--color-shadow-soft);
+  }
+
   .recipe-filters__groups {
     display: grid;
   }

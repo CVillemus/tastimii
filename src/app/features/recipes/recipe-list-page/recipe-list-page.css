@@ -373,7 +373,7 @@
   }
 
   .recipe-list-layout.page-columns {
-    grid-template-columns: 15rem minmax(0, 1fr);
+    grid-template-columns: 17rem minmax(0, 1fr);
   }
 
   .recipe-list {

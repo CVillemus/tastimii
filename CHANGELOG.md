@@ -24,6 +24,7 @@ même commit.
 - **Lien « ← Retour »** un peu plus grand sur ordinateur.
 - **Tags sur téléphone** : « +N » est un bouton qui affiche les autres tags de la recette.
 - **Page Ingrédients** : cartes des rayons plus compactes, titre plus petit.
+- **Filtres des recettes** (ordinateur) dans une carte blanche, comme les ingrédients sur la fiche ; plus de filet vertical entre les colonnes, sur toutes les pages.
 
 ### Base de données
 

@@ -509,22 +509,6 @@ input[type='checkbox']:checked {
     position: sticky;
     top: var(--sticky-top);
   }
-
-  /* Filet vertical au milieu de l'écart, comme entre deux colonnes de magazine. */
-  .page-columns__sidebar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: calc(var(--columns-gap) / -2);
-    width: 1px;
-    background: var(--color-border);
-  }
-
-  .page-columns--sidebar-end .page-columns__sidebar::after {
-    right: auto;
-    left: calc(var(--columns-gap) / -2);
-  }
 }
 
 .muted {
