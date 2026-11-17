@@ -11,7 +11,7 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Titres des étapes** de la fiche recette en terracotta.
 
 ## 17/11/2026
 

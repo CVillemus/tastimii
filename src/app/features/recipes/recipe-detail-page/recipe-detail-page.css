@@ -319,10 +319,12 @@
   gap: 0.25rem;
 }
 
+/* Titre d'étape en terracotta foncé : il se distingue du grand numéro (terracotta) et du texte. */
 .step-list__title {
   font-size: 1.125rem;
   line-height: 1.3;
   padding-top: 0.25rem;
+  color: var(--color-accent-hover);
 }
 
 /* ---- Desktop : photo à côté du titre, ingrédients à gauche et étapes à droite ---- */
