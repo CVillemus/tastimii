@@ -72,13 +72,21 @@ describe('durées de préparation et de cuisson', () => {
     expect(totalRecipeMinutes(null, null)).toBeNull();
   });
 
-  it('nomme les durées sur la fiche dès qu’il y a une cuisson', () => {
-    expect(describeRecipeDurations(15, 35)).toBe('Préparation 15 min · Cuisson 35 min');
-    expect(describeRecipeDurations(null, 90)).toBe('Cuisson 1 h 30');
+  it('sépare préparation et cuisson sur la fiche dès qu’il y a une cuisson', () => {
+    expect(describeRecipeDurations(15, 35)).toEqual({
+      kind: 'split',
+      preparationLabel: '15 min',
+      cookingLabel: '35 min',
+    });
+    expect(describeRecipeDurations(null, 90)).toEqual({
+      kind: 'split',
+      preparationLabel: null,
+      cookingLabel: '1 h 30',
+    });
   });
 
-  it('garde une durée seule sans libellé (recettes d’avant, où c’était la durée totale)', () => {
-    expect(describeRecipeDurations(80, null)).toBe('1 h 20');
+  it('garde une durée seule sans icône (recettes d’avant, où c’était la durée totale)', () => {
+    expect(describeRecipeDurations(80, null)).toEqual({ kind: 'single', durationLabel: '1 h 20' });
     expect(describeRecipeDurations(null, null)).toBeNull();
   });
 });

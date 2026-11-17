@@ -164,6 +164,24 @@
   gap: 0.375rem;
 }
 
+/* Durée avec son icône : planche (préparation) ou cocotte qui fume (cuisson). */
+.recipe-duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+}
+
+.recipe-duration__icon {
+  flex-shrink: 0;
+  width: 1.125em;
+  height: 1.125em;
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .recipe-meta__origin a {
   color: var(--color-accent);
 }
@@ -221,16 +239,23 @@
   font-size: var(--font-size-small);
 }
 
+/*
+ * La quantité d'abord, puis l'ingrédient. Les quantités forment une colonne alignée (sous-grille) :
+ * sa largeur suit la quantité la plus longue (« 2 gousses »), les noms commencent tous au même endroit.
+ */
 .ingredient-list {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
 }
 
 .ingredient-list__line {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  column-gap: 0.875rem;
   padding: 0.375rem 0;
   border-bottom: 1px solid var(--color-border);
 }
@@ -241,7 +266,6 @@
 
 .ingredient-list__quantity {
   font-weight: 700;
-  text-align: right;
   white-space: nowrap;
 }
 

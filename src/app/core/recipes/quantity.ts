@@ -116,23 +116,32 @@ export function totalRecipeMinutes(
 }
 
 /**
- * Durées de la fiche recette :
- * - préparation et cuisson : « Préparation 15 min · Cuisson 35 min » ;
- * - cuisson seule : « Cuisson 35 min » ;
- * - préparation seule : « 1 h 20 », sans libellé (les recettes d'avant le script 012 n'ont qu'une
- *   durée, qui était la durée totale).
+ * Durées de la fiche recette, à afficher avec une icône chacune (planche pour la préparation,
+ * cocotte pour la cuisson) :
+ * - dès qu'il y a une cuisson : `split`, avec la préparation (si renseignée) et la cuisson ;
+ * - préparation seule : `single`, sans icône (les recettes d'avant le script 012 n'ont qu'une
+ *   durée, qui était la durée totale) ;
+ * - aucune durée : `null`.
  */
+export type RecipeDurationLabels =
+  | { kind: 'single'; durationLabel: string }
+  | { kind: 'split'; preparationLabel: string | null; cookingLabel: string };
+
 export function describeRecipeDurations(
   preparationMinutes: number | null,
   cookingMinutes: number | null,
-): string | null {
+): RecipeDurationLabels | null {
   if (cookingMinutes === null) {
-    return preparationMinutes === null ? null : formatPreparationTime(preparationMinutes);
+    return preparationMinutes === null
+      ? null
+      : { kind: 'single', durationLabel: formatPreparationTime(preparationMinutes) };
   }
-  const cookingLabel: string = `Cuisson ${formatPreparationTime(cookingMinutes)}`;
-  return preparationMinutes === null
-    ? cookingLabel
-    : `Préparation ${formatPreparationTime(preparationMinutes)} · ${cookingLabel}`;
+  return {
+    kind: 'split',
+    preparationLabel:
+      preparationMinutes === null ? null : formatPreparationTime(preparationMinutes),
+    cookingLabel: formatPreparationTime(cookingMinutes),
+  };
 }
 
 /** Durée lisible : « 45 min », « 1 h 10 ». */

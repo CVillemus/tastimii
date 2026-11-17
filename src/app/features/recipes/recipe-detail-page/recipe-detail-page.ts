@@ -18,6 +18,7 @@ import { keepScreenAwake } from '../../../core/device/keep-screen-awake';
 import { buildRecipeShareUrl, shareLink, ShareLinkOutcome } from '../../../core/sharing/share-link';
 import {
   describeRecipeDurations,
+  RecipeDurationLabels,
   formatPreparationTime,
   formatQuantityWithUnit,
   scaleQuantity,
@@ -129,7 +130,7 @@ export class RecipeDetailPage {
   protected readonly describeRecipeDurations: (
     preparationMinutes: number | null,
     cookingMinutes: number | null,
-  ) => string | null = describeRecipeDurations;
+  ) => RecipeDurationLabels | null = describeRecipeDurations;
   protected readonly parseRecipeOrigin: (origin: string) => RecipeOrigin | null = parseRecipeOrigin;
 
   protected decreaseWantedServings(): void {
