@@ -13,6 +13,29 @@
   gap: 1.25rem;
 }
 
+/* Recherche : une loupe dans le champ, pour qu'on le reconnaisse sans lire le texte d'exemple. */
+.recipe-search {
+  position: relative;
+}
+
+.recipe-search__icon {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: var(--color-ink-muted);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.recipe-search input {
+  padding-left: 2.375rem;
+}
+
 /* Un groupe de filtres par catégorie : petit titre (🍲 Type de plat), puis ses tags. */
 .recipe-filters__title {
   margin-bottom: 0.5rem;
