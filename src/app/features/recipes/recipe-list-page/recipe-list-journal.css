@@ -1,0 +1,297 @@
+/*
+ * ---- Style « journal » de la liste des recettes ----
+ * Peu de cartes et d'ombres : des filets fins structurent la page, comme dans un magazine.
+ * Chargé en dernier : ajuste les styles des autres feuilles de la page.
+ */
+
+/* En tête de l'index : « Filtrer l'index » en italique, « Tout effacer » à droite. */
+.recipe-filters__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.recipe-filters__clear {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  font-size: var(--font-size-small);
+  cursor: pointer;
+}
+
+.recipe-filters__clear:hover {
+  text-decoration: underline;
+}
+
+.recipe-list-toolbar__count {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.recipe-list-toolbar__filtered {
+  margin-left: 0.375rem;
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+/* Tags des cartes : du texte simple, séparé par des points médians (plus de pastilles). */
+.recipe-card__tags .tag-label {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  font-size: var(--font-size-small);
+  color: var(--color-ink-muted);
+}
+
+.recipe-card__tags {
+  gap: 0 0.375rem;
+}
+
+.recipe-card__tags .tag-label + .tag-label::before {
+  content: '·';
+  margin-right: 0.375rem;
+}
+
+.menu-control__add-label {
+  display: none;
+}
+
+/* Petits boutons carrés à filet (sac, « ⋯ ») plutôt que des ronds. */
+.menu-control__add,
+.recipe-actions-toggle {
+  border-radius: var(--radius-small);
+}
+
+.menu-control__add {
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+}
+
+@media (min-width: 48rem) {
+  /* Index des filtres sans carte, séparé des recettes par un filet vertical. */
+  .recipe-filters {
+    padding: 0.25rem 2rem 0 0;
+    border-right: 1px solid var(--color-border);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .recipe-list-layout.page-columns {
+    gap: 2rem;
+  }
+
+  /* Recherche : un simple trait sous le champ. */
+  .recipe-search input {
+    border: none;
+    border-bottom: 1px solid var(--color-border-strong);
+    border-radius: 0;
+    background: transparent;
+    padding-left: 1.75rem;
+  }
+
+  .recipe-search input:focus {
+    outline: none;
+    border-bottom-color: var(--color-accent);
+  }
+
+  .recipe-search__icon {
+    left: 0.125rem;
+  }
+
+  /* Groupes de tags séparés par des filets. */
+  .recipe-filters__groups {
+    gap: 0;
+  }
+
+  .recipe-filters__heading {
+    margin-bottom: 1.25rem;
+  }
+
+  .recipe-filters__groups .filter-group + .filter-group {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .recipe-filters__title {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Pas d'emoji devant les rubriques : petites capitales seules, plus sobres. */
+  .recipe-filters__title span[aria-hidden='true'] {
+    display: none;
+  }
+
+  /* Barre d'outils au-dessus d'un filet. */
+  .recipe-list-toolbar {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .recipe-sort__option + .recipe-sort__option {
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--color-border-strong);
+    border-radius: 0;
+  }
+
+  .recipe-view-toggle {
+    gap: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-small);
+  }
+
+  .recipe-view-toggle__option {
+    border-radius: 0;
+  }
+
+  /* ---- Mosaïque : photo, titre, durée, filet, tags ; sans fond de carte ---- */
+  .recipe-list--mosaic .recipe-card,
+  .recipe-list--mosaic .recipe-list__item .recipe-card,
+  .recipe-list--mosaic .recipe-list__item--on-menu .recipe-card {
+    border-radius: 0;
+    overflow: visible;
+    background: none;
+    box-shadow: none;
+  }
+
+  .recipe-list--mosaic .recipe-card:hover {
+    box-shadow: none;
+    transform: none;
+  }
+
+  .recipe-list--mosaic .recipe-list__item--on-menu .recipe-card {
+    box-shadow: none;
+  }
+
+  .recipe-list--mosaic .recipe-card__photo {
+    border-radius: var(--radius-control);
+  }
+
+  /* Au menu : un filet terracotta autour de la photo plutôt qu'autour de la carte. */
+  .recipe-list--mosaic .recipe-list__item--on-menu .recipe-card__photo {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .recipe-list--mosaic .recipe-card__text {
+    padding: 1rem 0 0;
+  }
+
+  .recipe-list--mosaic .recipe-card__tags {
+    margin-top: 0.625rem;
+    padding-top: 0.625rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  /* Badges carrés translucides posés sur la photo (sac, « ⋯ »). */
+  .recipe-list--mosaic .menu-control__add,
+  .recipe-list--mosaic .recipe-actions-toggle {
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid rgb(44 34 30 / 10%);
+    border-radius: var(--radius-control);
+    background: rgb(253 251 247 / 80%);
+    backdrop-filter: blur(0.75rem);
+    box-shadow: none;
+  }
+
+  /* Photo : léger zoom au survol de la carte. */
+  .recipe-list--mosaic .recipe-card__photo {
+    overflow: hidden;
+  }
+
+  .recipe-list--mosaic .recipe-card__photo img {
+    transition: transform 0.4s ease;
+  }
+
+  .recipe-list--mosaic .recipe-card:hover .recipe-card__photo img {
+    transform: scale(1.03);
+  }
+
+  .recipe-list--mosaic .recipe-card__title {
+    font-size: 1.3125rem;
+  }
+
+  .recipe-list--mosaic .recipe-actions-toggle {
+    top: 3rem;
+  }
+
+  .recipe-list--mosaic {
+    gap: 2.5rem 1.75rem;
+  }
+
+  /* ---- Liste : des lignes séparées par des filets, « Cabas » à droite ---- */
+  .recipe-list--rows {
+    gap: 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .recipe-list--rows .recipe-card {
+    padding: 1rem 0;
+    padding-right: 9rem;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .recipe-list--rows .recipe-list__item--on-menu .recipe-card {
+    padding-right: 13rem;
+  }
+
+  .recipe-list--rows .recipe-card__photo {
+    width: 4rem;
+    height: 4rem;
+    border-radius: var(--radius-small);
+  }
+
+  .recipe-list--rows .menu-control {
+    top: 50%;
+    right: 2.75rem;
+    transform: translateY(-50%);
+  }
+
+  .recipe-list--rows .menu-control__add {
+    width: auto;
+    gap: 0.375rem;
+    padding: 0 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    height: 2.125rem;
+    color: var(--color-ink);
+    font-size: var(--font-size-small);
+  }
+
+  .recipe-list--rows .menu-control__add-label {
+    display: inline;
+  }
+
+  .recipe-list--rows .menu-control__add svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .recipe-list--rows .menu-control__add:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .recipe-list--rows .recipe-actions-toggle {
+    top: 50%;
+    bottom: auto;
+    right: 0;
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recipe-list--mosaic .recipe-card:hover .recipe-card__photo img {
+    transform: none;
+  }
+}

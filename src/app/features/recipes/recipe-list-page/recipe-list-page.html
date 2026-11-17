@@ -1,6 +1,9 @@
 <div class="page">
   <div class="page-header">
-    <h1>Nos recettes</h1>
+    <div class="page-header__titles">
+      <p class="page-kicker">Le carnet culinaire • Collection maison</p>
+      <h1>Nos recettes</h1>
+    </div>
     <!-- Bouton flottant en bas à droite sur mobile, dans l'en-tête sur desktop. -->
     <a
       class="button button--primary new-recipe-button"
@@ -60,19 +63,19 @@
 
         <!-- Desktop : les tags dans la colonne. Mobile : dans le panneau « Filtres ». -->
         <div class="recipe-filters__groups">
+          <!-- En tête de l'index : une note en italique, et « Tout effacer » dès qu'un tag est choisi. -->
+          <div class="recipe-filters__heading">
+            <span class="editorial-note">Filtrer l’index</span>
+            @if (selectedTagIds().size > 0) {
+              <button class="recipe-filters__clear" type="button" (click)="clearTagFilters()">
+                Tout effacer
+              </button>
+            }
+          </div>
           <ng-container
             [ngTemplateOutlet]="tagFilterGroups"
             [ngTemplateOutletContext]="{ $implicit: 'colonne' }"
           />
-          @if (selectedTagIds().size > 0) {
-            <button
-              class="button button--quiet button--small recipe-filters__clear"
-              type="button"
-              (click)="clearTagFilters()"
-            >
-              Retirer les filtres
-            </button>
-          }
         </div>
       </aside>
     }
@@ -105,6 +108,11 @@
             >
               {{ matchingRecipeSummaries().length }}
               {{ matchingRecipeSummaries().length > 1 ? 'recettes' : 'recette' }}
+              @if (selectedFilterTagNames().length > 0) {
+                <span class="editorial-note recipe-list-toolbar__filtered">
+                  — Filtré par {{ selectedFilterTagNames().join(', ') }}
+                </span>
+              }
             </p>
             <!-- Ordre de la liste : alphabétique ou dernières recettes ajoutées. -->
             <div class="recipe-list-toolbar__controls">
@@ -265,6 +273,8 @@
                         <path d="M5 9h14v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" />
                         <path d="M8.5 12V7.5a3.5 3.5 0 0 1 7 0V12" />
                       </svg>
+                      <!-- Vue liste sur desktop : le mot à côté du sac. -->
+                      <span class="menu-control__add-label" aria-hidden="true">Cabas</span>
                     </button>
                   } @else {
                     <div
@@ -358,8 +368,8 @@
                   Essayez un autre mot, ou retirez des filtres pour voir plus de recettes.
                 </p>
                 @if (hasActiveFilters()) {
-                  <button class="button button--primary" type="button" (click)="clearAllFilters()">
-                    Retirer les filtres
+                  <button class="button button--outline" type="button" (click)="clearAllFilters()">
+                    Réinitialiser les filtres
                   </button>
                 }
               </li>

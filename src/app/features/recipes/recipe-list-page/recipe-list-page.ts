@@ -65,7 +65,12 @@ import { RecipePhoto } from '../recipe-photo/recipe-photo';
   ],
   templateUrl: './recipe-list-page.html',
   // Styles de la page et de la vue liste, des filtres, puis ceux de la vue mosaïque (cartes).
-  styleUrls: ['./recipe-list-page.css', './recipe-list-filters.css', './recipe-list-mosaic.css'],
+  styleUrls: [
+    './recipe-list-page.css',
+    './recipe-list-filters.css',
+    './recipe-list-mosaic.css',
+    './recipe-list-journal.css',
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipeListPage {
@@ -139,6 +144,13 @@ export class RecipeListPage {
   private readonly selectedTagIdsState: WritableSignal<ReadonlySet<string>> = signal(new Set());
   protected readonly selectedTagIds: Signal<ReadonlySet<string>> =
     this.selectedTagIdsState.asReadonly();
+
+  /** Noms des tags choisis, pour « — Filtré par Au four, Peu de vaisselle ». */
+  protected readonly selectedFilterTagNames: Signal<string[]> = computed(() =>
+    this.filterTags()
+      .filter((filterTag: RecipeTag) => this.selectedTagIds().has(filterTag.id))
+      .map((filterTag: RecipeTag) => filterTag.name),
+  );
 
   protected readonly hasActiveFilters: Signal<boolean> = computed(
     () => this.selectedTagIds().size > 0 || this.recipeSearchText().trim().length > 0,

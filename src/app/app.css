@@ -65,8 +65,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  /* Onglets en Fraunces, en minuscules, comme les surtitres. */
-  font-family: var(--font-title);
+  /* Onglets en Lora, la serif de lecture du style journal. */
+  font-family: var(--font-serif-body);
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--color-ink);
@@ -100,21 +100,18 @@
  * avec la page (il est trop haut pour rester collé en haut de l'écran).
  */
 @media (min-width: 48rem) {
-  .app-header {
-    box-shadow: 0 1px 3px var(--color-shadow-soft);
-  }
-
+  /* Bandeau plat, sans ombre : le logo, puis la ligne des rubriques entre deux filets pleine largeur. */
   .app-header__inner {
     flex-direction: column;
-    gap: 0.75rem;
-    padding-top: 1.5rem;
-    padding-bottom: 0;
+    gap: 1.125rem;
+    max-width: none;
+    padding: 1.375rem 0 0;
   }
 
   .app-header__brand {
-    font-size: 2.5rem;
+    font-size: 2.125rem;
     line-height: 1;
-    font-variation-settings: 'opsz' 144;
+    letter-spacing: -0.01em;
   }
 
   .app-main {
@@ -138,7 +135,8 @@
     height: auto;
     gap: 0;
     padding: 0.875rem 0 0.75rem;
-    font-size: 1.0625rem;
+    font-size: 0.9375rem;
+    font-weight: 400;
     color: var(--color-ink);
     border-bottom: 1px solid transparent;
     transition: color 0.15s ease;

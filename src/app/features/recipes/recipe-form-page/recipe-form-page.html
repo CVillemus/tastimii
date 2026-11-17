@@ -11,7 +11,12 @@
       </svg>
       <span class="back-link__label" aria-hidden="true">Annuler</span>
     </a>
-    <h1>Modifier la recette</h1>
+    <div class="page-header">
+      <div class="page-header__titles">
+        <p class="page-kicker">Le carnet culinaire • Retouches</p>
+        <h1>Modifier la recette</h1>
+      </div>
+    </div>
   } @else {
     <a class="back-link" routerLink="/recettes" aria-label="Retour aux recettes">
       <svg class="back-link__icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -20,7 +25,12 @@
       </svg>
       <span class="back-link__label" aria-hidden="true">Recettes</span>
     </a>
-    <h1>Nouvelle recette</h1>
+    <div class="page-header">
+      <div class="page-header__titles">
+        <p class="page-kicker">Le carnet culinaire • Nouvelle page</p>
+        <h1>Nouvelle recette</h1>
+      </div>
+    </div>
   }
 
   @if (isExistingRecipeLoading()) {

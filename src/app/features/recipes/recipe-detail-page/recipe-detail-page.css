@@ -457,3 +457,58 @@
 .recipe-skeleton__step {
   margin-bottom: 1rem;
 }
+
+/*
+ * ---- Style « journal » (docs/design-system.md) ----
+ * Tags en texte simple reliés par des points médians ; sur desktop, plus de cartes blanches :
+ * l'en-tête et les ingrédients se posent sur le papier, structurés par des filets.
+ */
+.recipe-tags {
+  gap: 0 0.375rem;
+}
+
+.recipe-tags .tag-label {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  font-size: var(--font-size-small);
+  color: var(--color-ink-muted);
+}
+
+.recipe-tags .tag-label + .tag-label::before {
+  content: '·';
+  margin-right: 0.375rem;
+}
+
+@media (min-width: 48rem) {
+  /* Le séparateur ✦ qui suit fait office de filet sous l'en-tête. */
+  .recipe-hero {
+    gap: 2.5rem;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .recipe-hero__photo {
+    border-radius: var(--radius-control);
+  }
+
+  .recipe-hero__text {
+    padding: 0.5rem 3.75rem 0.5rem 0;
+  }
+
+  .recipe-hero__actions {
+    top: 0.5rem;
+    right: 0;
+  }
+
+  /* Ingrédients : une colonne d'index, séparée de la préparation par un filet vertical. */
+  .recipe-ingredients {
+    padding: 1.25rem 2rem 0 0;
+    border-right: 1px solid var(--color-border);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+}
