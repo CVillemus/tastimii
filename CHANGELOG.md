@@ -11,6 +11,12 @@ même commit.
 
 ## À venir
 
+Rien pour l'instant.
+
+## 17/11/2026
+
+### Raffinements
+
 - **Fiche recette** :
   - durées avec une icône : planche et couteau pour la préparation, cocotte qui fume pour la cuisson
     (aussi sur les cartes de la liste des recettes) ;
@@ -20,8 +26,6 @@ même commit.
 - **Fenêtre « Gérer les tags »** (ordinateur) : une seule barre de défilement au lieu de deux.
 - **Barres de défilement** aux couleurs du site : fines, arrondies, terracotta au survol.
 - **Fiche recette sur téléphone**, harmonisée avec l'ordinateur : l'en-tête est une carte blanche bord à bord (photo, puis titre et infos), les ingrédients et les étapes sont dans des cartes blanches.
-
-## 17/11/2026
 
 ### Ajouts
 
