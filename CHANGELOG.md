@@ -11,6 +11,12 @@ même commit.
 
 ## À venir
 
+Rien pour l'instant.
+
+## 17/11/2026
+
+### Ajouts
+
 - **Durées de préparation et de cuisson**, facultatives, à la place d'une seule durée. La fiche
   affiche « Préparation 15 min · Cuisson 35 min » ; les vignettes et la cuisine, la durée totale.
   Les recettes existantes gardent leur durée (affichée comme avant ; à répartir au besoin dans le
@@ -25,19 +31,14 @@ même commit.
 - **Tags sur téléphone** : « +N » est un bouton qui affiche les autres tags de la recette.
 - **Page Ingrédients** : cartes des rayons plus compactes, titre plus petit.
 - **Filtres des recettes** (ordinateur) dans une carte blanche, comme les ingrédients sur la fiche ; plus de filet vertical entre les colonnes, sur toutes les pages.
-
-### Base de données
-
-- Lancer `supabase/migrations/012_duree_de_cuisson.sql` **avant** de déployer (sans lui,
-  l'enregistrement d'une recette échoue).
-
-## 17/11/2026
-
-### Ajouts
-
 - **Ajouter une recette en trois étapes** : 1 Infos (titre, parts, durée, origine, photo, tags), 2 Ingrédients, 3 Préparation (étapes, puis astuces et variantes). Une barre en haut montre où on en est ; « Suivant » vérifie l'étape avant de passer à la suivante (un titre, au moins un ingrédient, au moins une étape écrite). Les boutons sont à la fin de chaque étape, sans barre fixe. Le bouton Retour du téléphone revient à l'étape précédente.
 - **Brouillon** : une nouvelle recette en cours de saisie est gardée sur l'appareil (sans la photo) jusqu'à son enregistrement ; « Recommencer à zéro » pour l'oublier.
 - **Modifier une recette** : les trois étapes s'ouvrent librement, « Enregistrer » est sur chacune.
+
+### Base de données
+
+- `supabase/migrations/012_duree_de_cuisson.sql` : colonne `cooking_minutes` (lancé le
+  17/11/2026 sur la base partagée).
 
 ## 16/11/2026
 
