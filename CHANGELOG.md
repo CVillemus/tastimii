@@ -11,7 +11,11 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Fiche recette** :
+  - durées avec une icône : planche et couteau pour la préparation, cocotte qui fume pour la cuisson ;
+  - ingrédients dans l'ordre des livres de cuisine : « 400 g » puis « pomme de terre », quantités en colonne.
+- **Typographie** : les surtitres (« Ingrédients », « Type de plat »…) et les onglets du menu passent en Fraunces, en minuscules, au lieu des capitales espacées.
+- **Recherche des recettes** : une loupe dans le champ ; les textes d'exemple de tous les champs sont plus contrastés.
 
 ## 17/11/2026
 
