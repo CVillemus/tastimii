@@ -16,6 +16,8 @@
   --color-photo-placeholder-ink: #b3a493;
   --color-ink: #2b2420;
   --color-ink-muted: #6b6058;
+  /* Texte d'exemple des champs : plus clair que le texte saisi, mais lisible (contraste 4,5:1). */
+  --color-placeholder: #7d7067;
   --color-border: #e6ddcf;
   --color-accent: #b5532f;
   --color-accent-hover: #9a4426;
@@ -161,6 +163,12 @@ textarea {
   border-radius: var(--radius-control);
   padding: 0.5rem 0.75rem;
   min-height: 2.625rem;
+}
+
+/* Texte d'exemple des champs : assez contrasté pour être lu (le gris par défaut est trop pâle). */
+::placeholder {
+  color: var(--color-placeholder);
+  opacity: 1;
 }
 
 textarea {
@@ -384,18 +392,16 @@ input[type='checkbox']:checked {
 }
 
 /*
- * Surtitres de section (« INGRÉDIENTS », « AU MENU »…) : petites capitales espacées, comme dans
- * un magazine de cuisine. Les titres de page et de carte restent en Fraunces.
+ * Surtitres de section (« Ingrédients », « Au menu », « Type de plat »…) : en Fraunces, la police
+ * des titres, en minuscules (les capitales espacées rendaient mal), plus petits qu'un titre de page.
  */
 .section-title,
 .surtitle {
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 700;
-  line-height: 1.4;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--color-ink-muted);
+  font-family: var(--font-title);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-ink);
 }
 
 .section-title {
@@ -405,7 +411,7 @@ input[type='checkbox']:checked {
 @media (min-width: 48rem) {
   .section-title,
   .surtitle {
-    font-size: 0.8125rem;
+    font-size: 1.1875rem;
   }
 }
 

@@ -65,9 +65,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  font-size: 0.625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  /* Onglets en Fraunces, en minuscules, comme les surtitres. */
+  font-family: var(--font-title);
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--color-ink);
   text-decoration: none;
 }
@@ -137,8 +138,7 @@
     height: auto;
     gap: 0;
     padding: 0.875rem 0 0.75rem;
-    font-size: 0.8125rem;
-    letter-spacing: 0.16em;
+    font-size: 1.0625rem;
     color: var(--color-ink);
     border-bottom: 1px solid transparent;
     transition: color 0.15s ease;
