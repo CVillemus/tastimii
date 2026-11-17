@@ -11,7 +11,7 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Titres de section avec plus de caractère** (« Ingrédients », « Préparation », « Photo », « Au menu »…) : plus grands, Fraunces dans son dessin « affiche », soulignés d'un petit trait terracotta.
 
 ## 17/11/2026
 

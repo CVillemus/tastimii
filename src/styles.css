@@ -435,12 +435,32 @@ input[type='checkbox']:checked {
 
 /*
  * Titres de section (« Ingrédients », « Préparation », « Au menu »…) : nettement plus grands que
- * les titres des étapes ou des cartes qu'ils contiennent, pour que la hiérarchie se lise.
+ * les titres des étapes ou des cartes qu'ils contiennent. Fraunces dans son dessin « affiche »
+ * (grande taille optique, plus contrastée), soulignée d'un petit trait terracotta.
  */
 .section-title {
-  margin: var(--block-gap) 0 0.75rem;
-  font-size: var(--font-size-section-title);
-  line-height: 1.15;
+  margin: var(--block-gap) 0 1rem;
+  font-size: 1.625rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variation-settings: 'opsz' 144;
+}
+
+.section-title::after {
+  content: '';
+  display: block;
+  width: 2.25rem;
+  height: 0.1875rem;
+  margin-top: 0.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+}
+
+@media (min-width: 48rem) {
+  .section-title {
+    font-size: 2rem;
+  }
 }
 
 /*
