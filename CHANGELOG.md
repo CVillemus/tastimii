@@ -19,6 +19,7 @@ même commit.
 - **Recherche des recettes** : une loupe dans le champ ; les textes d'exemple de tous les champs sont plus contrastés.
 - **Fenêtre « Gérer les tags »** (ordinateur) : une seule barre de défilement au lieu de deux.
 - **Barres de défilement** aux couleurs du site : fines, arrondies, terracotta au survol.
+- **Fiche recette sur téléphone**, harmonisée avec l'ordinateur : l'en-tête est une carte blanche bord à bord (photo, puis titre et infos), les ingrédients et les étapes sont dans des cartes blanches.
 
 ## 17/11/2026
 
