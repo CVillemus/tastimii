@@ -21,8 +21,19 @@
   stroke-linecap: round;
 }
 
-.new-recipe-button__label {
+.new-recipe-button__label,
+.new-recipe-button__book {
   display: none;
+}
+
+.new-recipe-button__book {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linejoin: round;
 }
 
 /* Mobile : recherche au-dessus de la liste (sur desktop, l'écart vient de .page-columns). */
@@ -361,9 +372,13 @@
     gap: 0.375rem;
   }
 
+  /* Desktop : le livre ouvert remplace la croix. */
   .new-recipe-button__plus {
-    width: 1rem;
-    height: 1rem;
+    display: none;
+  }
+
+  .new-recipe-button__book {
+    display: block;
   }
 
   .new-recipe-button__label {

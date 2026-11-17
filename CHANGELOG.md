@@ -11,7 +11,7 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Bouton « Ajouter une recette »** (ordinateur) : un livre ouvert au lieu du « + » (le bouton rond « + » reste sur téléphone).
 
 ## 17/11/2026
 

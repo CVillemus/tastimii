@@ -7,9 +7,14 @@
       routerLink="/recettes/nouvelle"
       aria-label="Ajouter une recette"
     >
-      <!-- Croix dessinée (et non le caractère « + ») : centrée au pixel près dans le rond. -->
+      <!-- Croix dessinée (et non le caractère « + ») : centrée au pixel près dans le rond (mobile). -->
       <svg class="new-recipe-button__plus" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 5v14M5 12h14" />
+      </svg>
+      <!-- Desktop : un livre ouvert devant « Ajouter une recette ». -->
+      <svg class="new-recipe-button__book" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 6.5C10.5 5 8 4.5 3 4.5v13c5 0 7.5.5 9 2 1.5-1.5 4-2 9-2v-13c-5 0-7.5.5-9 2z" />
+        <path d="M12 6.5v13" />
       </svg>
       <span class="new-recipe-button__label" aria-hidden="true">Ajouter une recette</span>
     </a>
