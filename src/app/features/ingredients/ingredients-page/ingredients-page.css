@@ -65,8 +65,9 @@
   gap: 0.75rem;
 }
 
+/* Pas de marge en bas : la dernière ligne a déjà son propre espace (padding des lignes). */
 .ingredient-type {
-  padding: 0 1rem 0.75rem;
+  padding: 0 1rem 0.25rem;
   overflow: hidden;
 }
 
@@ -88,10 +89,12 @@
   gap: 0.5rem;
 }
 
+/* Titre du rayon : plus petit qu'un titre de section, il reste une étiquette de carte. */
 .ingredient-type__name {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
+  font-size: 1.25rem;
   color: var(--color-accent-hover);
 }
 
