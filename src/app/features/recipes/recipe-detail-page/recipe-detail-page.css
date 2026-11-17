@@ -394,11 +394,15 @@
     box-shadow: 0 1px 3px var(--color-shadow-soft);
   }
 
+  /*
+   * Les étapes se posent directement sur le fond de page, comme dans un livre de cuisine :
+   * seule la carte des ingrédients reste blanche à côté, et ressort mieux.
+   */
   .recipe-steps {
-    background: var(--color-surface);
-    border-radius: var(--radius-card);
-    box-shadow: 0 1px 3px var(--color-shadow-soft);
-    padding: 1.25rem 2rem 2rem;
+    padding: 1.25rem 0 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
   }
 
   .recipe-steps .recipe-body__title {

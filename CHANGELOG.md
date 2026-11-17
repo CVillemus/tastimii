@@ -16,6 +16,7 @@ même commit.
 - **Icône de préparation** : un simple couteau.
 - **Titres de section plus grands** (« Ingrédients », « Préparation », « Au menu »…), pour que la hiérarchie se lise.
 - **États vides** (cabas vide, carnet de recettes vide) : une grande carte centrée, avec une grande icône, comme une page 404 soignée.
+- **Fiche recette sur ordinateur** : les étapes se posent directement sur le fond de page, comme dans un livre ; seule la carte des ingrédients reste blanche à côté.
 
 ## 17/11/2026
 
