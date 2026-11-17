@@ -11,12 +11,13 @@ même commit.
 
 ## À venir
 
-- **Titres de section avec plus de caractère** (« Ingrédients », « Préparation », « Photo », « Au menu »…) : un peu plus grands, précédés de l'ornement ✦ terracotta du séparateur de la fiche.
+Rien pour l'instant.
 
 ## 17/11/2026
 
 ### Raffinements
 
+- **Titres de section avec plus de caractère** (« Ingrédients », « Préparation », « Photo », « Au menu »…) : un peu plus grands, précédés de l'ornement ✦ terracotta du séparateur de la fiche.
 - **Durées toujours avec leur icône** : la préparation avec le couteau, la cuisson avec la cocotte, même quand une seule est renseignée. Les recettes créées avant le 17/11 ont leur ancienne durée totale rangée en préparation : à répartir à la main dans le formulaire.
 - **Au moins une durée obligatoire** (préparation ou cuisson) dans le formulaire de recette.
 - **Icône de préparation** : un simple couteau.
