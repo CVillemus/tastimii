@@ -123,11 +123,13 @@
                     placeholder="15"
                     [formField]="recipeForm.preparationMinutes"
                   />
-                  @for (
-                    durationError of recipeForm.preparationMinutes().errors();
-                    track durationError.kind
-                  ) {
-                    <p class="field-error">{{ durationError.message }}</p>
+                  @if (recipeForm.preparationMinutes().touched()) {
+                    @for (
+                      durationError of recipeForm.preparationMinutes().errors();
+                      track durationError.kind
+                    ) {
+                      <p class="field-error">{{ durationError.message }}</p>
+                    }
                   }
                 </div>
                 <div>
@@ -139,11 +141,13 @@
                     placeholder="30"
                     [formField]="recipeForm.cookingMinutes"
                   />
-                  @for (
-                    durationError of recipeForm.cookingMinutes().errors();
-                    track durationError.kind
-                  ) {
-                    <p class="field-error">{{ durationError.message }}</p>
+                  @if (recipeForm.cookingMinutes().touched()) {
+                    @for (
+                      durationError of recipeForm.cookingMinutes().errors();
+                      track durationError.kind
+                    ) {
+                      <p class="field-error">{{ durationError.message }}</p>
+                    }
                   }
                 </div>
               </div>

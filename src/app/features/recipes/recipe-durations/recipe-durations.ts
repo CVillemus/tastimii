@@ -10,8 +10,7 @@ import { describeRecipeDurations, RecipeDurationLabels } from '../../../core/rec
 
 /**
  * Durées d'une recette, chacune avec son icône : planche et couteau pour la préparation, cocotte
- * qui fume pour la cuisson. Une durée seule (recettes d'avant les deux durées) s'affiche sans
- * icône. Utilisé sur la fiche recette et sur les cartes de la liste.
+ * qui fume pour la cuisson. Utilisé sur la fiche recette et sur les cartes de la liste.
  */
 @Component({
   selector: 'app-recipe-durations',

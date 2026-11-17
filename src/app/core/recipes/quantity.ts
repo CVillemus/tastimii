@@ -116,31 +116,25 @@ export function totalRecipeMinutes(
 }
 
 /**
- * Durées de la fiche recette, à afficher avec une icône chacune (planche pour la préparation,
- * cocotte pour la cuisson) :
- * - dès qu'il y a une cuisson : `split`, avec la préparation (si renseignée) et la cuisson ;
- * - préparation seule : `single`, sans icône (les recettes d'avant le script 012 n'ont qu'une
- *   durée, qui était la durée totale) ;
- * - aucune durée : `null`.
+ * Durées d'une recette, chacune affichée avec son icône (planche pour la préparation, cocotte pour
+ * la cuisson). `null` si aucune durée n'est renseignée.
  */
-export type RecipeDurationLabels =
-  | { kind: 'single'; durationLabel: string }
-  | { kind: 'split'; preparationLabel: string | null; cookingLabel: string };
+export type RecipeDurationLabels = {
+  preparationLabel: string | null;
+  cookingLabel: string | null;
+};
 
 export function describeRecipeDurations(
   preparationMinutes: number | null,
   cookingMinutes: number | null,
 ): RecipeDurationLabels | null {
-  if (cookingMinutes === null) {
-    return preparationMinutes === null
-      ? null
-      : { kind: 'single', durationLabel: formatPreparationTime(preparationMinutes) };
+  if (preparationMinutes === null && cookingMinutes === null) {
+    return null;
   }
   return {
-    kind: 'split',
     preparationLabel:
       preparationMinutes === null ? null : formatPreparationTime(preparationMinutes),
-    cookingLabel: formatPreparationTime(cookingMinutes),
+    cookingLabel: cookingMinutes === null ? null : formatPreparationTime(cookingMinutes),
   };
 }
 

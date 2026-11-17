@@ -11,7 +11,8 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Durées toujours avec leur icône** : la préparation avec la planche, la cuisson avec la cocotte, même quand une seule est renseignée. Les recettes créées avant le 17/11 ont leur ancienne durée totale rangée en préparation : à répartir à la main dans le formulaire.
+- **Au moins une durée obligatoire** (préparation ou cuisson) dans le formulaire de recette.
 
 ## 17/11/2026
 

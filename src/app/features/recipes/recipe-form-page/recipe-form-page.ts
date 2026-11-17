@@ -201,6 +201,15 @@ export class RecipeFormPage {
       min(recipeFormPath.baseServings, 1, { message: 'Au moins une part.' });
       min(recipeFormPath.preparationMinutes, 1, { message: 'Au moins une minute.' });
       min(recipeFormPath.cookingMinutes, 1, { message: 'Au moins une minute.' });
+      // Au moins une des deux durées (le message s'affiche sous la préparation).
+      validate(recipeFormPath.preparationMinutes, ({ value, valueOf }) =>
+        isMissingDuration(value()) && isMissingDuration(valueOf(recipeFormPath.cookingMinutes))
+          ? {
+              kind: 'dureeManquante',
+              message: 'Indiquez une durée de préparation ou de cuisson.',
+            }
+          : undefined,
+      );
       applyEach(recipeFormPath.ingredientLines, (ingredientLinePath) => {
         min(ingredientLinePath.quantity, 0.01, { message: 'La quantité doit être positive.' });
         disabled(
@@ -514,7 +523,7 @@ export class RecipeFormPage {
   private describeStepProblem(stepNumber: RecipeFormStepNumber): string {
     if (stepNumber === 1) {
       return this.recipeForm.title().valid()
-        ? 'Vérifiez le nombre de parts et les durées.'
+        ? 'Indiquez une durée (préparation ou cuisson) et vérifiez le nombre de parts.'
         : 'Donnez un titre à la recette pour continuer.';
     }
     if (stepNumber === 2) {
@@ -844,4 +853,9 @@ export class RecipeFormPage {
     );
     return createdIngredient.id;
   }
+}
+
+/** Champ de durée vide (un champ nombre vidé peut valoir `null` ou `NaN`). */
+function isMissingDuration(durationMinutes: number | null): boolean {
+  return durationMinutes === null || Number.isNaN(durationMinutes);
 }
