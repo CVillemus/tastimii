@@ -22,6 +22,8 @@ même commit.
     au survol (icône toujours visible sur téléphone).
 - **Zones « Ajouter… »** (ingrédient, étape, photo) : fond blanc et pointillés plus fins.
 - **Lien « ← Retour »** un peu plus grand sur ordinateur.
+- **Tags sur téléphone** : « +N » est un bouton qui affiche les autres tags de la recette.
+- **Page Ingrédients** : cartes des rayons plus compactes, titre plus petit.
 
 ### Base de données
 
