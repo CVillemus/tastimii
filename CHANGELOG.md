@@ -11,13 +11,14 @@ même commit.
 
 ## À venir
 
-- **Titres des étapes** de la fiche recette en terracotta.
-- **Boutons** en Atkinson normale, légèrement espacée, au lieu du gras (trop épais) : boutons, zones « Ajouter… », bouton « Filtres ».
+Rien pour l'instant.
 
 ## 17/11/2026
 
 ### Raffinements
 
+- **Titres des étapes** de la fiche recette en terracotta.
+- **Boutons** en Atkinson normale, légèrement espacée, au lieu du gras (trop épais) : boutons, zones « Ajouter… », bouton « Filtres ».
 - **Titres de section avec plus de caractère** (« Ingrédients », « Préparation », « Photo », « Au menu »…) : un peu plus grands, précédés de l'ornement ✦ terracotta du séparateur de la fiche.
 - **Durées toujours avec leur icône** : la préparation avec le couteau, la cuisson avec la cocotte, même quand une seule est renseignée. Les recettes créées avant le 17/11 ont leur ancienne durée totale rangée en préparation : à répartir à la main dans le formulaire.
 - **Au moins une durée obligatoire** (préparation ou cuisson) dans le formulaire de recette.
