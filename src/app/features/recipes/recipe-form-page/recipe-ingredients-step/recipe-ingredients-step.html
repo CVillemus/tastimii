@@ -1,0 +1,122 @@
+<p class="muted recipe-form__hint">
+  Quantités pour le nombre de parts choisi à l’étape 1. Unité « nb » pour compter (4 diots), «
+  Aucune unité » pour le sel, le poivre… (au goût).
+</p>
+
+<datalist id="known-ingredients">
+  @for (knownIngredient of knownIngredients(); track knownIngredient.id) {
+    <option [value]="knownIngredient.name"></option>
+  }
+</datalist>
+
+<!-- On réordonne les ingrédients en les faisant glisser par la poignée ⠿. -->
+<ol
+  class="ingredient-lines"
+  cdkDropList
+  cdkDropListLockAxis="y"
+  (cdkDropListDropped)="moveIngredientLine($event)"
+>
+  @for (ingredientLineField of ingredientLinesField(); track ingredientLineField) {
+    <li class="ingredient-line card" cdkDrag>
+      <button
+        class="drag-handle ingredient-line__drag-handle"
+        type="button"
+        cdkDragHandle
+        [attr.aria-label]="'Déplacer l’ingrédient ' + ($index + 1)"
+        (keydown.arrowup)="moveIngredientLineByKeyboard($index, -1, $event)"
+        (keydown.arrowdown)="moveIngredientLineByKeyboard($index, 1, $event)"
+      >
+        ⠿
+      </button>
+      <div class="ingredient-line__name">
+        <label [for]="'ingredient-name-' + $index">Ingrédient</label>
+        <input
+          [id]="'ingredient-name-' + $index"
+          type="text"
+          list="known-ingredients"
+          autocomplete="off"
+          placeholder="Cuisses de poulet"
+          [formField]="ingredientLineField.ingredientName"
+          (change)="fillDefaultUnit(ingredientLineField)"
+        />
+      </div>
+      <button
+        class="icon-button icon-button--quiet ingredient-line__remove"
+        type="button"
+        [attr.aria-label]="'Retirer l’ingrédient ' + ($index + 1)"
+        (click)="removeIngredientLine($index)"
+      >
+        ×
+      </button>
+      <div class="ingredient-line__quantity">
+        <label [for]="'ingredient-quantity-' + $index">Quantité</label>
+        <input
+          [id]="'ingredient-quantity-' + $index"
+          type="number"
+          inputmode="decimal"
+          step="any"
+          [formField]="ingredientLineField.quantity"
+        />
+      </div>
+      <div class="ingredient-line__unit">
+        <label [for]="'ingredient-unit-' + $index">Unité</label>
+        <select
+          [id]="'ingredient-unit-' + $index"
+          [formField]="ingredientLineField.unit"
+          (change)="clearQuantityWithoutUnit(ingredientLineField)"
+        >
+          @let chosenUnit = ingredientLineField.unit().value();
+          <!-- [selected] : les options arrivent après la valeur du champ. -->
+          @for (unitChoice of unitChoices; track unitChoice.value) {
+            <option [value]="unitChoice.value" [selected]="unitChoice.value === chosenUnit">
+              {{ unitChoice.label }}
+            </option>
+          }
+          @if (isUnlistedUnit(chosenUnit)) {
+            <option [value]="chosenUnit" selected>{{ chosenUnit }}</option>
+          }
+        </select>
+      </div>
+
+      @let readableQuantityHint =
+        formatReadableQuantityHint(
+          ingredientLineField.quantity().value(),
+          ingredientLineField.unit().value()
+        );
+      @if (readableQuantityHint !== null) {
+        <p class="ingredient-line__hint" aria-live="polite">
+          S'affichera « {{ readableQuantityHint }} »
+        </p>
+      }
+
+      @if (isNewIngredientName(ingredientLineField.ingredientName().value())) {
+        <div class="ingredient-line__new-type">
+          <label [for]="'ingredient-type-' + $index"> Nouvel ingrédient : de quel type ? </label>
+          <select
+            [id]="'ingredient-type-' + $index"
+            [formField]="ingredientLineField.newIngredientTypeId"
+          >
+            <option value="">Choisir un type</option>
+            @for (ingredientType of ingredientTypes(); track ingredientType.id) {
+              <option [value]="ingredientType.id">
+                {{ formatIngredientTypeLabel(ingredientType) }}
+              </option>
+            }
+          </select>
+          @if (ingredientLineField.newIngredientTypeId().touched()) {
+            @for (
+              typeError of ingredientLineField.newIngredientTypeId().errors();
+              track typeError.kind
+            ) {
+              <p class="field-error">{{ typeError.message }}</p>
+            }
+          }
+        </div>
+      }
+    </li>
+  }
+</ol>
+<!-- Dans la continuité des lignes : une ligne vide en pointillés, de la même taille. -->
+<button class="add-line-button" type="button" (click)="addIngredientLine()">
+  + Ajouter un ingrédient
+</button>

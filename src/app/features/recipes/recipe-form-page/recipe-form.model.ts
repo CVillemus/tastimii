@@ -208,3 +208,12 @@ export function isFilledStep(formStep: RecipeFormStep): boolean {
 export function normalizeIngredientName(ingredientName: string): string {
   return ingredientName.trim().toLocaleLowerCase('fr');
 }
+
+/** Vrai si un nom est tapé et ne correspond à aucun ingrédient connu (il sera créé). */
+export function isNewIngredientName(
+  ingredientName: string,
+  ingredientsByNormalizedName: ReadonlyMap<string, unknown>,
+): boolean {
+  const normalizedName: string = normalizeIngredientName(ingredientName);
+  return normalizedName.length > 0 && !ingredientsByNormalizedName.has(normalizedName);
+}

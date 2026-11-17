@@ -11,7 +11,9 @@ même commit.
 
 ## À venir
 
-Rien pour l'instant.
+- **Ajouter une recette en trois étapes** : 1 Infos (titre, parts, durée, origine, photo, tags), 2 Ingrédients, 3 Préparation (étapes, puis astuces et variantes). Une barre en haut montre où on en est ; « Suivant » vérifie l'étape avant de passer à la suivante (un titre, au moins un ingrédient, au moins une étape écrite). Les boutons sont à la fin de chaque étape, sans barre fixe. Le bouton Retour du téléphone revient à l'étape précédente.
+- **Brouillon** : une nouvelle recette en cours de saisie est gardée sur l'appareil (sans la photo) jusqu'à son enregistrement ; « Recommencer à zéro » pour l'oublier.
+- **Modifier une recette** : les trois étapes s'ouvrent librement, « Enregistrer » est sur chacune.
 
 ## 16/11/2026
 

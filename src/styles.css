@@ -896,3 +896,63 @@ input[type='checkbox']:checked {
     animation: none;
   }
 }
+
+/* ---- Listes réordonnables des formulaires (ingrédients, étapes) ---- */
+
+/*
+ * « + Ajouter un ingrédient / une étape » : une ligne de plus, vide, dans la continuité de la liste.
+ * Même largeur, même arrondi et même hauteur qu'une ligne remplie, bordure en pointillés.
+ */
+.add-line-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 4.75rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--color-checkbox-border);
+  border-radius: var(--radius-card);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.add-line-button:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: var(--color-surface);
+}
+
+/* Poignée ⠿ pour réordonner (ingrédients et étapes). */
+.drag-handle {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 2.75rem;
+  padding: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--color-ink-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-control);
+  cursor: grab;
+  touch-action: none;
+}
+
+.drag-handle:hover {
+  color: var(--color-accent);
+  background: var(--color-surface-sunken);
+}
+
+/* Desktop : même hauteur qu'une ligne d'ingrédient (libellé + champ). */
+@media (min-width: 48rem) {
+  .add-line-button {
+    min-height: 5.875rem;
+  }
+}

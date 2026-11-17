@@ -1,8 +1,10 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
+  DOCUMENT,
   effect,
   inject,
   input,
@@ -25,17 +27,12 @@ import {
   submit,
   validate,
 } from '@angular/forms/signals';
-import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
-import { Router, RouterLink } from '@angular/router';
-import {
-  formatIngredientTypeLabel,
-  sortIngredientTypesByName,
-} from '../../../core/ingredients/ingredient-types';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { sortIngredientTypesByName } from '../../../core/ingredients/ingredient-types';
 import {
   Ingredient,
   IngredientCatalog,
   IngredientType,
-  SUGGESTED_UNITS,
 } from '../../../core/ingredients/ingredient.model';
 import { IngredientsApi } from '../../../core/ingredients/ingredients-api';
 import {
@@ -44,7 +41,6 @@ import {
   RecipeDraftIngredientLine,
   RecipeStep,
 } from '../../../core/recipes/recipe.model';
-import { formatReadableQuantityHint } from '../../../core/recipes/quantity';
 import { RecipePhotosApi } from '../../../core/recipes/recipe-photos-api';
 import { RecipesApi } from '../../../core/recipes/recipes-api';
 import { resizeRecipePhoto } from '../../../core/recipes/resize-recipe-photo';
@@ -63,16 +59,10 @@ import { TagsApi } from '../../../core/tags/tags-api';
 import { ConfirmationDialog } from '../../../shared/confirmation-dialog/confirmation-dialog';
 import { ModalDialog } from '../../../shared/modal-dialog/modal-dialog';
 import { TagManager } from '../../tags/tag-manager/tag-manager';
-import { RichTextEditor } from '../../../shared/rich-text-editor/rich-text-editor';
 import {
-  buildUnitChoices,
-  COUNT_UNIT_CHOICE,
-  createEmptyIngredientLine,
   createEmptyRecipeFormModel,
-  createEmptyStep,
-  findStarterStepLegend,
   isFilledStep,
-  moveArrayItem,
+  isNewIngredientName,
   NO_UNIT_CHOICE,
   normalizeIngredientName,
   RecipeFormIngredientLine,
@@ -80,8 +70,23 @@ import {
   RecipeFormStep,
   toRecipeFormModel,
   toStoredQuantityAndUnit,
-  UnitChoice,
 } from './recipe-form.model';
+import {
+  FIRST_RECIPE_FORM_STEP,
+  hasNamedIngredientLine,
+  hasStepWithText,
+  isUntouchedRecipeFormModel,
+  LAST_RECIPE_FORM_STEP,
+  parseRecipeDraft,
+  parseRecipeFormStep,
+  RECIPE_DRAFT_STORAGE_KEY,
+  RECIPE_FORM_STEPS,
+  RecipeFormStepDefinition,
+  RecipeFormStepNumber,
+  serializeRecipeDraft,
+} from './recipe-form-steps';
+import { RecipeIngredientsStep } from './recipe-ingredients-step/recipe-ingredients-step';
+import { RecipePreparationStep } from './recipe-preparation-step/recipe-preparation-step';
 
 /**
  * Ce qu'on fera de la photo à l'enregistrement : rien, envoyer la nouvelle, ou retirer l'actuelle.
@@ -92,18 +97,22 @@ type RecipePhotoChoice =
   | { kind: 'new'; resizedPhoto: Blob; previewUrl: string }
   | { kind: 'removed' };
 
-/** Création (`/recettes/nouvelle`) et modification (`/recettes/:recipeId/modifier`) d'une recette. */
+/**
+ * Création (`/recettes/nouvelle`) et modification (`/recettes/:recipeId/modifier`) d'une recette,
+ * en trois étapes : infos, ingrédients, préparation (`?etape=2` dans l'adresse).
+ * - En création, on avance dans l'ordre : « Suivant » vérifie l'étape avant de passer à la
+ *   suivante, et un brouillon est gardé sur l'appareil jusqu'à l'enregistrement.
+ * - En modification, les étapes s'ouvrent librement et « Enregistrer » est sur chaque étape.
+ */
 @Component({
   selector: 'app-recipe-form-page',
   imports: [
-    CdkDrag,
-    CdkDragHandle,
-    CdkDropList,
     ConfirmationDialog,
     FormField,
     ModalDialog,
+    RecipeIngredientsStep,
+    RecipePreparationStep,
     RouterLink,
-    RichTextEditor,
     TagManager,
   ],
   templateUrl: './recipe-form-page.html',
@@ -119,9 +128,14 @@ export class RecipeFormPage {
   private readonly recipePhotosApi: RecipePhotosApi = inject(RecipePhotosApi);
   private readonly tagsApi: TagsApi = inject(TagsApi);
   private readonly router: Router = inject(Router);
+  private readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private readonly documentRef: Document = inject(DOCUMENT);
 
   /** Présent seulement en modification (vient de l'URL). */
   readonly recipeId: InputSignal<string | undefined> = input<string | undefined>();
+
+  /** Étape demandée dans l'adresse (`?etape=2`) ; la première si absente. */
+  readonly etape: InputSignal<string | undefined> = input<string | undefined>();
 
   protected readonly isEditingExistingRecipe: Signal<boolean> = computed(
     () => this.recipeId() !== undefined,
@@ -173,19 +187,6 @@ export class RecipeFormPage {
       : [],
   );
 
-  protected readonly unitChoices: readonly UnitChoice[] = buildUnitChoices(SUGGESTED_UNITS);
-  protected readonly formatIngredientTypeLabel: (ingredientType: IngredientType) => string =
-    formatIngredientTypeLabel;
-  protected readonly findStarterStepLegend: (stepTitle: string) => string | null =
-    findStarterStepLegend;
-  protected readonly formatReadableQuantityHint: (
-    quantity: number | null,
-    unit: string,
-  ) => string | null = formatReadableQuantityHint;
-  private readonly listedUnitChoiceValues: ReadonlySet<string> = new Set(
-    this.unitChoices.map((unitChoice: UnitChoice) => unitChoice.value),
-  );
-
   private readonly recipeFormModel: WritableSignal<RecipeFormModel> = signal(
     createEmptyRecipeFormModel(),
   );
@@ -204,7 +205,10 @@ export class RecipeFormPage {
           ({ valueOf }) => valueOf(ingredientLinePath.unit) === NO_UNIT_CHOICE,
         );
         validate(ingredientLinePath.newIngredientTypeId, ({ value, valueOf }) =>
-          this.isNewIngredientName(valueOf(ingredientLinePath.ingredientName)) && value() === ''
+          isNewIngredientName(
+            valueOf(ingredientLinePath.ingredientName),
+            this.ingredientsByNormalizedName(),
+          ) && value() === ''
             ? {
                 kind: 'typeManquant',
                 message: 'Choisissez un type pour ce nouvel ingrédient.',
@@ -280,7 +284,254 @@ export class RecipeFormPage {
       }
     });
 
+    // Création : reprendre le brouillon laissé sur l'appareil, puis le tenir à jour à chaque saisie.
+    afterNextRender(() => {
+      if (!this.isEditingExistingRecipe()) {
+        this.restoreDraft();
+      }
+    });
+    effect(() => {
+      const recipeFormModel: RecipeFormModel = this.recipeFormModel();
+      if (this.isDraftSavingActive()) {
+        this.saveDraft(recipeFormModel);
+      }
+    });
+
     inject(DestroyRef).onDestroy(() => this.revokePhotoPreview());
+  }
+
+  // ---- Étapes du formulaire ----
+
+  protected readonly recipeFormSteps: readonly RecipeFormStepDefinition[] = RECIPE_FORM_STEPS;
+  protected readonly firstStep: RecipeFormStepNumber = FIRST_RECIPE_FORM_STEP;
+  protected readonly lastStep: RecipeFormStepNumber = LAST_RECIPE_FORM_STEP;
+
+  /**
+   * Étapes terminées :
+   * 1. un titre, des parts et une durée valides ;
+   * 2. au moins un ingrédient, et un type pour chaque nouvel ingrédient ;
+   * 3. au moins une étape avec un texte.
+   */
+  protected readonly completedSteps: Signal<ReadonlySet<RecipeFormStepNumber>> = computed(() => {
+    const recipeFormModel: RecipeFormModel = this.recipeFormModel();
+    const completedSteps: Set<RecipeFormStepNumber> = new Set();
+    if (this.areInfoFieldsValid()) {
+      completedSteps.add(1);
+    }
+    if (
+      hasNamedIngredientLine(recipeFormModel.ingredientLines) &&
+      this.recipeForm.ingredientLines().valid()
+    ) {
+      completedSteps.add(2);
+    }
+    if (hasStepWithText(recipeFormModel.steps)) {
+      completedSteps.add(3);
+    }
+    return completedSteps;
+  });
+
+  /** En création, on ne peut pas aller plus loin que la première étape pas terminée. */
+  private readonly firstIncompleteStep: Signal<RecipeFormStepNumber> = computed(
+    () =>
+      this.recipeFormSteps
+        .map((formStep: RecipeFormStepDefinition) => formStep.stepNumber)
+        .find((stepNumber: RecipeFormStepNumber) => !this.completedSteps().has(stepNumber)) ??
+      LAST_RECIPE_FORM_STEP,
+  );
+
+  /** Étape affichée : celle de l'adresse, sauf en création si une étape précédente manque. */
+  protected readonly currentStep: Signal<RecipeFormStepNumber> = computed(() => {
+    const requestedStep: RecipeFormStepNumber = parseRecipeFormStep(this.etape());
+    if (this.isEditingExistingRecipe() || requestedStep <= this.firstIncompleteStep()) {
+      return requestedStep;
+    }
+    return this.firstIncompleteStep();
+  });
+
+  /** Dernière étape où l'on a tenté d'avancer (ou d'enregistrer) : ses manques s'affichent. */
+  private readonly attemptedStepState: WritableSignal<RecipeFormStepNumber | null> = signal(null);
+
+  /** Ce qui manque pour terminer l'étape, après une tentative ; disparaît une fois corrigé. */
+  protected readonly stepProblem: Signal<string | null> = computed(() => {
+    const currentStep: RecipeFormStepNumber = this.currentStep();
+    const isCurrentStepMissingSomething: boolean = this.isEditingExistingRecipe()
+      ? this.hasInvalidFieldOnStep(currentStep)
+      : !this.completedSteps().has(currentStep);
+    if (this.attemptedStepState() !== currentStep || !isCurrentStepMissingSomething) {
+      return null;
+    }
+    return this.describeStepProblem(currentStep);
+  });
+
+  protected canOpenStep(stepNumber: RecipeFormStepNumber): boolean {
+    return this.isEditingExistingRecipe() || stepNumber <= this.firstIncompleteStep();
+  }
+
+  /** « Suivant » : montre ce qui manque, ou passe à l'étape suivante si tout est bon. */
+  protected goToNextStep(): void {
+    const currentStep: RecipeFormStepNumber = this.currentStep();
+    this.attemptedStepState.set(currentStep);
+    this.markStepFieldsAsTouched(currentStep);
+    const canLeaveStep: boolean = this.isEditingExistingRecipe()
+      ? !this.hasInvalidFieldOnStep(currentStep)
+      : this.completedSteps().has(currentStep);
+    if (canLeaveStep && currentStep < LAST_RECIPE_FORM_STEP) {
+      this.goToStep((currentStep + 1) as RecipeFormStepNumber);
+    }
+  }
+
+  /**
+   * En modification, « Suivant » est un simple bouton. En création, c'est le bouton d'envoi du
+   * formulaire (traité par `submitRecipeForm`) : rien à faire ici, et surtout ne rien renvoyer
+   * (renvoyer `false` annulerait l'envoi).
+   */
+  protected onNextButtonClick(): void {
+    if (this.isEditingExistingRecipe()) {
+      this.goToNextStep();
+    }
+  }
+
+  protected goToPreviousStep(): void {
+    const currentStep: RecipeFormStepNumber = this.currentStep();
+    if (currentStep > FIRST_RECIPE_FORM_STEP) {
+      this.goToStep((currentStep - 1) as RecipeFormStepNumber);
+    }
+  }
+
+  /**
+   * Change d'étape dans l'adresse (`?etape=2`) : le bouton Retour du téléphone revient à l'étape
+   * précédente au lieu de quitter le formulaire. On remonte en haut du formulaire.
+   */
+  protected goToStep(stepNumber: RecipeFormStepNumber): void {
+    if (!this.canOpenStep(stepNumber)) {
+      return;
+    }
+    void this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: { etape: stepNumber === FIRST_RECIPE_FORM_STEP ? null : stepNumber },
+      queryParamsHandling: 'merge',
+    });
+    this.documentRef.defaultView?.scrollTo({ top: 0 });
+  }
+
+  private areInfoFieldsValid(): boolean {
+    return (
+      this.recipeForm.title().valid() &&
+      this.recipeForm.baseServings().valid() &&
+      this.recipeForm.preparationMinutes().valid()
+    );
+  }
+
+  private hasInvalidFieldOnStep(stepNumber: RecipeFormStepNumber): boolean {
+    if (stepNumber === 1) {
+      return !this.areInfoFieldsValid();
+    }
+    if (stepNumber === 2) {
+      return this.recipeForm.ingredientLines().invalid();
+    }
+    return this.recipeForm.steps().invalid() || this.recipeForm.descriptionHtml().invalid();
+  }
+
+  private findFirstStepWithInvalidField(): RecipeFormStepNumber {
+    return (
+      this.recipeFormSteps
+        .map((formStep: RecipeFormStepDefinition) => formStep.stepNumber)
+        .find((stepNumber: RecipeFormStepNumber) => this.hasInvalidFieldOnStep(stepNumber)) ??
+      this.currentStep()
+    );
+  }
+
+  /** Les messages d'erreur des champs s'affichent une fois le champ « touché ». */
+  private markStepFieldsAsTouched(stepNumber: RecipeFormStepNumber): void {
+    if (stepNumber === 1) {
+      this.recipeForm.title().markAsTouched();
+      this.recipeForm.baseServings().markAsTouched();
+      this.recipeForm.preparationMinutes().markAsTouched();
+    } else if (stepNumber === 2) {
+      this.recipeForm.ingredientLines().markAsTouched();
+    } else {
+      this.recipeForm.steps().markAsTouched();
+    }
+  }
+
+  private describeStepProblem(stepNumber: RecipeFormStepNumber): string {
+    if (stepNumber === 1) {
+      return this.recipeForm.title().valid()
+        ? 'Vérifiez le nombre de parts et la durée.'
+        : 'Donnez un titre à la recette pour continuer.';
+    }
+    if (stepNumber === 2) {
+      return hasNamedIngredientLine(this.recipeFormModel().ingredientLines)
+        ? 'Choisissez un type pour chaque nouvel ingrédient, et vérifiez les quantités.'
+        : 'Ajoutez au moins un ingrédient pour continuer.';
+    }
+    return 'Écrivez au moins une étape pour enregistrer la recette.';
+  }
+
+  // ---- Brouillon de la nouvelle recette (sur l'appareil) ----
+
+  /** Vrai une fois le brouillon relu : avant, on ne doit pas l'écraser par un formulaire vide. */
+  private readonly isDraftSavingActive: WritableSignal<boolean> = signal(false);
+  private readonly isDraftRestoredState: WritableSignal<boolean> = signal(false);
+  protected readonly isDraftRestored: Signal<boolean> = this.isDraftRestoredState.asReadonly();
+
+  private restoreDraft(): void {
+    const recipeDraft: RecipeFormModel | null = parseRecipeDraft(
+      this.readStoredValue(RECIPE_DRAFT_STORAGE_KEY),
+    );
+    if (recipeDraft !== null && !isUntouchedRecipeFormModel(recipeDraft)) {
+      this.recipeFormModel.set(recipeDraft);
+      this.isDraftRestoredState.set(true);
+    }
+    this.isDraftSavingActive.set(true);
+  }
+
+  private saveDraft(recipeFormModel: RecipeFormModel): void {
+    if (isUntouchedRecipeFormModel(recipeFormModel)) {
+      this.removeStoredValue(RECIPE_DRAFT_STORAGE_KEY);
+    } else {
+      this.writeStoredValue(RECIPE_DRAFT_STORAGE_KEY, serializeRecipeDraft(recipeFormModel));
+    }
+  }
+
+  /** « Recommencer à zéro » : on oublie le brouillon et on repart d'un formulaire vide. */
+  protected discardDraft(): void {
+    this.removeStoredValue(RECIPE_DRAFT_STORAGE_KEY);
+    this.isDraftRestoredState.set(false);
+    this.attemptedStepState.set(null);
+    this.recipeFormModel.set(createEmptyRecipeFormModel());
+    this.goToStep(FIRST_RECIPE_FORM_STEP);
+  }
+
+  /** Après l'enregistrement : le brouillon n'a plus lieu d'être. */
+  private forgetDraft(): void {
+    this.isDraftSavingActive.set(false);
+    this.removeStoredValue(RECIPE_DRAFT_STORAGE_KEY);
+  }
+
+  // Le stockage de l'appareil peut être indisponible (navigation privée…) : rien ne doit planter.
+  private readStoredValue(storageKey: string): string | null {
+    try {
+      return this.documentRef.defaultView?.localStorage.getItem(storageKey) ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  private writeStoredValue(storageKey: string, storedValue: string): void {
+    try {
+      this.documentRef.defaultView?.localStorage.setItem(storageKey, storedValue);
+    } catch {
+      // Pas de brouillon : la saisie continue normalement.
+    }
+  }
+
+  private removeStoredValue(storageKey: string): void {
+    try {
+      this.documentRef.defaultView?.localStorage.removeItem(storageKey);
+    } catch {
+      // Rien à faire.
+    }
   }
 
   /** Après une modification dans « Gérer les tags » : la liste des tags du formulaire suit. */
@@ -371,109 +622,6 @@ export class RecipeFormPage {
     this.photoChoiceState.set({ kind: 'removed' });
   }
 
-  /** Vrai si un nom est tapé et ne correspond à aucun ingrédient connu. */
-  protected isNewIngredientName(ingredientName: string): boolean {
-    const normalizedName: string = normalizeIngredientName(ingredientName);
-    return normalizedName.length > 0 && !this.ingredientsByNormalizedName().has(normalizedName);
-  }
-
-  /** En choisissant un ingrédient connu, on reprend son unité habituelle si « nb » est choisi. */
-  protected fillDefaultUnit(ingredientLineField: FieldTree<RecipeFormIngredientLine>): void {
-    const knownIngredient: Ingredient | undefined = this.ingredientsByNormalizedName().get(
-      normalizeIngredientName(ingredientLineField.ingredientName().value()),
-    );
-    if (knownIngredient !== undefined && ingredientLineField.unit().value() === COUNT_UNIT_CHOICE) {
-      ingredientLineField.unit().value.set(knownIngredient.defaultUnit);
-    }
-  }
-
-  /** « Aucune unité » n'a pas de quantité : on vide le champ, qui est désactivé. */
-  protected clearQuantityWithoutUnit(
-    ingredientLineField: FieldTree<RecipeFormIngredientLine>,
-  ): void {
-    if (ingredientLineField.unit().value() === NO_UNIT_CHOICE) {
-      ingredientLineField.quantity().value.set(null);
-    }
-  }
-
-  /** Vrai pour une unité tapée autrefois à la main, absente de la liste : on la garde comme choix. */
-  protected isUnlistedUnit(unitChoice: string): boolean {
-    return !this.listedUnitChoiceValues.has(unitChoice);
-  }
-
-  protected addIngredientLine(): void {
-    this.recipeFormModel.update((formModel: RecipeFormModel) => ({
-      ...formModel,
-      ingredientLines: [...formModel.ingredientLines, createEmptyIngredientLine()],
-    }));
-  }
-
-  /** Glisser-déposer d'un ingrédient : l'ordre du formulaire devient l'ordre d'affichage. */
-  protected moveIngredientLine(dropEvent: CdkDragDrop<unknown>): void {
-    this.reorderIngredientLines(dropEvent.previousIndex, dropEvent.currentIndex);
-  }
-
-  /** Au clavier : flèche haut / bas sur la poignée. */
-  protected moveIngredientLineByKeyboard(
-    lineIndex: number,
-    direction: -1 | 1,
-    keyboardEvent: Event,
-  ): void {
-    keyboardEvent.preventDefault();
-    this.reorderIngredientLines(lineIndex, lineIndex + direction);
-  }
-
-  private reorderIngredientLines(previousIndex: number, currentIndex: number): void {
-    this.recipeFormModel.update((formModel: RecipeFormModel) => ({
-      ...formModel,
-      ingredientLines: moveArrayItem(formModel.ingredientLines, previousIndex, currentIndex),
-    }));
-  }
-
-  protected removeIngredientLine(removedIndex: number): void {
-    this.recipeFormModel.update((formModel: RecipeFormModel) => ({
-      ...formModel,
-      ingredientLines: formModel.ingredientLines.filter(
-        (_ingredientLine: RecipeFormIngredientLine, lineIndex: number) =>
-          lineIndex !== removedIndex,
-      ),
-    }));
-  }
-
-  protected addStep(): void {
-    this.recipeFormModel.update((formModel: RecipeFormModel) => ({
-      ...formModel,
-      steps: [...formModel.steps, createEmptyStep()],
-    }));
-  }
-
-  /** Glisser-déposer d'une étape : l'ordre du formulaire devient l'ordre de la recette. */
-  protected moveStep(dropEvent: CdkDragDrop<unknown>): void {
-    this.reorderSteps(dropEvent.previousIndex, dropEvent.currentIndex);
-  }
-
-  /** Au clavier : flèche haut / bas sur la poignée. */
-  protected moveStepByKeyboard(stepIndex: number, direction: -1 | 1, keyboardEvent: Event): void {
-    keyboardEvent.preventDefault();
-    this.reorderSteps(stepIndex, stepIndex + direction);
-  }
-
-  private reorderSteps(previousIndex: number, currentIndex: number): void {
-    this.recipeFormModel.update((formModel: RecipeFormModel) => ({
-      ...formModel,
-      steps: moveArrayItem(formModel.steps, previousIndex, currentIndex),
-    }));
-  }
-
-  protected removeStep(removedIndex: number): void {
-    this.recipeFormModel.update((formModel: RecipeFormModel) => ({
-      ...formModel,
-      steps: formModel.steps.filter(
-        (_step: RecipeFormStep, stepIndex: number) => stepIndex !== removedIndex,
-      ),
-    }));
-  }
-
   private readonly isDeletingRecipeState: WritableSignal<boolean> = signal(false);
   protected readonly isDeletingRecipe: Signal<boolean> = this.isDeletingRecipeState.asReadonly();
 
@@ -504,12 +652,28 @@ export class RecipeFormPage {
     }
   }
 
+  /**
+   * Bouton d'envoi du formulaire (ou Entrée dans un champ). En création, avant la dernière
+   * étape : on passe à l'étape suivante. Sinon : on enregistre.
+   */
   protected async submitRecipeForm(submitEvent: Event): Promise<void> {
     submitEvent.preventDefault();
+    const isCreatingRecipe: boolean = !this.isEditingExistingRecipe();
+    if (isCreatingRecipe && this.currentStep() < LAST_RECIPE_FORM_STEP) {
+      this.goToNextStep();
+      return;
+    }
+    if (isCreatingRecipe && !this.completedSteps().has(LAST_RECIPE_FORM_STEP)) {
+      this.attemptedStepState.set(LAST_RECIPE_FORM_STEP);
+      return;
+    }
     await submit(this.recipeForm, async () => {
       this.saveErrorMessageState.set(null);
       try {
         const savedRecipeId: string = await this.saveRecipe(this.recipeFormModel());
+        if (isCreatingRecipe) {
+          this.forgetDraft();
+        }
         await this.router.navigate(['/recettes', savedRecipeId]);
       } catch {
         this.saveErrorMessageState.set(
@@ -518,6 +682,14 @@ export class RecipeFormPage {
       }
       return undefined;
     });
+    // Champ invalide sur une autre étape (modification) : on ouvre cette étape pour le montrer.
+    if (this.recipeForm().invalid()) {
+      const invalidStep: RecipeFormStepNumber = this.findFirstStepWithInvalidField();
+      this.attemptedStepState.set(invalidStep);
+      if (invalidStep !== this.currentStep()) {
+        this.goToStep(invalidStep);
+      }
+    }
   }
 
   /** Crée d'abord les nouveaux ingrédients, puis enregistre la recette. Renvoie son identifiant. */

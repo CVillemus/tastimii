@@ -1,9 +1,12 @@
-/* `minmax(0, …)` : un lien long ou une option longue ne doit pas élargir la page sur mobile. */
+/*
+ * Formulaire en trois étapes, dans une colonne de lecture (même largeur sur toutes les étapes).
+ * `minmax(0, …)` : un lien long ou une option longue ne doit pas élargir la page sur mobile.
+ */
 .recipe-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
-  margin-top: 1.25rem;
+  margin-top: 1rem;
 }
 
 .recipe-form__row {
@@ -12,159 +15,153 @@
   gap: 0.75rem;
 }
 
-.recipe-form__hint {
-  font-size: var(--font-size-small);
-  margin: -0.25rem 0 0.75rem;
-}
+/* ---- Barre des étapes : 1 Infos · 2 Ingrédients · 3 Préparation ---- */
 
-.ingredient-lines,
-.step-lines {
+.form-stepper {
   list-style: none;
-  margin: 0 0 0.75rem;
+  margin: 0;
   padding: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-
-/*
- * Mobile : poignée à gauche sur deux lignes ; le nom et le bouton « retirer » sur la première,
- * quantité et unité côte à côte sur la deuxième.
- */
-.ingredient-line {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
-  gap: 0.5rem 0.75rem;
-  padding: 0.75rem 0.75rem 0.75rem 0.25rem;
-}
-
-/*
- * « + Ajouter un ingrédient / une étape » : une ligne de plus, vide, dans la continuité de la liste.
- * Même largeur, même arrondi et même hauteur qu'une ligne remplie, bordure en pointillés.
- */
-.add-line-button {
   display: flex;
+}
+
+/* Un trait relie chaque étape à la précédente ; il prend la couleur une fois l'étape atteinte. */
+.form-stepper__item {
+  position: relative;
+  flex: 1;
+}
+
+.form-stepper__item + .form-stepper__item::before {
+  content: '';
+  position: absolute;
+  top: 1rem;
+  right: calc(50% + 1.25rem);
+  left: calc(-50% + 1.25rem);
+  height: 1px;
+  background: var(--color-border);
+}
+
+.form-stepper__item--current::before,
+.form-stepper__item--done::before {
+  background: var(--color-accent);
+}
+
+.form-stepper__button {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 0.375rem;
   width: 100%;
-  min-height: 4.75rem;
-  padding: 0.75rem;
-  border: 1px dashed var(--color-checkbox-border);
-  border-radius: var(--radius-card);
-  background: transparent;
+  padding: 0;
+  border: none;
+  background: none;
   color: var(--color-ink-muted);
   font: inherit;
-  font-weight: 700;
   cursor: pointer;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease,
-    background-color 0.15s ease;
 }
 
-.add-line-button:hover {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
+.form-stepper__button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.form-stepper__number {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
   background: var(--color-surface);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
-/* Poignée ⠿ pour réordonner (ingrédients et étapes). */
-.drag-handle {
-  flex-shrink: 0;
-  width: 1.75rem;
-  height: 2.75rem;
-  padding: 0;
-  font-size: 1.25rem;
-  line-height: 1;
-  color: var(--color-ink-muted);
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-control);
-  cursor: grab;
-  touch-action: none;
+.form-stepper__label {
+  font-size: var(--font-size-small);
 }
 
-.drag-handle:hover {
+.form-stepper__button:not(:disabled):hover .form-stepper__number {
+  border-color: var(--color-accent);
   color: var(--color-accent);
+}
+
+.form-stepper__item--done .form-stepper__number {
+  border-color: var(--color-accent-soft);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.form-stepper__item--current .form-stepper__button {
+  color: var(--color-ink);
+}
+
+.form-stepper__item--current .form-stepper__number,
+.form-stepper__item--current .form-stepper__button:hover .form-stepper__number {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.form-stepper__item--current .form-stepper__label {
+  font-weight: 700;
+}
+
+/* « Brouillon repris » : petite bande discrète, avec de quoi repartir de zéro. */
+.draft-notice {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-control);
   background: var(--color-surface-sunken);
-}
-
-.ingredient-line__drag-handle {
-  grid-column: 1;
-  grid-row: 1 / span 2;
-  align-self: center;
-}
-
-.ingredient-line__name {
-  grid-column: 2 / 4;
-  grid-row: 1;
-}
-
-.ingredient-line__remove {
-  grid-column: 4;
-  grid-row: 1;
-  align-self: end;
-}
-
-.ingredient-line__quantity {
-  grid-column: 2;
-  grid-row: 2;
-}
-
-.ingredient-line__unit {
-  grid-column: 3;
-  grid-row: 2;
-}
-
-.ingredient-line__hint {
-  grid-column: 2 / -1;
-  margin: -0.25rem 0 0;
   font-size: var(--font-size-small);
   color: var(--color-ink-muted);
 }
 
-.ingredient-line__new-type {
-  grid-column: 2 / -1;
-  background: var(--color-accent-soft);
-  border-radius: var(--radius-control);
-  padding: 0.625rem;
+.draft-notice__discard {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
-/* Fond plein : la carte reste lisible pendant qu'on la fait glisser. */
-.step-line {
+/* ---- Étape 1 : les infos, la photo, les tags ---- */
+
+.recipe-info-step,
+.recipe-info-step__fields {
   display: grid;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  gap: 1.25rem;
 }
 
-.step-line__header {
+.recipe-info-step .section-title {
+  margin-top: 0;
+}
+
+/* ---- Boutons Précédent / Suivant, à la fin de l'étape (dans le flux, pas de barre fixe) ---- */
+
+.form-step-nav {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  margin-left: -0.375rem;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
 }
 
-.step-line__label {
-  flex: 1;
+.form-step-nav__end {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.form-step-nav__problem {
   margin: 0;
-  font-family: var(--font-title);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-accent);
-}
-
-.step-line__title {
-  font-weight: 700;
-}
-
-/* Légende des étapes proposées au départ : ce qu'on met dans cette étape. */
-.step-line__legend {
-  margin: -0.125rem 0 0;
-  font-size: var(--font-size-small);
-  font-style: italic;
-  color: var(--color-ink-muted);
 }
 
 .recipe-photo-field {
@@ -205,11 +202,6 @@
 .recipe-photo-field__choose:focus-within {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
-}
-
-.recipe-form__submit {
-  width: 100%;
-  margin-top: 0.5rem;
 }
 
 /* Nouveau tag : le nom sur toute la largeur, puis sa catégorie et le bouton. */
@@ -270,103 +262,26 @@
   color: var(--color-ink-muted);
 }
 
-/* Mobile : photo et tags restent à leur place dans le formulaire ; un seul bouton, tout en bas. */
-.recipe-form__aside {
-  display: grid;
-  gap: 1.25rem;
-}
-
-.recipe-form__aside-save {
-  display: none;
-}
-
-/*
- * Desktop : le formulaire principal à gauche, photo + tags + enregistrement à droite.
- * Les lignes de la grille n'ont pas d'écart : la colonne de droite s'étend sur plusieurs lignes
- * sans créer de vide, l'espacement vient des marges.
- */
+/* Desktop : les infos à gauche, la photo à droite ; les tags dessous, sur toute la largeur. */
 @media (min-width: 48rem) {
   .recipe-form {
-    grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
-    column-gap: 2.5rem;
-    row-gap: 0;
-    align-items: start;
+    gap: 1.75rem;
     margin-top: 1.5rem;
   }
 
-  .recipe-form > * {
-    grid-column: 1;
-    margin-bottom: 1.75rem;
+  .recipe-info-step {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    column-gap: 2rem;
+    align-items: start;
   }
 
-  .recipe-form > .recipe-form__aside {
-    grid-column: 2;
-    grid-row: 1 / span 10;
-    position: sticky;
-    top: var(--sticky-top);
-    margin-bottom: 0;
-    padding: 1rem 1.25rem 1.25rem;
-    background: var(--color-surface);
-    border-radius: var(--radius-card);
-    box-shadow: 0 1px 3px var(--color-shadow-soft);
-  }
-
-  .recipe-form > section > .section-title,
-  .recipe-form__aside .section-title {
-    margin-top: 0;
-  }
-
-  .recipe-form__aside-save {
-    display: block;
-    padding-top: 1rem;
-    border-top: 1px solid var(--color-border);
+  .recipe-info-step__tags {
+    grid-column: 1 / -1;
   }
 
   .recipe-photo-field__preview,
   .recipe-photo-field__empty {
     height: 12rem;
-  }
-
-  /* Une ligne par ingrédient : poignée, nom, quantité, unité, puis le bouton pour la retirer. */
-  /* Même hauteur qu'une ligne d'ingrédient sur desktop (libellé + champ). */
-  .add-line-button {
-    min-height: 5.875rem;
-  }
-
-  .ingredient-line {
-    grid-template-columns: auto minmax(0, 1fr) 6.5rem 12rem auto;
-    align-items: end;
-    padding: 0.75rem 1rem 0.75rem 0.375rem;
-  }
-
-  .ingredient-line__drag-handle {
-    grid-row: 1;
-    align-self: end;
-  }
-
-  .ingredient-line__name {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .ingredient-line__quantity {
-    grid-column: 3;
-    grid-row: 1;
-  }
-
-  .ingredient-line__unit {
-    grid-column: 4;
-    grid-row: 1;
-  }
-
-  .ingredient-line__remove {
-    grid-column: 5;
-    grid-row: 1;
-  }
-
-  .step-line {
-    background: var(--color-surface);
-    padding: 1rem 1.25rem;
   }
 }
 

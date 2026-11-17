@@ -1,4 +1,4 @@
-<div class="page">
+<div class="page page--narrow">
   @if (isEditingExistingRecipe()) {
     <a
       class="back-link"
@@ -36,437 +36,317 @@
     </div>
   } @else {
     <form class="recipe-form loaded-content" novalidate (submit)="submitRecipeForm($event)">
-      <div>
-        <label for="recipe-title">Titre</label>
-        <input
-          id="recipe-title"
-          type="text"
-          placeholder="Poulet rôti au citron"
-          [formField]="recipeForm.title"
-        />
-        @if (recipeForm.title().touched()) {
-          @for (titleError of recipeForm.title().errors(); track titleError.kind) {
-            <p class="field-error">{{ titleError.message }}</p>
-          }
-        }
-      </div>
-
-      <div class="recipe-form__row">
-        <div>
-          <label for="recipe-base-servings">Nombre de parts</label>
-          <input
-            id="recipe-base-servings"
-            type="number"
-            inputmode="numeric"
-            [formField]="recipeForm.baseServings"
-          />
-          @for (servingsError of recipeForm.baseServings().errors(); track servingsError.kind) {
-            <p class="field-error">{{ servingsError.message }}</p>
-          }
-        </div>
-        <div>
-          <label for="recipe-preparation-minutes">Durée (minutes)</label>
-          <input
-            id="recipe-preparation-minutes"
-            type="number"
-            inputmode="numeric"
-            placeholder="45"
-            [formField]="recipeForm.preparationMinutes"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label for="recipe-origin">Origine (facultatif)</label>
-        <input
-          id="recipe-origin"
-          type="text"
-          autocomplete="off"
-          placeholder="Un lien, un livre (Saveurs), une personne…"
-          [formField]="recipeForm.origin"
-        />
-      </div>
-
-      <!-- Desktop : photo, tags et bouton d'enregistrement dans une colonne à droite qui reste visible. -->
-      <div class="recipe-form__aside">
-        <section>
-          <h2 class="section-title">Photo</h2>
-          <div class="recipe-photo-field">
-            @if (displayedPhotoUrl(); as photoUrl) {
-              <img class="recipe-photo-field__preview" [src]="photoUrl" alt="Photo de la recette" />
-            } @else {
-              <div class="recipe-photo-field__empty">Pas encore de photo</div>
-            }
-            <div class="recipe-photo-field__actions">
-              <label class="button button--small recipe-photo-field__choose">
-                @if (isPreparingPhoto()) {
-                  Préparation de la photo…
-                } @else if (displayedPhotoUrl() !== null) {
-                  Changer la photo
-                } @else {
-                  Ajouter une photo
-                }
-                <input
-                  class="visually-hidden"
-                  type="file"
-                  accept="image/*"
-                  [disabled]="isPreparingPhoto()"
-                  (change)="chooseRecipePhoto($event)"
-                />
-              </label>
-              @if (displayedPhotoUrl() !== null) {
-                <button
-                  class="button button--quiet button--danger button--small"
-                  type="button"
-                  (click)="removeRecipePhoto()"
-                >
-                  Retirer la photo
-                </button>
-              }
-            </div>
-            @if (photoErrorMessage() !== null) {
-              <p class="field-error" role="alert">{{ photoErrorMessage() }}</p>
-            }
-          </div>
-        </section>
-
-        <section>
-          <div class="tags-heading">
-            <h2 class="section-title">Tags</h2>
-            <!-- Dans une fenêtre : on ne quitte pas la recette (rien n'est perdu). -->
-            <button class="tags-heading__manage" type="button" (click)="tagManagerDialog.open()">
-              Gérer les tags
-            </button>
-          </div>
-          @if (tagsResource.hasValue()) {
-            <!-- Une ligne par catégorie : type de plat, saison (un seul choix), envie. -->
-            @for (
-              tagCategoryGroup of tagCategoryGroups();
-              track tagCategoryGroup.definition.category
-            ) {
-              @let categoryDefinition = tagCategoryGroup.definition;
-              <div class="tag-category">
-                <h3
-                  class="tag-category__title"
-                  [id]="'tag-category-' + categoryDefinition.category"
-                >
-                  <span aria-hidden="true">{{ categoryDefinition.emoji }}</span>
-                  {{ categoryDefinition.label }}
-                  @if (categoryDefinition.noTagLabel !== null) {
-                    <span class="tag-category__hint">
-                      · un seul choix, aucun = {{ categoryDefinition.noTagLabel.toLowerCase() }}
-                    </span>
-                  }
-                </h3>
-                @if (tagCategoryGroup.tags.length > 0) {
-                  <ul
-                    class="tag-choices"
-                    [attr.aria-labelledby]="'tag-category-' + categoryDefinition.category"
-                  >
-                    @for (tag of tagCategoryGroup.tags; track tag.id) {
-                      <li>
-                        <button
-                          class="tag-chip"
-                          type="button"
-                          [class.tag-chip--selected]="isTagSelected(tag.id)"
-                          [attr.aria-pressed]="isTagSelected(tag.id)"
-                          (click)="toggleTag(tag)"
-                        >
-                          {{ tag.name }}
-                        </button>
-                      </li>
-                    }
-                  </ul>
-                } @else {
-                  <p class="tag-category__empty">Pas encore de tag</p>
-                }
-              </div>
-            }
-            <div class="new-tag">
-              <label class="visually-hidden" for="new-tag-name">Nouveau tag</label>
-              <input
-                id="new-tag-name"
-                type="text"
-                autocomplete="off"
-                placeholder="Nouveau tag"
-                [value]="newTagName()"
-                (input)="updateNewTagName($event)"
-                (keydown.enter)="$event.preventDefault(); addNewTag()"
-              />
-              <label class="visually-hidden" for="new-tag-category">Catégorie du nouveau tag</label>
-              <select
-                id="new-tag-category"
-                class="new-tag__category"
-                (change)="updateNewTagCategory($event)"
-              >
-                @for (tagCategory of tagCategories; track tagCategory.category) {
-                  <option
-                    [value]="tagCategory.category"
-                    [selected]="tagCategory.category === newTagCategory()"
-                  >
-                    {{ tagCategory.emoji }} {{ tagCategory.label }}
-                  </option>
-                }
-              </select>
-              <button
-                class="button button--small"
-                type="button"
-                [disabled]="isCreatingTag()"
-                (click)="addNewTag()"
-              >
-                Ajouter
-              </button>
-            </div>
-            @if (tagErrorMessage() !== null) {
-              <p class="field-error" role="alert">{{ tagErrorMessage() }}</p>
-            }
-          } @else if (tagsResource.error()) {
-            <p class="error-message">Impossible de charger les tags.</p>
-          } @else {
-            <p class="visually-hidden" role="status">Chargement des tags…</p>
-            <div class="tag-choices" aria-hidden="true">
-              <span class="skeleton skeleton--pill"></span>
-              <span class="skeleton skeleton--pill"></span>
-              <span class="skeleton skeleton--pill"></span>
-            </div>
-          }
-        </section>
-
-        <div class="recipe-form__aside-save">
-          @if (saveErrorMessage() !== null) {
-            <p class="error-message">{{ saveErrorMessage() }}</p>
-          }
-          <button
-            class="button button--primary recipe-form__submit"
-            type="submit"
-            [disabled]="recipeForm().submitting()"
+      <!-- Les trois étapes : on voit où on en est ; en création, on avance dans l'ordre. -->
+      <ol class="form-stepper" aria-label="Étapes de la recette">
+        @for (formStep of recipeFormSteps; track formStep.stepNumber) {
+          @let isCurrentStep = formStep.stepNumber === currentStep();
+          @let isCompletedStep = completedSteps().has(formStep.stepNumber);
+          <li
+            class="form-stepper__item"
+            [class.form-stepper__item--current]="isCurrentStep"
+            [class.form-stepper__item--done]="isCompletedStep && !isCurrentStep"
           >
-            @if (recipeForm().submitting()) {
-              Enregistrement…
-            } @else {
-              Enregistrer la recette
-            }
-          </button>
-        </div>
-      </div>
-
-      <section>
-        <h2 class="section-title">Astuces et variantes</h2>
-        <app-rich-text-editor
-          editorLabel="Astuces et variantes"
-          placeholder="Four ou air fryer, version végétarienne, ce qu'on changera la prochaine fois…"
-          [formField]="recipeForm.descriptionHtml"
-        />
-      </section>
-
-      <section>
-        <h2 class="section-title">Ingrédients</h2>
-        <p class="muted recipe-form__hint">
-          Quantités pour le nombre de parts ci-dessus. Unité « nb » pour compter (4 diots), « Aucune
-          unité » pour le sel, le poivre… (au goût).
-        </p>
-
-        <datalist id="known-ingredients">
-          @for (knownIngredient of knownIngredients(); track knownIngredient.id) {
-            <option [value]="knownIngredient.name"></option>
-          }
-        </datalist>
-
-        <!-- On réordonne les ingrédients en les faisant glisser par la poignée ⠿. -->
-        <ol
-          class="ingredient-lines"
-          cdkDropList
-          cdkDropListLockAxis="y"
-          (cdkDropListDropped)="moveIngredientLine($event)"
-        >
-          @for (ingredientLineField of recipeForm.ingredientLines; track ingredientLineField) {
-            <li class="ingredient-line card" cdkDrag>
-              <button
-                class="drag-handle ingredient-line__drag-handle"
-                type="button"
-                cdkDragHandle
-                [attr.aria-label]="'Déplacer l’ingrédient ' + ($index + 1)"
-                (keydown.arrowup)="moveIngredientLineByKeyboard($index, -1, $event)"
-                (keydown.arrowdown)="moveIngredientLineByKeyboard($index, 1, $event)"
-              >
-                ⠿
-              </button>
-              <div class="ingredient-line__name">
-                <label [for]="'ingredient-name-' + $index">Ingrédient</label>
-                <input
-                  [id]="'ingredient-name-' + $index"
-                  type="text"
-                  list="known-ingredients"
-                  autocomplete="off"
-                  placeholder="Cuisses de poulet"
-                  [formField]="ingredientLineField.ingredientName"
-                  (change)="fillDefaultUnit(ingredientLineField)"
-                />
-              </div>
-              <button
-                class="icon-button icon-button--quiet ingredient-line__remove"
-                type="button"
-                [attr.aria-label]="'Retirer l’ingrédient ' + ($index + 1)"
-                (click)="removeIngredientLine($index)"
-              >
-                ×
-              </button>
-              <div class="ingredient-line__quantity">
-                <label [for]="'ingredient-quantity-' + $index">Quantité</label>
-                <input
-                  [id]="'ingredient-quantity-' + $index"
-                  type="number"
-                  inputmode="decimal"
-                  step="any"
-                  [formField]="ingredientLineField.quantity"
-                />
-              </div>
-              <div class="ingredient-line__unit">
-                <label [for]="'ingredient-unit-' + $index">Unité</label>
-                <select
-                  [id]="'ingredient-unit-' + $index"
-                  [formField]="ingredientLineField.unit"
-                  (change)="clearQuantityWithoutUnit(ingredientLineField)"
-                >
-                  @let chosenUnit = ingredientLineField.unit().value();
-                  <!-- [selected] : les options arrivent après la valeur du champ. -->
-                  @for (unitChoice of unitChoices; track unitChoice.value) {
-                    <option [value]="unitChoice.value" [selected]="unitChoice.value === chosenUnit">
-                      {{ unitChoice.label }}
-                    </option>
-                  }
-                  @if (isUnlistedUnit(chosenUnit)) {
-                    <option [value]="chosenUnit" selected>{{ chosenUnit }}</option>
-                  }
-                </select>
-              </div>
-
-              @let readableQuantityHint =
-                formatReadableQuantityHint(
-                  ingredientLineField.quantity().value(),
-                  ingredientLineField.unit().value()
-                );
-              @if (readableQuantityHint !== null) {
-                <p class="ingredient-line__hint" aria-live="polite">
-                  S'affichera « {{ readableQuantityHint }} »
-                </p>
+            <button
+              class="form-stepper__button"
+              type="button"
+              [disabled]="!canOpenStep(formStep.stepNumber)"
+              [attr.aria-current]="isCurrentStep ? 'step' : null"
+              (click)="goToStep(formStep.stepNumber)"
+            >
+              <span class="form-stepper__number" aria-hidden="true">
+                @if (isCompletedStep && !isCurrentStep) {
+                  ✓
+                } @else {
+                  {{ formStep.stepNumber }}
+                }
+              </span>
+              <span class="form-stepper__label">{{ formStep.label }}</span>
+              @if (isCompletedStep && !isCurrentStep) {
+                <span class="visually-hidden">(terminée)</span>
               }
+            </button>
+          </li>
+        }
+      </ol>
 
-              @if (isNewIngredientName(ingredientLineField.ingredientName().value())) {
-                <div class="ingredient-line__new-type">
-                  <label [for]="'ingredient-type-' + $index">
-                    Nouvel ingrédient : de quel type ?
+      @if (isDraftRestored()) {
+        <p class="draft-notice" role="status">
+          Brouillon repris là où vous l'aviez laissé (sans la photo).
+          <button class="draft-notice__discard" type="button" (click)="discardDraft()">
+            Recommencer à zéro
+          </button>
+        </p>
+      }
+
+      @switch (currentStep()) {
+        @case (1) {
+          <div class="recipe-info-step">
+            <div class="recipe-info-step__fields">
+              <div>
+                <label for="recipe-title">Titre</label>
+                <input
+                  id="recipe-title"
+                  type="text"
+                  placeholder="Poulet rôti au citron"
+                  [formField]="recipeForm.title"
+                />
+                @if (recipeForm.title().touched()) {
+                  @for (titleError of recipeForm.title().errors(); track titleError.kind) {
+                    <p class="field-error">{{ titleError.message }}</p>
+                  }
+                }
+              </div>
+
+              <div class="recipe-form__row">
+                <div>
+                  <label for="recipe-base-servings">Nombre de parts</label>
+                  <input
+                    id="recipe-base-servings"
+                    type="number"
+                    inputmode="numeric"
+                    [formField]="recipeForm.baseServings"
+                  />
+                  @for (
+                    servingsError of recipeForm.baseServings().errors();
+                    track servingsError.kind
+                  ) {
+                    <p class="field-error">{{ servingsError.message }}</p>
+                  }
+                </div>
+                <div>
+                  <label for="recipe-preparation-minutes">Durée (minutes)</label>
+                  <input
+                    id="recipe-preparation-minutes"
+                    type="number"
+                    inputmode="numeric"
+                    placeholder="45"
+                    [formField]="recipeForm.preparationMinutes"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label for="recipe-origin">Origine (facultatif)</label>
+                <input
+                  id="recipe-origin"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="Un lien, un livre (Saveurs), une personne…"
+                  [formField]="recipeForm.origin"
+                />
+              </div>
+            </div>
+
+            <section class="recipe-info-step__photo">
+              <h2 class="section-title">Photo</h2>
+              <div class="recipe-photo-field">
+                @if (displayedPhotoUrl(); as photoUrl) {
+                  <img
+                    class="recipe-photo-field__preview"
+                    [src]="photoUrl"
+                    alt="Photo de la recette"
+                  />
+                } @else {
+                  <div class="recipe-photo-field__empty">Pas encore de photo</div>
+                }
+                <div class="recipe-photo-field__actions">
+                  <label class="button button--small recipe-photo-field__choose">
+                    @if (isPreparingPhoto()) {
+                      Préparation de la photo…
+                    } @else if (displayedPhotoUrl() !== null) {
+                      Changer la photo
+                    } @else {
+                      Ajouter une photo
+                    }
+                    <input
+                      class="visually-hidden"
+                      type="file"
+                      accept="image/*"
+                      [disabled]="isPreparingPhoto()"
+                      (change)="chooseRecipePhoto($event)"
+                    />
                   </label>
-                  <select
-                    [id]="'ingredient-type-' + $index"
-                    [formField]="ingredientLineField.newIngredientTypeId"
+                  @if (displayedPhotoUrl() !== null) {
+                    <button
+                      class="button button--quiet button--danger button--small"
+                      type="button"
+                      (click)="removeRecipePhoto()"
+                    >
+                      Retirer la photo
+                    </button>
+                  }
+                </div>
+                @if (photoErrorMessage() !== null) {
+                  <p class="field-error" role="alert">{{ photoErrorMessage() }}</p>
+                }
+              </div>
+            </section>
+
+            <section class="recipe-info-step__tags">
+              <div class="tags-heading">
+                <h2 class="section-title">Tags</h2>
+                <!-- Dans une fenêtre : on ne quitte pas la recette (rien n'est perdu). -->
+                <button
+                  class="tags-heading__manage"
+                  type="button"
+                  (click)="tagManagerDialog.open()"
+                >
+                  Gérer les tags
+                </button>
+              </div>
+              @if (tagsResource.hasValue()) {
+                <!-- Une ligne par catégorie : type de plat, saison (un seul choix), envie. -->
+                @for (
+                  tagCategoryGroup of tagCategoryGroups();
+                  track tagCategoryGroup.definition.category
+                ) {
+                  @let categoryDefinition = tagCategoryGroup.definition;
+                  <div class="tag-category">
+                    <h3
+                      class="tag-category__title"
+                      [id]="'tag-category-' + categoryDefinition.category"
+                    >
+                      <span aria-hidden="true">{{ categoryDefinition.emoji }}</span>
+                      {{ categoryDefinition.label }}
+                      @if (categoryDefinition.noTagLabel !== null) {
+                        <span class="tag-category__hint">
+                          · un seul choix, aucun = {{ categoryDefinition.noTagLabel.toLowerCase() }}
+                        </span>
+                      }
+                    </h3>
+                    @if (tagCategoryGroup.tags.length > 0) {
+                      <ul
+                        class="tag-choices"
+                        [attr.aria-labelledby]="'tag-category-' + categoryDefinition.category"
+                      >
+                        @for (tag of tagCategoryGroup.tags; track tag.id) {
+                          <li>
+                            <button
+                              class="tag-chip"
+                              type="button"
+                              [class.tag-chip--selected]="isTagSelected(tag.id)"
+                              [attr.aria-pressed]="isTagSelected(tag.id)"
+                              (click)="toggleTag(tag)"
+                            >
+                              {{ tag.name }}
+                            </button>
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <p class="tag-category__empty">Pas encore de tag</p>
+                    }
+                  </div>
+                }
+                <div class="new-tag">
+                  <label class="visually-hidden" for="new-tag-name">Nouveau tag</label>
+                  <input
+                    id="new-tag-name"
+                    type="text"
+                    autocomplete="off"
+                    placeholder="Nouveau tag"
+                    [value]="newTagName()"
+                    (input)="updateNewTagName($event)"
+                    (keydown.enter)="$event.preventDefault(); addNewTag()"
+                  />
+                  <label class="visually-hidden" for="new-tag-category"
+                    >Catégorie du nouveau tag</label
                   >
-                    <option value="">Choisir un type</option>
-                    @for (ingredientType of sortedIngredientTypes(); track ingredientType.id) {
-                      <option [value]="ingredientType.id">
-                        {{ formatIngredientTypeLabel(ingredientType) }}
+                  <select
+                    id="new-tag-category"
+                    class="new-tag__category"
+                    (change)="updateNewTagCategory($event)"
+                  >
+                    @for (tagCategory of tagCategories; track tagCategory.category) {
+                      <option
+                        [value]="tagCategory.category"
+                        [selected]="tagCategory.category === newTagCategory()"
+                      >
+                        {{ tagCategory.emoji }} {{ tagCategory.label }}
                       </option>
                     }
                   </select>
-                  @if (ingredientLineField.newIngredientTypeId().touched()) {
-                    @for (
-                      typeError of ingredientLineField.newIngredientTypeId().errors();
-                      track typeError.kind
-                    ) {
-                      <p class="field-error">{{ typeError.message }}</p>
-                    }
-                  }
+                  <button
+                    class="button button--small"
+                    type="button"
+                    [disabled]="isCreatingTag()"
+                    (click)="addNewTag()"
+                  >
+                    Ajouter
+                  </button>
+                </div>
+                @if (tagErrorMessage() !== null) {
+                  <p class="field-error" role="alert">{{ tagErrorMessage() }}</p>
+                }
+              } @else if (tagsResource.error()) {
+                <p class="error-message">Impossible de charger les tags.</p>
+              } @else {
+                <p class="visually-hidden" role="status">Chargement des tags…</p>
+                <div class="tag-choices" aria-hidden="true">
+                  <span class="skeleton skeleton--pill"></span>
+                  <span class="skeleton skeleton--pill"></span>
+                  <span class="skeleton skeleton--pill"></span>
                 </div>
               }
-            </li>
-          }
-        </ol>
-        <!-- Dans la continuité des lignes : une ligne vide en pointillés, de la même taille. -->
-        <button class="add-line-button" type="button" (click)="addIngredientLine()">
-          + Ajouter un ingrédient
-        </button>
-      </section>
+            </section>
+          </div>
+        }
+        @case (2) {
+          <app-recipe-ingredients-step
+            [ingredientLinesField]="recipeForm.ingredientLines"
+            [knownIngredients]="knownIngredients()"
+            [ingredientTypes]="sortedIngredientTypes()"
+          />
+        }
+        @case (3) {
+          <app-recipe-preparation-step
+            [stepsField]="recipeForm.steps"
+            [descriptionField]="recipeForm.descriptionHtml"
+          />
+        }
+      }
 
-      <section>
-        <h2 class="section-title">Préparation</h2>
-        <!-- On réordonne les étapes en les faisant glisser par la poignée ⠿. -->
-        <ol
-          class="step-lines"
-          cdkDropList
-          cdkDropListLockAxis="y"
-          (cdkDropListDropped)="moveStep($event)"
-        >
-          @for (stepField of recipeForm.steps; track stepField) {
-            <li class="step-line" cdkDrag>
-              <div class="step-line__header">
-                <button
-                  class="drag-handle"
-                  type="button"
-                  cdkDragHandle
-                  [attr.aria-label]="'Déplacer l’étape ' + ($index + 1)"
-                  (keydown.arrowup)="moveStepByKeyboard($index, -1, $event)"
-                  (keydown.arrowdown)="moveStepByKeyboard($index, 1, $event)"
-                >
-                  ⠿
-                </button>
-                <label class="step-line__label" [for]="'step-title-' + $index">
-                  Étape {{ $index + 1 }}
-                </label>
-                <button
-                  class="icon-button icon-button--quiet"
-                  type="button"
-                  [attr.aria-label]="'Retirer l’étape ' + ($index + 1)"
-                  (click)="removeStep($index)"
-                >
-                  ×
-                </button>
-              </div>
-              <input
-                [id]="'step-title-' + $index"
-                class="step-line__title"
-                type="text"
-                placeholder="Titre de l’étape (facultatif) : Faire la préparation"
-                [formField]="stepField.title"
-                [attr.aria-describedby]="
-                  findStarterStepLegend(stepField.title().value()) !== null
-                    ? 'step-legend-' + $index
-                    : null
-                "
-              />
-              @let starterStepLegend = findStarterStepLegend(stepField.title().value());
-              @if (starterStepLegend !== null) {
-                <p class="step-line__legend" [id]="'step-legend-' + $index">
-                  {{ starterStepLegend }}
-                </p>
-              }
-              <app-rich-text-editor
-                [editorLabel]="'Texte de l’étape ' + ($index + 1)"
-                placeholder="Mélanger la farine et les œufs…"
-                [formField]="stepField.contentHtml"
-              />
-            </li>
-          }
-        </ol>
-        <button class="add-line-button" type="button" (click)="addStep()">
-          + Ajouter une étape
-        </button>
-      </section>
-
+      @if (stepProblem(); as stepProblemMessage) {
+        <p class="field-error form-step-nav__problem" role="alert">{{ stepProblemMessage }}</p>
+      }
       @if (saveErrorMessage() !== null) {
         <p class="error-message" role="alert">{{ saveErrorMessage() }}</p>
       }
 
-      <button
-        class="button button--primary recipe-form__submit"
-        type="submit"
-        [disabled]="recipeForm().submitting()"
-      >
-        @if (recipeForm().submitting()) {
-          Enregistrement…
-        } @else {
-          Enregistrer la recette
+      <!-- À la fin de l'étape, dans le flux de la page (pas de barre fixe). -->
+      <div class="form-step-nav">
+        @if (currentStep() > firstStep) {
+          <button class="button button--quiet" type="button" (click)="goToPreviousStep()">
+            ← Précédent
+          </button>
         }
-      </button>
+        <div class="form-step-nav__end">
+          @if (currentStep() < lastStep) {
+            <!-- En création, « Suivant » est le bouton d'envoi : Entrée dans un champ avance aussi. -->
+            <button
+              class="button"
+              [class.button--primary]="!isEditingExistingRecipe()"
+              [type]="isEditingExistingRecipe() ? 'button' : 'submit'"
+              (click)="onNextButtonClick()"
+            >
+              Suivant →
+            </button>
+          }
+          @if (isEditingExistingRecipe() || currentStep() === lastStep) {
+            <button
+              class="button button--primary"
+              type="submit"
+              [disabled]="recipeForm().submitting()"
+            >
+              @if (recipeForm().submitting()) {
+                Enregistrement…
+              } @else {
+                Enregistrer la recette
+              }
+            </button>
+          }
+        </div>
+      </div>
 
       <!-- Suppression : seulement en modification, après confirmation dans une fenêtre. -->
       @if (isEditingExistingRecipe()) {
